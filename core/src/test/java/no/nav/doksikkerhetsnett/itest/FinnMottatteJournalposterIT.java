@@ -62,13 +62,13 @@ public class FinnMottatteJournalposterIT {
 	@Test
 	public void finnMottatteJournalposterHappyPathTemaSingle() {
 		AssertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(TEMA_SINGLE, 2,
-				"mottatteJournalPosterMedTemaSingle-happy.json", TEMA_SINGLE);
+				"mottatteJournalposterMedTemaSingle-happy.json", TEMA_SINGLE);
 	}
 
 	@Test
 	public void finnMottatteJournalposterHappyPathTemaMulti() {
 		AssertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(TEMA_MULTI, 2,
-				"mottatteJournalPosterMedTemaMulti-happy.json", "UFO", "BAR");
+				"mottatteJournalposterMedTemaMulti-happy.json", "UFO", "BAR");
 	}
 
 	@Test
@@ -80,7 +80,7 @@ public class FinnMottatteJournalposterIT {
 	@Test
 	public void finnMottatteJournalposterInvalidTema() {
 		AssertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(TEMA_INVALID, 0,
-				"mottatteJournalPosterMedinvalidTema.json", "");
+				"mottatteJournalposterMedinvalidTema.json", "");
 	}
 
 	private void AssertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(String temaer, int expectedOutcome, String filename, String... resultTemaer) {
