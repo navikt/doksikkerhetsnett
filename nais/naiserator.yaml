@@ -6,6 +6,9 @@ metadata:
   labels:
     team: teamdokumenthandtering
 spec:
+  env:
+    - name: DOKSIKKERHETSNETT_FINNMOTTATTEJOURNALPOSTERURL
+      value: {{ DOKSIKKERHETSNETT_FINNMOTTATTEJOURNALPOSTERURL }}
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
