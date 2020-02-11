@@ -6,7 +6,6 @@ metadata:
   labels:
     team: teamdokumenthandtering
 spec:
-  env:
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
