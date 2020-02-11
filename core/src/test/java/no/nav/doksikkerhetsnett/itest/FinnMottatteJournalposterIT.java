@@ -80,7 +80,7 @@ public class FinnMottatteJournalposterIT {
 	@Test
 	public void finnMottatteJournalposterInvalidTema() {
 		AssertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(TEMA_INVALID, 0,
-				"mottatteJournalposterMedinvalidTema.json", "");
+				"mottatteJournalposterMedInvalidTema.json", "");
 	}
 
 	private void AssertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(String temaer, int expectedOutcome, String filename, String... resultTemaer) {
