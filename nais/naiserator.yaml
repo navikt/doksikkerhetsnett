@@ -7,13 +7,11 @@ metadata:
     team: teamdokumenthandtering
 spec:
   env:
-    - name: DOKSIKKERHETSNETT_TEMAER
-      value: {{DOKSIKKERHETSNETT_TEMAER}}
-    - name: FINNMOTTATTEJOURNALPOSTERURL
-      value: {{FINNMOTTATTEJOURNALPOSTERURL}}
   image: {{ image }}
   ingresses:
-    - {{ INGRESSES }}
+    {{#each INGRESSES}}
+       - {{this }}
+    {{/each}}
   liveness:
     path: /isAlive
     port: 8080
@@ -34,15 +32,10 @@ spec:
     cpuThresholdPercentage: 50
   resources:
     limits:
-      cpu: 3000m
-      memory: 2560Mi
-    requests:
-      cpu: 60m
+      cpu: 1500m
       memory: 1024Mi
   vault:
     enabled: true
     paths:
       - kvPath: {{ SRVDOKSIKKERHETSNETT }}
-        mountPath: "/secrets/serviceuser/srvdoksikkerhetsnt"
-      - kvPath: {{ DOKSIKKERHETSNETT_VAULT }}
-        mountPath: "/var/run/secrets/nais.io/vault"
+        mountPath: /var/run/secrets/nais.io/srvdoksikkerhetsnt
