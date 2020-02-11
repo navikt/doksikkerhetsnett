@@ -1,0 +1,30 @@
+{
+  "journalposter": [
+    {
+      "journalpostId": 111111111,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "33333333333",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2014-04-11T14:11:34.622+0000"
+    },
+    {
+      "journalpostId": 222222222,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    }
+  ]
+}

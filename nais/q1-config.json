@@ -1,0 +1,8 @@
+{
+  "NAMESPACE": "q1",
+  "INGRESSES": "https://doksikkerhetsnett-q1.nais.preprod.local",
+  "SRVDOKSIKKERHETSNETT": "/serviceuser/dev/srvdoksikkerhetsnt",
+  "DOKSIKKERHETSNETT_VAULT": "/kv/preprod/fss/doksikkerhetsnett/default",
+  "FINNMOTTATTEJOURNALPOSTERURL": "https://dokarkiv-q1.nais.preprod.local" ,
+  "DOKSIKKERHETSNETT_TEMAER": "UFO"
+}
