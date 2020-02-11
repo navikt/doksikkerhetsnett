@@ -63,14 +63,14 @@ public class FinnMottatteJournalposterConsumer {
 
 		} catch (HttpClientErrorException e) {
 			if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
-				throw new FinnMottatteJournalposterFinnesIkkeFunctionalException(String.format("finnMottateJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
-						.getStatusCode(), e.getMessage()), e);
+				throw new FinnMottatteJournalposterFinnesIkkeFunctionalException(String.format("finnMottateJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
+						.getStatusCode(), e.getMessage(), finnMottatteJournalposterUrl), e);
 			} else if (HttpStatus.CONFLICT.equals(e.getStatusCode())) {
 				throw new FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException(String.format("finnMottateJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
 						.getStatusCode(), e.getMessage()), e);
 			} else {
-				throw new FinnMottatteJournalposterFunctionalException(String.format("finnMottateJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
-						.getStatusCode(), e.getMessage()), e);
+				throw new FinnMottatteJournalposterFinnesIkkeFunctionalException(String.format("finnMottateJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
+						.getStatusCode(), e.getMessage(), finnMottatteJournalposterUrl), e);
 			}
 		} catch (HttpServerErrorException e) {
 			throw new FinnMottatteJournalposterTechnicalException(String.format("finnMottateJournalposter feilet teknisk med statusKode=%s. Feilmelding=%s", e
