@@ -61,29 +61,29 @@ public class FinnMottatteJournalposterIT {
 
 	@Test
 	public void finnMottatteJournalposterHappyPathTemaSingle() {
-		AssertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(TEMA_SINGLE, 2,
+		assertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(TEMA_SINGLE, 2,
 				"mottatteJournalposterMedTemaSingle-happy.json", TEMA_SINGLE);
 	}
 
 	@Test
 	public void finnMottatteJournalposterHappyPathTemaMulti() {
-		AssertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(TEMA_MULTI, 2,
+		assertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(TEMA_MULTI, 2,
 				"mottatteJournalposterMedTemaMulti-happy.json", "UFO", "BAR");
 	}
 
 	@Test
 	public void finnMottatteJournalposterHappyPathTemaNone() {
-		AssertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(TEMA_NONE, 2,
+		assertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(TEMA_NONE, 2,
 				"mottatteJournalposterMedTemaNone-happy.json", "UFO", "PEN");
 	}
 
 	@Test
 	public void finnMottatteJournalposterInvalidTema() {
-		AssertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(TEMA_INVALID, 0,
+		assertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(TEMA_INVALID, 0,
 				"mottatteJournalposterMedInvalidTema.json", "");
 	}
 
-	private void AssertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(String temaer, int expectedOutcome, String filename, String... resultTemaer) {
+	private void assertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(String temaer, int expectedOutcome, String filename, String... resultTemaer) {
 		stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER + temaer))
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)

@@ -6,7 +6,7 @@ Sikkerhetsnett for Joark
 Sikkerhetsnettet er en skedulert jobb som henter alle ubehandlede journalposter 
 som er eldre enn en uke og oppretter oppgaver for disse om de ikke eksisterer.
 
-Tjenesten er nå satt til å kjøre hvert tiende minutt.
+Tjenesten er nå satt til å kjøre en gang i timen.
 
 Man kan spesifisere hvilke temaer man ønsker å fange ved å oppdatere miljøvariabelen "temaer".
 

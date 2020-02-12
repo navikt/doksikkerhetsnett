@@ -14,7 +14,7 @@ public class DoksikkerhetsnettScheduled {
 
 	private final FinnMottatteJournalposterService finnMottatteJournalposterService;
 	private final DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
-	private final int MINUTES = 60_000;
+	private final int MINUTE = 60_000;
 
 	public DoksikkerhetsnettScheduled(FinnMottatteJournalposterService finnMottatteJournalposterService,
 									  DokSikkerhetsnettProperties dokSikkerhetsnettProperties) {
@@ -22,7 +22,7 @@ public class DoksikkerhetsnettScheduled {
 		this.dokSikkerhetsnettProperties = dokSikkerhetsnettProperties;
 	}
 
-	@Scheduled(initialDelay = 1000, fixedDelay = 10 * MINUTES)
+	@Scheduled(initialDelay = 1000, fixedDelay = 60 * MINUTE)
 	public void triggerOppdatering() {
 		lagOppgaverForGlemteJournalposter();
 	}
@@ -43,6 +43,11 @@ public class DoksikkerhetsnettScheduled {
 	private void tildelOppgave() {
 		FinnMottatteJournalposterResponse finnMottatteJournalposterResponse = finnMottatteJournalposterService.finnMottatteJournalPoster(dokSikkerhetsnettProperties
 				.getTemaer());
+
+		if (finnMottatteJournalposterResponse.getJournalposter().size() > 0) {
+			log.info("Finnmottattejournalposter har funnet {} poster med tema i{}", finnMottatteJournalposterResponse.getJournalposter()
+					.size(), dokSikkerhetsnettProperties.getTemaer());
+		}
 
 		/* TODO:
 		 * Del 1:  Finn hvilke poster som ikke har en oppgave
