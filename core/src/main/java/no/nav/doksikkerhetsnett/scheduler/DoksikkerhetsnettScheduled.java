@@ -4,9 +4,6 @@ package no.nav.doksikkerhetsnett.scheduler;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.config.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.consumer.FinnMottatteJournalposterResponse;
-import no.nav.doksikkerhetsnett.consumer.UbehandletJournalpost;
-import no.nav.doksikkerhetsnett.exceptions.functional.AbstractDoksikkerhetsnettFunctionalException;
-import no.nav.doksikkerhetsnett.metrics.Monitor;
 import no.nav.doksikkerhetsnett.service.FinnMottatteJournalposterService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -30,7 +27,6 @@ public class DoksikkerhetsnettScheduled {
 		lagOppgaverForGlemteJournalposter();
 	}
 
-	@Monitor(value = "dok_metric", extraTags = {"process", "oppdaterEformidlingStatus"}, histogram = true)
 	public void lagOppgaverForGlemteJournalposter() {
 		log.info("doksikkerhetsnett lager oppgaver for alle gjenglemte journalposter");
 
