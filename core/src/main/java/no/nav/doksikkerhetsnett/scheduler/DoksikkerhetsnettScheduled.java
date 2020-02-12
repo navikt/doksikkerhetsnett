@@ -28,7 +28,7 @@ public class DoksikkerhetsnettScheduled {
 	}
 
 	public void lagOppgaverForGlemteJournalposter() {
-		log.info("doksikkerhetsnett lager oppgaver for alle gjenglemte journalposter");
+		log.info("doksikkerhetsnett henter alle ubehandlede journalposter");
 
 		try {
 			tildelOppgave();
@@ -37,7 +37,7 @@ public class DoksikkerhetsnettScheduled {
 			return;
 		}
 
-		//log.info("doksikkerhetsnett har laget oppgaver for alle gjenglemte journalposter");
+		log.info("doksikkerhetsnett har hentet alle ubehandlede journalposter");
 	}
 
 	private void tildelOppgave() {
@@ -47,6 +47,8 @@ public class DoksikkerhetsnettScheduled {
 		if (finnMottatteJournalposterResponse.getJournalposter().size() > 0) {
 			log.info("Finnmottattejournalposter har funnet {} poster med tema i{}", finnMottatteJournalposterResponse.getJournalposter()
 					.size(), dokSikkerhetsnettProperties.getTemaer());
+		} else{
+			log.info("finnMottatteJournalposter fant ingen journalposter med tema i {}", dokSikkerhetsnettProperties.getTemaer());
 		}
 
 		/* TODO:
