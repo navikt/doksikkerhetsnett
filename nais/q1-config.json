@@ -3,7 +3,6 @@
   "SRVDOKSIKKERHETSNETT": "/serviceuser/data/dev/srvdoksikkerhetsnt",
   "DOKSIKKERHETSNETT_VAULT": "/kv/preprod/fss/doksikkerhetsnett/default",
   "DOKSIKKERHETSNETT_FINNMOTTATTEJOURNALPOSTERURL": "https://dokarkiv-q1.nais.preprod.local/rest/intern/journalpostapi/v1/finnMottatteJournalposter/",
-  "DOKSIKKERHETSNETT_TEMAER": "UFO",
   "INGRESSES": [
     "https://doksikkerhetsnett-q1.nais.preprod.local"
   ]

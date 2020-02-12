@@ -33,7 +33,7 @@ public class DoksikkerhetsnettScheduled {
 		try {
 			tildelOppgave();
 		} catch (Exception e) {
-			log.error("doksikkerhetsnett feilet under hentingen av alle journalposter: " + e.getMessage());
+			log.error("doksikkerhetsnett feilet under hentingen av alle journalposter (evt med tema i: {}): " + e.getMessage(), dokSikkerhetsnettProperties.getTemaer());
 			return;
 		}
 
