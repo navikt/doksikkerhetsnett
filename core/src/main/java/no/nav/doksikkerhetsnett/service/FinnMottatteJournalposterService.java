@@ -25,7 +25,7 @@ public class FinnMottatteJournalposterService {
 
 	public FinnMottatteJournalposterResponse finnMottatteJournalPoster(String temaer) {
 		if(temaer == null) {
-			return finnMottateJournalposter();
+			return finnMottatteJournalPoster();
 		}
 		return finnMottatteJournalposterConsumer.finnMottateJournalposter(temaer);
 	}
@@ -35,7 +35,7 @@ public class FinnMottatteJournalposterService {
 	}
 
 
-	public FinnMottatteJournalposterResponse finnMottateJournalposter() {
+	public FinnMottatteJournalposterResponse finnMottatteJournalPoster() {
 		return finnMottatteJournalposterConsumer.finnMottateJournalposter("");
 	}
 
