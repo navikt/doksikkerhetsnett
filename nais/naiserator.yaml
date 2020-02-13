@@ -1,0 +1,43 @@
+kind: Application
+apiVersion: nais.io/v1alpha1
+metadata:
+  name: doksikkerhetsnett
+  namespace: {{ NAMESPACE }}
+  labels:
+    team: teamdokumenthandtering
+spec:
+  env:
+    - name: DOKSIKKERHETSNETT_FINNMOTTATTEJOURNALPOSTERURL
+      value: {{ DOKSIKKERHETSNETT_FINNMOTTATTEJOURNALPOSTERURL }}
+  image: {{ image }}
+  ingresses:
+    {{#each INGRESSES}}
+       - {{this }}
+    {{/each}}
+  liveness:
+    path: /isAlive
+    port: 8080
+    initialDelay: 30
+    failureThreshold: 10
+  port: 8080
+  prometheus:
+    enabled: true
+    path: /actuator/prometheus
+  readiness:
+    path: /isReady
+    port: 8080
+    initialDelay: 30
+    timeout: 3
+  replicas:
+    min: 1
+    max: 1
+    cpuThresholdPercentage: 50
+  resources:
+    limits:
+      cpu: 1500m
+      memory: 1024Mi
+  vault:
+    enabled: true
+    paths:
+      - kvPath: {{ SRVDOKSIKKERHETSNETT }}
+        mountPath: /var/run/secrets/nais.io/srvdoksikkerhetsnt
