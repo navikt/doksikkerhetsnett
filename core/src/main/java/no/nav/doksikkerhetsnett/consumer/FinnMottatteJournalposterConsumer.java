@@ -47,7 +47,7 @@ public class FinnMottatteJournalposterConsumer {
 				.build();
 	}
 
-	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnMottateJournalposter"}, percentiles = {0.5, 0.95}, histogram = true, logExceptions = false)
+	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnMottateJournalposter"}, percentiles = {0.5, 0.95}, histogram = true)
 	public FinnMottatteJournalposterResponse finnMottateJournalposter(String temaer) {
 		try {
 			HttpHeaders headers = new HttpHeaders();
