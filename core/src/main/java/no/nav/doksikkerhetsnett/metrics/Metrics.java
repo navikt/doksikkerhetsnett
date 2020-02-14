@@ -24,5 +24,7 @@ public @interface Metrics{
 
 	boolean createErrorMetric() default false;
 
+	boolean createAntallJournalposterMetric() default false;
 
+	int antallJournalposter() default 0;
 }

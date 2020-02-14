@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 
 import io.micrometer.core.annotation.Incubating;
 import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
@@ -11,6 +12,8 @@ import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.lang.NonNullApi;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.config.MDCConstants;
+import no.nav.doksikkerhetsnett.consumer.FinnMottatteJournalposterConsumer;
+import no.nav.doksikkerhetsnett.consumer.FinnMottatteJournalposterResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.AbstractDoksikkerhetsnettFunctionalException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -19,7 +22,9 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.MDC;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.function.IntSupplier;
 
 @Aspect
 @NonNullApi
@@ -73,13 +78,31 @@ public class DokTimedAspect {
 			throw e;
 
 		} finally {
-			sample.stop(Timer.builder(metrics.value())
-					.description(metrics.description().isEmpty() ? null : metrics.description())
-					.tags(metrics.extraTags())
-					.tags(tagsBasedOnJoinpoint.apply(pjp))
-					.publishPercentileHistogram(metrics.histogram())
-					.publishPercentiles(metrics.percentiles().length == 0 ? null : metrics.percentiles())
-					.register(registry));
+			if (metrics.createAntallJournalposterMetric()) {
+				sample.stop(Timer.builder(metrics.value())
+						.description(metrics.description().isEmpty() ? null : metrics.description())
+						.tags(metrics.extraTags())
+						.tags(tagsBasedOnJoinpoint.apply(pjp))
+						.tags("antall_journalposter", ((FinnMottatteJournalposterConsumer) pjp.getThis()).getMetricsAntallJournalposter() + "")
+						.publishPercentileHistogram(metrics.histogram())
+						.publishPercentiles(metrics.percentiles().length == 0 ? null : metrics.percentiles())
+						.register(registry));
+
+				int antallJournalposter = ((FinnMottatteJournalposterConsumer) pjp.getThis()).getMetricsAntallJournalposter();
+				Counter.builder("mottatte.journalposter.antall")
+					.register(registry)
+					.increment(antallJournalposter);
+			}
+
+			else {
+				sample.stop(Timer.builder(metrics.value())
+						.description(metrics.description().isEmpty() ? null : metrics.description())
+						.tags(metrics.extraTags())
+						.tags(tagsBasedOnJoinpoint.apply(pjp))
+						.publishPercentileHistogram(metrics.histogram())
+						.publishPercentiles(metrics.percentiles().length == 0 ? null : metrics.percentiles())
+						.register(registry));
+			}
 		}
 	}
 

@@ -7,7 +7,6 @@ import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 
 import no.nav.doksikkerhetsnett.config.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFinnesIkkeFunctionalException;
-import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnMottatteJournalposterTechnicalException;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException;
 import no.nav.doksikkerhetsnett.metrics.Metrics;
@@ -31,6 +30,7 @@ import java.time.Duration;
 public class FinnMottatteJournalposterConsumer {
 	private final RestTemplate restTemplate;
 	private final String finnMottatteJournalposterUrl;
+	private int metricsAntallJournalposter = 0;
 
 	public FinnMottatteJournalposterConsumer(RestTemplateBuilder restTemplateBuilder,
 											 DokSikkerhetsnettProperties dokSikkerhetsnettProperties) {
@@ -47,8 +47,9 @@ public class FinnMottatteJournalposterConsumer {
 				.build();
 	}
 
-	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnMottateJournalposter"}, percentiles = {0.5, 0.95}, histogram = true)
+	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnMottateJournalposter"}, percentiles = {0.5, 0.95}, histogram = true, createAntallJournalposterMetric = true)
 	public FinnMottatteJournalposterResponse finnMottateJournalposter(String temaer) {
+
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -58,8 +59,10 @@ public class FinnMottatteJournalposterConsumer {
 			URI uri = UriComponentsBuilder.fromHttpUrl(finnMottatteJournalposterUrl)
 					.path(temaer)
 					.build().toUri();
-			return restTemplate.exchange(uri, HttpMethod.GET, requestEntity, FinnMottatteJournalposterResponse.class)
+			FinnMottatteJournalposterResponse response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, FinnMottatteJournalposterResponse.class)
 					.getBody();
+			metricsAntallJournalposter = response.getJournalposter().size();
+			return response;
 
 		} catch (HttpClientErrorException e) {
 			if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
@@ -78,6 +81,9 @@ public class FinnMottatteJournalposterConsumer {
 		}
 	}
 
+	public int getMetricsAntallJournalposter() {
+		return metricsAntallJournalposter;
+	}
 
 	private HttpHeaders createHeader(HttpHeaders headers) {
 		if (MDC.get(MDC_NAV_CALL_ID) != null) {
