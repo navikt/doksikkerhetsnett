@@ -2,15 +2,13 @@ package no.nav.doksikkerhetsnett.service;
 
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.doksikkerhetsnett.consumer.FinnMottatteJournalposterConsumer;
-import no.nav.doksikkerhetsnett.consumer.FinnMottatteJournalposterResponse;
+import no.nav.doksikkerhetsnett.consumer.finnMottateJournalposter.FinnMottatteJournalposterConsumer;
+import no.nav.doksikkerhetsnett.consumer.finnMottateJournalposter.FinnMottatteJournalposterResponse;
 import no.nav.doksikkerhetsnett.utils.Utils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service

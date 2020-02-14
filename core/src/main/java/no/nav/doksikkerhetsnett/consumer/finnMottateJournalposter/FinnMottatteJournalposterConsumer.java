@@ -1,13 +1,12 @@
-package no.nav.doksikkerhetsnett.consumer;
+package no.nav.doksikkerhetsnett.consumer.finnMottateJournalposter;
 
-import static no.nav.doksikkerhetsnett.config.MDCConstants.MDC_NAV_CALL_ID;
-import static no.nav.doksikkerhetsnett.config.MDCConstants.MDC_NAV_CONSUMER_ID;
+import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CALL_ID;
+import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_ID;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 
-import no.nav.doksikkerhetsnett.config.DokSikkerhetsnettProperties;
+import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFinnesIkkeFunctionalException;
-import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnMottatteJournalposterTechnicalException;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException;
 import no.nav.doksikkerhetsnett.metrics.Metrics;
