@@ -45,7 +45,7 @@ public class DoksikkerhetsnettScheduled {
 				.getTemaer());
 
 		if (finnMottatteJournalposterResponse.getJournalposter().size() > 0) {
-			log.info("Finnmottattejournalposter har funnet {} poster med tema i{}", finnMottatteJournalposterResponse.getJournalposter()
+			log.info("Finnmottattejournalposter har funnet {} poster med tema i {}", finnMottatteJournalposterResponse.getJournalposter()
 					.size(), dokSikkerhetsnettProperties.getTemaer());
 		} else{
 			log.info("finnMottatteJournalposter fant ingen journalposter med tema i {}", dokSikkerhetsnettProperties.getTemaer());

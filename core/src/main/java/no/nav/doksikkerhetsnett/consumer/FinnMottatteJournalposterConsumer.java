@@ -48,7 +48,7 @@ public class FinnMottatteJournalposterConsumer {
 	}
 
 	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnMottatteJournalposter"}, percentiles = {0.5, 0.95}, histogram = true, createAntallJournalposterMetric = true)
-	public FinnMottatteJournalposterResponse finnMottateJournalposter(String temaer) {
+	public FinnMottatteJournalposterResponse finnMottatteJournalposter(String temaer) {
 
 		try {
 			HttpHeaders headers = new HttpHeaders();
@@ -66,17 +66,17 @@ public class FinnMottatteJournalposterConsumer {
 
 		} catch (HttpClientErrorException e) {
 			if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
-				throw new FinnMottatteJournalposterFinnesIkkeFunctionalException(String.format("finnMottateJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
+				throw new FinnMottatteJournalposterFinnesIkkeFunctionalException(String.format("finnMottatteJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
 						.getStatusCode(), e.getMessage(), finnMottatteJournalposterUrl), e);
 			} else if (HttpStatus.CONFLICT.equals(e.getStatusCode())) {
-				throw new FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException(String.format("finnMottateJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
+				throw new FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException(String.format("finnMottatteJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
 						.getStatusCode(), e.getMessage()), e);
 			} else {
-				throw new FinnMottatteJournalposterFinnesIkkeFunctionalException(String.format("finnMottateJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
+				throw new FinnMottatteJournalposterFinnesIkkeFunctionalException(String.format("finnMottatteJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
 						.getStatusCode(), e.getMessage(), finnMottatteJournalposterUrl), e);
 			}
 		} catch (HttpServerErrorException e) {
-			throw new FinnMottatteJournalposterTechnicalException(String.format("finnMottateJournalposter feilet teknisk med statusKode=%s. Feilmelding=%s", e
+			throw new FinnMottatteJournalposterTechnicalException(String.format("finnMottatteJournalposter feilet teknisk med statusKode=%s. Feilmelding=%s", e
 					.getStatusCode(), e.getMessage()), e);
 		}
 	}
