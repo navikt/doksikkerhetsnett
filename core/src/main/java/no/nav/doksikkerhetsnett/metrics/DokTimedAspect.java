@@ -78,30 +78,22 @@ public class DokTimedAspect {
 			throw e;
 
 		} finally {
-			if (metrics.createAntallJournalposterMetric()) {
-				sample.stop(Timer.builder(metrics.value())
-						.description(metrics.description().isEmpty() ? null : metrics.description())
-						.tags(metrics.extraTags())
-						.tags(tagsBasedOnJoinpoint.apply(pjp))
-						.tags("antall_journalposter", ((FinnMottatteJournalposterConsumer) pjp.getThis()).getMetricsAntallJournalposter() + "")
-						.publishPercentileHistogram(metrics.histogram())
-						.publishPercentiles(metrics.percentiles().length == 0 ? null : metrics.percentiles())
-						.register(registry));
+			sample.stop(Timer.builder(metrics.value())
+					.description(metrics.description().isEmpty() ? null : metrics.description())
+					.tags(metrics.extraTags())
+					.tags(tagsBasedOnJoinpoint.apply(pjp))
+					.publishPercentileHistogram(metrics.histogram())
+					.publishPercentiles(metrics.percentiles().length == 0 ? null : metrics.percentiles())
+					.register(registry));
 
+			if (metrics.createAntallJournalposterMetric()) {
 				int antallJournalposter = ((FinnMottatteJournalposterConsumer) pjp.getThis()).getMetricsAntallJournalposter();
 				Counter.builder("mottatte.journalposter.antall")
+					.description(metrics.description().isEmpty() ? null : metrics.description())
+					.tags(metrics.extraTags())
+					.tags(tagsBasedOnJoinpoint.apply(pjp))
 					.register(registry)
 					.increment(antallJournalposter);
-			}
-
-			else {
-				sample.stop(Timer.builder(metrics.value())
-						.description(metrics.description().isEmpty() ? null : metrics.description())
-						.tags(metrics.extraTags())
-						.tags(tagsBasedOnJoinpoint.apply(pjp))
-						.publishPercentileHistogram(metrics.histogram())
-						.publishPercentiles(metrics.percentiles().length == 0 ? null : metrics.percentiles())
-						.register(registry));
 			}
 		}
 	}

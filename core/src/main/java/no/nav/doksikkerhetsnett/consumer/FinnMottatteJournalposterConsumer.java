@@ -47,7 +47,7 @@ public class FinnMottatteJournalposterConsumer {
 				.build();
 	}
 
-	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnMottateJournalposter"}, percentiles = {0.5, 0.95}, histogram = true, createAntallJournalposterMetric = true)
+	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnMottatteJournalposter"}, percentiles = {0.5, 0.95}, histogram = true, createAntallJournalposterMetric = true)
 	public FinnMottatteJournalposterResponse finnMottateJournalposter(String temaer) {
 
 		try {
