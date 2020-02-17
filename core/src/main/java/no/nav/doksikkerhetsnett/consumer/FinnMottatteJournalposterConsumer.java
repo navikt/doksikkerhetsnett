@@ -6,7 +6,9 @@ import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 
 import no.nav.doksikkerhetsnett.config.DokSikkerhetsnettProperties;
+import no.nav.doksikkerhetsnett.exceptions.functional.AbstractDoksikkerhetsnettFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFinnesIkkeFunctionalException;
+import no.nav.doksikkerhetsnett.exceptions.technical.AbstractDoksikkerhetsnettTechnicalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnMottatteJournalposterTechnicalException;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException;
 import no.nav.doksikkerhetsnett.metrics.Metrics;
@@ -54,6 +56,11 @@ public class FinnMottatteJournalposterConsumer {
 	public FinnMottatteJournalposterResponse finnMottatteJournalposter(String temaer) {
 		List<UbehandletJournalpost> dummyData = new ArrayList<>();
 		int randomNumberOfResponses = new Random().nextInt(1000);
+		if (randomNumberOfResponses > 975)
+			throw new AbstractDoksikkerhetsnettTechnicalException("Dummy teknisk feil");
+		if (randomNumberOfResponses > 900)
+			throw new AbstractDoksikkerhetsnettFunctionalException("Dummy funksjonell feil");
+
 		metricsAntallJournalposter = randomNumberOfResponses;
 		for (int i = 0; i < randomNumberOfResponses; i++)
 			dummyData.add(new UbehandletJournalpost());
