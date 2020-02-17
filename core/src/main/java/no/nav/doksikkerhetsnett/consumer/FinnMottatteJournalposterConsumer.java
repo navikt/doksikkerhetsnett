@@ -54,6 +54,7 @@ public class FinnMottatteJournalposterConsumer {
 	public FinnMottatteJournalposterResponse finnMottatteJournalposter(String temaer) {
 		List<UbehandletJournalpost> dummyData = new ArrayList<>();
 		int randomNumberOfResponses = new Random().nextInt(1000);
+		metricsAntallJournalposter = randomNumberOfResponses;
 		for (int i = 0; i < randomNumberOfResponses; i++)
 			dummyData.add(new UbehandletJournalpost());
 		return FinnMottatteJournalposterResponse.builder().journalposter(dummyData).build();
