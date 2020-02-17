@@ -54,6 +54,7 @@ public class FinnMottatteJournalposterConsumer {
 
 	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnMottatteJournalposter"}, percentiles = {0.5, 0.95}, histogram = true, createAntallJournalposterMetric = true)
 	public FinnMottatteJournalposterResponse finnMottatteJournalposter(String temaer) {
+		metricsAntallJournalposter = 0;
 		List<UbehandletJournalpost> dummyData = new ArrayList<>();
 		int randomNumberOfResponses = new Random().nextInt(1000);
 		if (randomNumberOfResponses > 975)
