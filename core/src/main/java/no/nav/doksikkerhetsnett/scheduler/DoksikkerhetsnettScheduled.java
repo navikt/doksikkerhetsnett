@@ -42,7 +42,7 @@ public class DoksikkerhetsnettScheduled {
 		log.info("doksikkerhetsnett henter alle ubehandlede journalposter");
 
 		try {
-			tildelOppgave();
+			finnJournalposterUtenTilknyttetOppgave();
 		} catch (Exception e) {
 			log.error("doksikkerhetsnett feilet under hentingen av alle journalposter (evt med tema i: {}): " + e.getMessage(), dokSikkerhetsnettProperties.getTemaer());
 			return;
@@ -50,30 +50,30 @@ public class DoksikkerhetsnettScheduled {
 		log.info("doksikkerhetsnett har hentet alle ubehandlede journalposter");
 	}
 
-	private void tildelOppgave() {
+	private void finnJournalposterUtenTilknyttetOppgave() {
 		FinnMottatteJournalposterResponse finnMottatteJournalposterResponse = finnMottatteJournalposterService.finnMottatteJournalPoster(dokSikkerhetsnettProperties
 				.getTemaer());
 		System.out.println("Fant: "+ finnMottatteJournalposterResponse.getJournalposter().size() +" relevante journalposter");
-		searchForOpenAndClosedOppgaver( finnMottatteJournalposterResponse.getJournalposter());
+		finnEksisterendeOppgaverFraUbehandledeJournalpostList( finnMottatteJournalposterResponse.getJournalposter());
 		System.out.println("Etter opprydning er det: "+ finnMottatteJournalposterResponse.getJournalposter().size() +" journalposter igjen");
 	}
 
-	public void searchForOpenAndClosedOppgaver(List<UbehandletJournalpost> ubehandledeJournalpostList){
-		slettJoruanlposterMedOppgaver(ubehandledeJournalpostList, true);
-		slettJoruanlposterMedOppgaver(ubehandledeJournalpostList, false);
+	private void finnEksisterendeOppgaverFraUbehandledeJournalpostList(List<UbehandletJournalpost> ubehandledeJournalpostList){
+		fjernJournalposterMedEksisterendeOppgaverFraListe(ubehandledeJournalpostList, true);
+		fjernJournalposterMedEksisterendeOppgaverFraListe(ubehandledeJournalpostList, false);
 	}
 
-	private void slettJoruanlposterMedOppgaver(List<UbehandletJournalpost> ubehandledeJournalpostList, boolean searchforOpenJournalposts){
+	private void fjernJournalposterMedEksisterendeOppgaverFraListe(List<UbehandletJournalpost> ubehandledeJournalpostList, boolean searchforOpenJournalposts){
 		//Finn alle åpne journalposter fra lista med ubehandlede journalposter
 		ArrayList<FinnOppgaveResponse> oppgaveResponseList = finnOppgaveService.finnOppgaver(ubehandledeJournalpostList, searchforOpenJournalposts);
 
 		oppgaveResponseList.removeIf((oppgave -> oppgave.getOppgaver() == null));
-		
+
 		//Samler alle journalpostId'er fra svaret fra oppgave
 		List<String> journalposterMedOppgaver = oppgaveResponseList.stream()
 				.flatMap(FinnOppgaveResponse -> FinnOppgaveResponse.getOppgaver().stream())
 				.map(OppgaveJson::getJournalpostId)
-				.collect(Collectors.toList());   
+				.collect(Collectors.toList());
 
 		//Sletter journalpostene fra arbeidslista dersom de allerede har oppgaver i systemet
 		ubehandledeJournalpostList.removeIf(ubehandletJournalpost -> journalposterMedOppgaver.contains(""+ubehandletJournalpost.getJournalpostId()));

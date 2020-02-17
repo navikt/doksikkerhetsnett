@@ -7,6 +7,7 @@ import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_I
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 
+import no.nav.doksikkerhetsnett.jaxws.MDCGenerate;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.constants.MDCConstants;
 import no.nav.doksikkerhetsnett.consumer.sts.StsRestConsumer;
@@ -34,6 +35,7 @@ import java.time.Duration;
 public class FinnOppgaveConsumer {
 
 	private static final String CORRELATION_HEADER = "X-Correlation-Id";
+	private static final String UUID_HEADER = "X-Uuid";
 	private final String finnOppgaverUrl;
 	private final RestTemplate restTemplate;
 	private final StsRestConsumer stsRestConsumer;
@@ -81,12 +83,13 @@ public class FinnOppgaveConsumer {
 	}
 
 	private HttpHeaders createHeaders() {
+		MDCGenerate.generateNewCallIdIfThereAreNone();
 		HttpHeaders headers = new HttpHeaders();
+		
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.set(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + stsRestConsumer.getOidcToken());
-		headers.add(CORRELATION_HEADER, "TBF");
-		//TODO: fix correlationheader!
-		//headers.add(CORRELATION_HEADER, MDC.get(MDCConstants.MDC_CALL_ID));
+		headers.add(CORRELATION_HEADER, MDC.get(MDCConstants.MDC_CALL_ID));
+		headers.add(UUID_HEADER, MDC.get(MDCConstants.MDC_CALL_ID));
 		headers.add(MDC_NAV_CONSUMER_ID, APP_NAME);
 		headers.add(MDC_NAV_CALL_ID, MDC.get(MDC_NAV_CALL_ID));
 		return headers;

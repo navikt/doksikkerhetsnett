@@ -28,8 +28,13 @@ public class FinnOppgaveService {
 		String status = getStatus(checkForOpenJournalPosts);
 		ArrayList<FinnOppgaveResponse> oppgaveResponses = new ArrayList<>();
 		
-		for(String s : idStrings){
-			oppgaveResponses.add(finnOppgaveConsumer.finnOppgaveForJournalposter(s+"&statuskategori="+status+"&sorteringsrekkefolge=ASC"));
+		for(String journalpostIdsAsString : idStrings){
+			oppgaveResponses.add(finnOppgaveConsumer.finnOppgaveForJournalposter(journalpostIdsAsString+"&statuskategori="+status+"&sorteringsrekkefolge=ASC&limit=20"));
+		}
+		for(FinnOppgaveResponse response : oppgaveResponses){
+			if (response.getAntallTreffTotalt() != response.getOppgaver().size()) {
+				System.out.println("break");
+			}
 		}
 		return oppgaveResponses;
 	}
