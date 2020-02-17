@@ -10,10 +10,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import no.nav.doksikkerhetsnett.config.DokSikkerhetsnettProperties;
-import no.nav.doksikkerhetsnett.consumer.FinnMottatteJournalposterConsumer;
-import no.nav.doksikkerhetsnett.consumer.FinnMottatteJournalposterResponse;
-import no.nav.doksikkerhetsnett.consumer.UbehandletJournalpost;
+import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
+import no.nav.doksikkerhetsnett.consumer.finnMottateJournalposter.FinnMottatteJournalposterConsumer;
+import no.nav.doksikkerhetsnett.consumer.finnMottateJournalposter.FinnMottatteJournalposterResponse;
+import no.nav.doksikkerhetsnett.consumer.finnMottateJournalposter.UbehandletJournalpost;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

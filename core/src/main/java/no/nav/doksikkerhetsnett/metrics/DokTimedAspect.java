@@ -4,16 +4,14 @@ import static java.util.Arrays.asList;
 
 import io.micrometer.core.annotation.Incubating;
 import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.lang.NonNullApi;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.doksikkerhetsnett.config.MDCConstants;
-import no.nav.doksikkerhetsnett.consumer.FinnMottatteJournalposterConsumer;
-import no.nav.doksikkerhetsnett.consumer.FinnMottatteJournalposterResponse;
+import no.nav.doksikkerhetsnett.constants.MDCConstants;
+import no.nav.doksikkerhetsnett.consumer.finnMottateJournalposter.FinnMottatteJournalposterConsumer;
 import no.nav.doksikkerhetsnett.exceptions.functional.AbstractDoksikkerhetsnettFunctionalException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -22,9 +20,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.MDC;
 
 import java.lang.reflect.Method;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
-import java.util.function.IntSupplier;
 
 @Aspect
 @NonNullApi

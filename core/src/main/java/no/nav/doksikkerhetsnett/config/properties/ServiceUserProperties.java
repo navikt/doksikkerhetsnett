@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.config;
+package no.nav.doksikkerhetsnett.config.properties;
 
 import lombok.Getter;
 import lombok.Setter;

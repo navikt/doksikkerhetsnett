@@ -1,31 +1,20 @@
-package no.nav.doksikkerhetsnett.consumer;
+package no.nav.doksikkerhetsnett.consumer.finnMottateJournalposter;
 
-import static no.nav.doksikkerhetsnett.config.MDCConstants.MDC_NAV_CALL_ID;
-import static no.nav.doksikkerhetsnett.config.MDCConstants.MDC_NAV_CONSUMER_ID;
+import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CALL_ID;
+import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_ID;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 
-import no.nav.doksikkerhetsnett.config.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.exceptions.functional.AbstractDoksikkerhetsnettFunctionalException;
-import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFinnesIkkeFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.AbstractDoksikkerhetsnettTechnicalException;
-import no.nav.doksikkerhetsnett.exceptions.technical.FinnMottatteJournalposterTechnicalException;
-import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException;
+import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.metrics.Metrics;
 import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +56,7 @@ public class FinnMottatteJournalposterConsumer {
 			dummyData.add(new UbehandletJournalpost());
 		return FinnMottatteJournalposterResponse.builder().journalposter(dummyData).build();
 
-		/*
+		/* TODO: Dette er gjort for testing av metrikker for å slippe faktiske kall. Fiks før ting merges!
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
