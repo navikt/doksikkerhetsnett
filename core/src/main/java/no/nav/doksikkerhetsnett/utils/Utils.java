@@ -18,9 +18,9 @@ public class Utils {
 	}
 
 	public static ArrayList<String> formatFinnOppgaveString(List<Long> ubehandledeJournalposter) {
+
 		ArrayList<String> retList = new ArrayList<>();
 		String arbeidsString = "";
-
 		int ii = 0;
 		for (int i = 0; i < ubehandledeJournalposter.size(); i++) {
 			arbeidsString += "journalpostId=" + ubehandledeJournalposter.get(i);
@@ -37,10 +37,11 @@ public class Utils {
 	}
 
 	public static ArrayList<String> journalpostListToJournalpostIdList(List<UbehandletJournalpost> ubehandledeJournalposter) {
-		ArrayList<Long> retList = new ArrayList<>();
-		for (UbehandletJournalpost ubehandletJP : ubehandledeJournalposter) {
-			retList.add(ubehandletJP.getJournalpostId());
-		}
+
+		List<Long> retList = ubehandledeJournalposter.stream()
+				.map(UbehandletJournalpost::getJournalpostId)
+				.collect(Collectors.toList());
+
 		return formatFinnOppgaveString(retList);
 	}
 }

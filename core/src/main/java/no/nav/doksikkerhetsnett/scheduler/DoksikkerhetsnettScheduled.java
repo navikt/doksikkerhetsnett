@@ -56,6 +56,15 @@ public class DoksikkerhetsnettScheduled {
 		System.out.println("Fant: "+ finnMottatteJournalposterResponse.getJournalposter().size() +" relevante journalposter");
 		finnEksisterendeOppgaverFraUbehandledeJournalpostList( finnMottatteJournalposterResponse.getJournalposter());
 		System.out.println("Etter opprydning er det: "+ finnMottatteJournalposterResponse.getJournalposter().size() +" journalposter igjen");
+
+		//TODO: REMOVE DENNE! kun for test
+		int i = 0;
+		for(UbehandletJournalpost ubhjp : finnMottatteJournalposterResponse.getJournalposter()) {
+			if(i == 10)
+				break;
+			System.out.print(ubhjp.getJournalpostId() + " ");
+			i++;
+		}
 	}
 
 	private void finnEksisterendeOppgaverFraUbehandledeJournalpostList(List<UbehandletJournalpost> ubehandledeJournalpostList){
