@@ -25,6 +25,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 @Component
 public class FinnMottatteJournalposterConsumer {
@@ -49,7 +52,13 @@ public class FinnMottatteJournalposterConsumer {
 
 	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnMottatteJournalposter"}, percentiles = {0.5, 0.95}, histogram = true, createAntallJournalposterMetric = true)
 	public FinnMottatteJournalposterResponse finnMottatteJournalposter(String temaer) {
+		List<UbehandletJournalpost> dummyData = new ArrayList<>();
+		int randomNumberOfResponses = new Random().nextInt(1000);
+		for (int i = 0; i < randomNumberOfResponses; i++)
+			dummyData.add(new UbehandletJournalpost());
+		return FinnMottatteJournalposterResponse.builder().journalposter(dummyData).build();
 
+		/*
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -79,6 +88,7 @@ public class FinnMottatteJournalposterConsumer {
 			throw new FinnMottatteJournalposterTechnicalException(String.format("finnMottatteJournalposter feilet teknisk med statusKode=%s. Feilmelding=%s", e
 					.getStatusCode(), e.getMessage()), e);
 		}
+		 */
 	}
 
 	public int getMetricsAntallJournalposter() {

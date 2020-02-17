@@ -22,7 +22,7 @@ public class DoksikkerhetsnettScheduled {
 		this.dokSikkerhetsnettProperties = dokSikkerhetsnettProperties;
 	}
 
-	@Scheduled(initialDelay = 1000, fixedDelay = 10 * MINUTE)
+	@Scheduled(initialDelay = 1000, fixedDelay = MINUTE / 2)
 	public void triggerOppdatering() {
 		lagOppgaverForGlemteJournalposter();
 	}
