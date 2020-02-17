@@ -54,7 +54,8 @@ public class DoksikkerhetsnettScheduled {
 				.getTemaer());
 		
 		finnEksisterendeOppgaverFraUbehandledeJournalpostList( finnMottatteJournalposterResponse.getJournalposter());
-		log.info("doksikkerhetsnett fant {} journalposter uten oppgave (evt med tema i: {})", dokSikkerhetsnettProperties.getTemaer());
+		log.info("doksikkerhetsnett fant {} journalposter uten oppgave (evt med tema i: {})",
+				finnMottatteJournalposterResponse.getJournalposter().size(), dokSikkerhetsnettProperties.getTemaer());
 
 		//TODO: burde fjernes at some point. For lettere testing av resultatet.
 		String ret = "";
