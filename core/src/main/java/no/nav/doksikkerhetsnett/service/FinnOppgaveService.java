@@ -1,7 +1,5 @@
 package no.nav.doksikkerhetsnett.service;
 
-import static org.apache.tomcat.jni.Time.sleep;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.consumer.finnOppgave.FinnOppgaveConsumer;
 import no.nav.doksikkerhetsnett.consumer.finnOppgave.FinnOppgaveResponse;
@@ -12,7 +10,6 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -36,7 +33,7 @@ public class FinnOppgaveService {
 
 		for (String journalpostIdsAsString : idStrings) {
 			FinnOppgaveResponse oppgaveResponse =
-				finnOppgaveConsumer.finnOppgaveForJournalposter(journalpostIdsAsString + "&statuskategori=" + status + DEFAULT_URL_P1 + DEFAULT_URL_P2);
+					finnOppgaveConsumer.finnOppgaveForJournalposter(journalpostIdsAsString + "&statuskategori=" + status + DEFAULT_URL_P1 + DEFAULT_URL_P2);
 			oppgaveResponses.add(oppgaveResponse);
 			int differenceBetweenTotalReponsesAndResponseList = oppgaveResponse.getAntallTreffTotalt() - oppgaveResponse.getOppgaver()
 					.size();

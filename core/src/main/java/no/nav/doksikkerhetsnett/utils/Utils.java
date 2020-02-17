@@ -18,7 +18,6 @@ public class Utils {
 	}
 
 	public static ArrayList<String> formatFinnOppgaveString(List<Long> ubehandledeJournalposter) {
-
 		ArrayList<String> retList = new ArrayList<>();
 		String arbeidsString = "";
 		int ii = 0;
@@ -37,7 +36,6 @@ public class Utils {
 	}
 
 	public static ArrayList<String> journalpostListToJournalpostIdList(List<UbehandletJournalpost> ubehandledeJournalposter) {
-
 		List<Long> retList = ubehandledeJournalposter.stream()
 				.map(UbehandletJournalpost::getJournalpostId)
 				.collect(Collectors.toList());

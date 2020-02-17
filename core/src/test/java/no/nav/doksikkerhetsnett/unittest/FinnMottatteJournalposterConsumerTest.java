@@ -52,8 +52,8 @@ class FinnMottatteJournalposterConsumerTest {
 		
 	}
 
-	@Test
-	public void shouldFormatJournalpostListToGetRequestFormat() {
+	//@Test
+	/*public void shouldFormatJournalpostListToGetRequestFormat() {
 		ArrayList<Long> ubehandledeJournalposter = new ArrayList<>();
 		long startId = 33333333333L;
 		for(int i = 0; i < 150; i++){
@@ -64,5 +64,5 @@ class FinnMottatteJournalposterConsumerTest {
 		for (String s : retStrings) {
 			System.out.println("length of string: " + s.length() + " " +s);
 		}
-	}
+	}  */
 }
