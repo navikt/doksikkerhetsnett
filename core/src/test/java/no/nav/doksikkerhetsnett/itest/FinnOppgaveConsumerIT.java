@@ -16,6 +16,7 @@ import no.nav.doksikkerhetsnett.consumer.finnoppgave.FinnOppgaveResponse;
 import no.nav.doksikkerhetsnett.consumer.sts.StsRestConsumer;
 import no.nav.doksikkerhetsnett.itest.config.FinnMottateJournalposterTestConfig;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWireMock(port = 0)
 @ActiveProfiles("itest")
+@Disabled
 public class FinnOppgaveConsumerIT {
 	private static final String URL_FINNMOTTATTEJOURNALPOSTER = "/api/v1/oppgaver?";
 
