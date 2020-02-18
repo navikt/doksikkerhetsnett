@@ -57,7 +57,7 @@ public class DoksikkerhetsnettScheduled {
 			ArrayList<UbehandletJournalpost> ubehandletJournalposts = finnEksisterendeOppgaverFraUbehandledeJournalpostList(finnMottatteJournalposterResponse
 					.getJournalposter());
 			log.info("doksikkerhetsnett fant {} journalposter uten oppgave (evt med tema i: {})",
-					ubehandletJournalposts.size(), dokSikkerhetsnettProperties.getTemaer()); 
+					ubehandletJournalposts.size(), dokSikkerhetsnettProperties.getTemaer());
 			if (ubehandletJournalposts.size() > 0) {
 				log.info("journalpostene hadde ID'ene: {}", ubehandletJournalposts);
 			}
@@ -67,12 +67,11 @@ public class DoksikkerhetsnettScheduled {
 	}
 
 	private ArrayList<UbehandletJournalpost> finnEksisterendeOppgaverFraUbehandledeJournalpostList(List<UbehandletJournalpost> ubehandledeJournalpostList) {
-		ArrayList<UbehandletJournalpost> retList = fjernJournalposterMedEksisterendeOppgaverFraListe(ubehandledeJournalpostList, true);
-		return fjernJournalposterMedEksisterendeOppgaverFraListe(retList, false);
+		return fjernJournalposterMedEksisterendeOppgaverFraListe(ubehandledeJournalpostList);
 	}
 
-	private ArrayList<UbehandletJournalpost> fjernJournalposterMedEksisterendeOppgaverFraListe(List<UbehandletJournalpost> ubehandledeJournalpostList, boolean searchforOpenJournalposts) {
-		FinnOppgaveResponse oppgaveResponse = finnOppgaveService.finnOppgaver(ubehandledeJournalpostList, searchforOpenJournalposts);
+	private ArrayList<UbehandletJournalpost> fjernJournalposterMedEksisterendeOppgaverFraListe(List<UbehandletJournalpost> ubehandledeJournalpostList) {
+		FinnOppgaveResponse oppgaveResponse = finnOppgaveService.finnOppgaver(ubehandledeJournalpostList);
 
 		if (oppgaveResponse.getOppgaver() == null) {
 			return new ArrayList<UbehandletJournalpost>();

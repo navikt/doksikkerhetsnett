@@ -14,9 +14,6 @@ import java.util.List;
 @Slf4j
 @Service
 public class FinnOppgaveService {
-	private final String AAPEN = "AAPEN";
-	private final String AVSLUTTET = "AVSLUTTET";
-
 
 	FinnOppgaveConsumer finnOppgaveConsumer;
 
@@ -25,16 +22,10 @@ public class FinnOppgaveService {
 		this.finnOppgaveConsumer = finnOppgaveConsumer;
 	}
 
-	public FinnOppgaveResponse finnOppgaver(List<UbehandletJournalpost> ubehandledeJournalposter, boolean checkForOpenJournalPosts) {
+	public FinnOppgaveResponse finnOppgaver(List<UbehandletJournalpost> ubehandledeJournalposter) {
 
-		return finnOppgaveConsumer.finnOppgaveForJournalposter(ubehandledeJournalposter, getStatus(checkForOpenJournalPosts));
+		return finnOppgaveConsumer.finnOppgaveForJournalposter(ubehandledeJournalposter);
 	}
 
-	public String getStatus(boolean checkForOpenJournalPosts) {
-		if (checkForOpenJournalPosts) {
-			return AAPEN;
-		} else {
-			return AVSLUTTET;
-		}
-	}
 }
+

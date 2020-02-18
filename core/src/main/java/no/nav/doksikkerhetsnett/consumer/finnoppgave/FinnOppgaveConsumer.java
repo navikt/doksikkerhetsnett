@@ -45,7 +45,9 @@ public class FinnOppgaveConsumer {
 	private final RestTemplate restTemplate;
 	private final StsRestConsumer stsRestConsumer;
 	private final String DEFAULT_URL_P1 = "&sorteringsrekkefolge=ASC&";
-	private final String DEFAULT_URL_P2 = "&limit=20";
+	private final String DEFAULT_URL_P2 = "&limit=";
+	private final String STATUSKATEGORI_AAPEN = "&statuskategori=AAPEN";
+	private static final int LIMIT = 50;
 
 	public FinnOppgaveConsumer(RestTemplateBuilder restTemplateBuilder,
 							   DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
@@ -61,25 +63,24 @@ public class FinnOppgaveConsumer {
 	}
 
 	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnOppgaveForJournalposter"}, percentiles = {0.5, 0.95}, histogram = true)
-	public FinnOppgaveResponse finnOppgaveForJournalposter(List<UbehandletJournalpost> ubehandledeJournalposter, String status) {
+	public FinnOppgaveResponse finnOppgaveForJournalposter(List<UbehandletJournalpost> ubehandledeJournalposter) {
 		try {
 			HttpHeaders headers = createHeaders();
 			HttpEntity<?> requestEntity = new HttpEntity<>(headers);
-			ArrayList<String> idStrings = Utils.journalpostListToJournalpostIdList(ubehandledeJournalposter);
+			ArrayList<String> idStrings = Utils.journalpostListToJournalpostIdList(ubehandledeJournalposter, LIMIT);
 			ArrayList<FinnOppgaveResponse> oppgaveResponses = new ArrayList<>();
 
 			for (String journalpostIdsAsString : idStrings) {
 				FinnOppgaveResponse oppgaveResponse =
-						executeGetRequest(journalpostIdsAsString + "&statuskategori=" + status + DEFAULT_URL_P1 + DEFAULT_URL_P2, requestEntity);
+						executeGetRequest(journalpostIdsAsString + STATUSKATEGORI_AAPEN + DEFAULT_URL_P1 + DEFAULT_URL_P2+LIMIT, requestEntity);
 				oppgaveResponses.add(oppgaveResponse);
 				int differenceBetweenTotalReponsesAndResponseList = oppgaveResponse.getAntallTreffTotalt() - oppgaveResponse.getOppgaver()
 						.size();
 				if (differenceBetweenTotalReponsesAndResponseList != 0) {
-					int extraPages = differenceBetweenTotalReponsesAndResponseList / 20;
-
+					int extraPages = differenceBetweenTotalReponsesAndResponseList / LIMIT;
 					for (int i = 1; i <= extraPages + 1; i++) {
 						oppgaveResponses.add(executeGetRequest(
-								journalpostIdsAsString + "&statuskategori=" + status + DEFAULT_URL_P1 + "offset=" + i * 20 + DEFAULT_URL_P2, requestEntity));
+								journalpostIdsAsString + STATUSKATEGORI_AAPEN + DEFAULT_URL_P1 + "offset=" + i * LIMIT + DEFAULT_URL_P2+ LIMIT, requestEntity));
 					}
 				}
 			}

@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
@@ -29,22 +30,19 @@ class DoksikkerhetsnettScheduledTest {
 	private static final String OPPGAVE_ID_STRING_AVSLUTTET =  "journalpostId=222222222&journalpostId=333333333";
 	private static final String STS_STORE = "https://security-token-service.nais.preprod.local/rest/v1/sts/token?grant_type=client_credentials&scope=openid";
 
-	@Mock
+	/*@Autowired
 	private FinnOppgaveConsumer finnOppgaveConsumer;
-	@Mock
+	@Autowired
 	private FinnMottatteJournalposterConsumer finnMottatteJournalposterConsumer;
-	@Mock
+	@Autowired
 	private DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
-	@Mock
+	@Autowired
 	private StsRestConsumer  stsRestConsumer;
-
-	@InjectMocks
+	@Autowired
 	private DoksikkerhetsnettScheduled doksikkerhetsnettScheduled;
-
-	@InjectMocks
+	@Autowired
 	private FinnMottatteJournalposterService finnMottatteJournalposterService;
-
-	@InjectMocks
+	@Autowired
 	private FinnOppgaveService finnOppgaveService;
 
 
@@ -73,6 +71,6 @@ class DoksikkerhetsnettScheduledTest {
 	@Test
 	public void Test() {
 		doksikkerhetsnettScheduled.lagOppgaverForGlemteJournalposter();
-	}
+	}   */
 
 }

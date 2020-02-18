@@ -1,6 +1,7 @@
 package no.nav.doksikkerhetsnett.utils;
 
 import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.UbehandletJournalpost;
+import no.nav.doksikkerhetsnett.consumer.finnoppgave.FinnOppgaveConsumer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,13 +18,13 @@ public class Utils {
 				.collect(Collectors.joining(","));
 	}
 
-	public static ArrayList<String> formatFinnOppgaveString(List<Long> ubehandledeJournalposter) {
+	private static ArrayList<String> formatFinnOppgaveString(List<Long> ubehandledeJournalposter, int limit ) {
 		ArrayList<String> retList = new ArrayList<>();
 		String arbeidsString = "";
 		int ii = 0;
 		for (int i = 0; i < ubehandledeJournalposter.size(); i++) {
 			arbeidsString += "journalpostId=" + ubehandledeJournalposter.get(i);
-			if (ii == 19 || i == ubehandledeJournalposter.size() - 1) {
+			if (ii == limit-1 || i == ubehandledeJournalposter.size() - 1) {
 				ii = 0;
 				retList.add(arbeidsString);
 				arbeidsString = "";
@@ -35,12 +36,12 @@ public class Utils {
 		return retList;
 	}
 
-	public static ArrayList<String> journalpostListToJournalpostIdList(List<UbehandletJournalpost> ubehandledeJournalposter) {
+	public static ArrayList<String> journalpostListToJournalpostIdList(List<UbehandletJournalpost> ubehandledeJournalposter, int limit) {
 		List<Long> retList = ubehandledeJournalposter.stream()
 				.map(UbehandletJournalpost::getJournalpostId)
 				.collect(Collectors.toList());
 
-		return formatFinnOppgaveString(retList);
+		return formatFinnOppgaveString(retList, limit);
 	}
 }
 
