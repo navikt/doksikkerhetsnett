@@ -24,7 +24,7 @@ public class DoksikkerhetsnettScheduled {
 	private final FinnOppgaveService finnOppgaveService;
 	private final DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
 	private final int MINUTE = 60_000;
-	private final int HOUR = 60*MINUTE;
+	private final int HOUR = 60 * MINUTE;
 
 	public DoksikkerhetsnettScheduled(FinnMottatteJournalposterService finnMottatteJournalposterService,
 									  DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
@@ -53,13 +53,15 @@ public class DoksikkerhetsnettScheduled {
 			return;
 		}
 
-		try{
+		try {
 			ArrayList<UbehandletJournalpost> ubehandletJournalposts = finnEksisterendeOppgaverFraUbehandledeJournalpostList(finnMottatteJournalposterResponse
 					.getJournalposter());
 			log.info("doksikkerhetsnett fant {} journalposter uten oppgave (evt med tema i: {})",
-					ubehandletJournalposts.size(), dokSikkerhetsnettProperties.getTemaer());
-			log.info("journalpostene hadde ID'ene: {}", ubehandletJournalposts);
-		}  catch (Exception e){
+					ubehandletJournalposts.size(), dokSikkerhetsnettProperties.getTemaer()); 
+			if (ubehandletJournalposts.size() > 0) {
+				log.info("journalpostene hadde ID'ene: {}", ubehandletJournalposts);
+			}
+		} catch (Exception e) {
 			log.error("doksikkerhetsnett feilet under hentingen av alle oppgaver");
 		}
 	}
