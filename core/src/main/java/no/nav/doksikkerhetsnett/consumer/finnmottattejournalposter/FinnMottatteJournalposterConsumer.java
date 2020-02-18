@@ -5,10 +5,10 @@ import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_I
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 
-import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFinnesIkkeFunctionalException;
-import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
+import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFinnesIkkeFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnMottatteJournalposterTechnicalException;
+import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException;
 import no.nav.doksikkerhetsnett.metrics.Metrics;
 import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -57,7 +57,8 @@ public class FinnMottatteJournalposterConsumer {
             URI uri = UriComponentsBuilder.fromHttpUrl(finnMottatteJournalposterUrl)
                     .path(temaer)
                     .build().toUri();
-            return restTemplate.exchange(uri, HttpMethod.GET, requestEntity, FinnMottatteJournalposterResponse.class).getBody();
+            return restTemplate.exchange(uri, HttpMethod.GET, requestEntity, FinnMottatteJournalposterResponse.class)
+                    .getBody();
 
         } catch (HttpClientErrorException e) {
             if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
@@ -75,6 +76,7 @@ public class FinnMottatteJournalposterConsumer {
                     .getStatusCode(), e.getMessage()), e);
         }
     }
+
 
     private HttpHeaders createHeader(HttpHeaders headers) {
         if (MDC.get(MDC_NAV_CALL_ID) != null) {

@@ -44,7 +44,7 @@ public class Utils {
     }
 
     // Hjelpefunksjon for finere logging ut ifra hvor mange temaer som er i kallet
-    public static String logTemaOrNot(String temaer) {
+    public static String logWithTema(String temaer) {
         if (temaer.isEmpty()) {
             return "for alle temaer";
         }
