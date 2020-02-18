@@ -31,11 +31,6 @@ public class FinnOppgaveService {
 		for(String journalpostIdsAsString : idStrings){
 			oppgaveResponses.add(finnOppgaveConsumer.finnOppgaveForJournalposter(journalpostIdsAsString+"&statuskategori="+status+"&sorteringsrekkefolge=ASC&limit=20"));
 		}
-		for(FinnOppgaveResponse response : oppgaveResponses){
-			if (response.getAntallTreffTotalt() != response.getOppgaver().size()) {
-				System.out.println("break");
-			}
-		}
 		return oppgaveResponses;
 	}
 

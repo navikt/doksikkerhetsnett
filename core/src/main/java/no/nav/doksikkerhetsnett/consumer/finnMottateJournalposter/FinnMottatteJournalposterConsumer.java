@@ -6,13 +6,19 @@ import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 
 import no.nav.doksikkerhetsnett.exceptions.functional.AbstractDoksikkerhetsnettFunctionalException;
+import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFinnesIkkeFunctionalException;
+import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.AbstractDoksikkerhetsnettTechnicalException;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
+import no.nav.doksikkerhetsnett.exceptions.technical.FinnMottatteJournalposterTechnicalException;
 import no.nav.doksikkerhetsnett.metrics.Metrics;
 import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
@@ -24,7 +30,6 @@ import java.util.Random;
 public class FinnMottatteJournalposterConsumer {
 	private final RestTemplate restTemplate;
 	private final String finnMottatteJournalposterUrl;
-	private int metricsAntallJournalposter = 0;
 
 	public FinnMottatteJournalposterConsumer(RestTemplateBuilder restTemplateBuilder,
 											 DokSikkerhetsnettProperties dokSikkerhetsnettProperties) {
@@ -41,20 +46,19 @@ public class FinnMottatteJournalposterConsumer {
 				.build();
 	}
 
-	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnMottatteJournalposter"}, percentiles = {0.5, 0.95}, histogram = true, createAntallJournalposterMetric = true)
+	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnMottatteJournalposter"}, percentiles = {0.5, 0.95}, histogram = true)
 	public FinnMottatteJournalposterResponse finnMottatteJournalposter(String temaer) {
-		metricsAntallJournalposter = 0;
-		List<UbehandletJournalpost> dummyData = new ArrayList<>();
-		int randomNumberOfResponses = new Random().nextInt(1000);
-		if (randomNumberOfResponses > 975)
-			throw new AbstractDoksikkerhetsnettTechnicalException("Dummy teknisk feil");
-		if (randomNumberOfResponses > 900)
-			throw new AbstractDoksikkerhetsnettFunctionalException("Dummy funksjonell feil");
+		try {
+			List<UbehandletJournalpost> dummyData = new ArrayList<>();
+			int randomNumberOfResponses = new Random().nextInt(1000);
+			if (randomNumberOfResponses > 975)
+				throw new AbstractDoksikkerhetsnettTechnicalException("Dummy teknisk feil");
+			if (randomNumberOfResponses > 900)
+				throw new AbstractDoksikkerhetsnettFunctionalException("Dummy funksjonell feil");
 
-		metricsAntallJournalposter = randomNumberOfResponses;
-		for (int i = 0; i < randomNumberOfResponses; i++)
-			dummyData.add(new UbehandletJournalpost());
-		return FinnMottatteJournalposterResponse.builder().journalposter(dummyData).build();
+			for (int i = 0; i < randomNumberOfResponses; i++)
+				dummyData.add(new UbehandletJournalpost());
+			return FinnMottatteJournalposterResponse.builder().journalposter(dummyData).build();
 
 		/* TODO: Dette er gjort for testing av metrikker for å slippe faktiske kall. Fiks før ting merges!
 		try {
@@ -70,7 +74,7 @@ public class FinnMottatteJournalposterConsumer {
 					.getBody();
 			metricsAntallJournalposter = response.getJournalposter().size();
 			return response;
-
+*/
 		} catch (HttpClientErrorException e) {
 			if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
 				throw new FinnMottatteJournalposterFinnesIkkeFunctionalException(String.format("finnMottatteJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
@@ -86,11 +90,6 @@ public class FinnMottatteJournalposterConsumer {
 			throw new FinnMottatteJournalposterTechnicalException(String.format("finnMottatteJournalposter feilet teknisk med statusKode=%s. Feilmelding=%s", e
 					.getStatusCode(), e.getMessage()), e);
 		}
-		 */
-	}
-
-	public int getMetricsAntallJournalposter() {
-		return metricsAntallJournalposter;
 	}
 
 	private HttpHeaders createHeader(HttpHeaders headers) {

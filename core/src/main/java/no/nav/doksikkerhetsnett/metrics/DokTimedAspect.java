@@ -11,13 +11,13 @@ import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.lang.NonNullApi;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.constants.MDCConstants;
-import no.nav.doksikkerhetsnett.consumer.finnMottateJournalposter.FinnMottatteJournalposterConsumer;
 import no.nav.doksikkerhetsnett.exceptions.functional.AbstractDoksikkerhetsnettFunctionalException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.MDC;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.util.function.Function;
@@ -81,16 +81,6 @@ public class DokTimedAspect {
 					.publishPercentileHistogram(metrics.histogram())
 					.publishPercentiles(metrics.percentiles().length == 0 ? null : metrics.percentiles())
 					.register(registry));
-
-			if (metrics.createAntallJournalposterMetric()) {
-				int antallJournalposter = ((FinnMottatteJournalposterConsumer) pjp.getThis()).getMetricsAntallJournalposter();
-				Counter.builder("mottatte.journalposter.antall")
-					.description(metrics.description().isEmpty() ? null : metrics.description())
-					.tags(metrics.extraTags())
-					.tags(tagsBasedOnJoinpoint.apply(pjp))
-					.register(registry)
-					.increment(antallJournalposter);
-			}
 		}
 	}
 

@@ -7,6 +7,10 @@ import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_I
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 
+import no.nav.doksikkerhetsnett.consumer.finnMottateJournalposter.FinnMottatteJournalposterResponse;
+import no.nav.doksikkerhetsnett.consumer.finnMottateJournalposter.UbehandletJournalpost;
+import no.nav.doksikkerhetsnett.exceptions.functional.AbstractDoksikkerhetsnettFunctionalException;
+import no.nav.doksikkerhetsnett.exceptions.technical.AbstractDoksikkerhetsnettTechnicalException;
 import no.nav.doksikkerhetsnett.jaxws.MDCGenerate;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.constants.MDCConstants;
@@ -30,6 +34,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 @Component
 public class FinnOppgaveConsumer {
@@ -39,6 +46,7 @@ public class FinnOppgaveConsumer {
 	private final String finnOppgaverUrl;
 	private final RestTemplate restTemplate;
 	private final StsRestConsumer stsRestConsumer;
+	private int metricsAntallOppgaver;
 
 	public FinnOppgaveConsumer(RestTemplateBuilder restTemplateBuilder,
 							   DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
@@ -56,6 +64,15 @@ public class FinnOppgaveConsumer {
 	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnOppgaveForJournalposter"}, percentiles = {0.5, 0.95}, histogram = true)
 	public FinnOppgaveResponse finnOppgaveForJournalposter(String journalpostIds) {
 		try {
+			List<OppgaveJson> dummyData = new ArrayList<>();
+			int randomNumberOfResponses = new Random().nextInt(20);
+
+			for (int i = 0; i < randomNumberOfResponses; i++)
+				dummyData.add(new OppgaveJson());
+			return FinnOppgaveResponse.builder().oppgaver(dummyData).build();
+
+		/* TODO: Dette er gjort for testing av metrikker for å unngå kall mot oppgave. Husk å fiks før merging!
+		try {
 			HttpHeaders headers = createHeaders();
 			HttpEntity<?> requestEntity = new HttpEntity<>(headers);
 
@@ -64,7 +81,7 @@ public class FinnOppgaveConsumer {
 					.build().toUri();
 			return restTemplate.exchange(uri, HttpMethod.GET, requestEntity, FinnOppgaveResponse.class)
 					.getBody();
-
+*/
 		} catch (HttpClientErrorException e) {
 			if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
 				throw new FinnOppgaveFinnesIkkeFunctionalException(String.format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
@@ -94,4 +111,8 @@ public class FinnOppgaveConsumer {
 		headers.add(MDC_NAV_CALL_ID, MDC.get(MDC_NAV_CALL_ID));
 		return headers;
 	}
+
+	public int getMetricsAntallOppgaver() {
+		return metricsAntallOppgaver;
 	}
+}
