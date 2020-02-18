@@ -34,4 +34,35 @@ class FinnMottatteJournalposterConsumerTest {
 
 		assertEquals("", Utils.formatTemaList(temaer));
 	}
+
+	@Test
+	public void surr(){
+		ArrayList<String> surreliste = new ArrayList<>();
+		ArrayList<Long> longliste = new ArrayList<>();
+		for(long i = 10; i < 21; i++){
+			longliste.add(i);
+			if(i % 2 == 0)
+				surreliste.add(""+i);
+		}
+
+		System.out.println("Før: " + longliste.size());
+		longliste.removeIf(longe -> surreliste.contains(""+longe));
+		System.out.println("Etter: " + longliste.size());
+
+		
+	}
+
+	//@Test
+	/*public void shouldFormatJournalpostListToGetRequestFormat() {
+		ArrayList<Long> ubehandledeJournalposter = new ArrayList<>();
+		long startId = 33333333333L;
+		for(int i = 0; i < 150; i++){
+		   ubehandledeJournalposter.add(startId++);
+		}
+
+		ArrayList<String> retStrings = Utils.formatFinnOppgaveString(ubehandledeJournalposter);
+		for (String s : retStrings) {
+			System.out.println("length of string: " + s.length() + " " +s);
+		}
+	}  */
 }

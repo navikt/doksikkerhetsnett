@@ -1,7 +1,7 @@
 package no.nav.doksikkerhetsnett;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import no.nav.doksikkerhetsnett.config.DokSikkerhetsnettProperties;
+import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.metrics.DokTimedAspect;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

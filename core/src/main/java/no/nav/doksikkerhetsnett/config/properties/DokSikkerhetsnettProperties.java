@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.config;
+package no.nav.doksikkerhetsnett.config.properties;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -18,10 +18,18 @@ public class DokSikkerhetsnettProperties {
 	@NotNull
 	private String finnmottattejournalposterurl;
 
-	private String temaer;
+	@NotNull
+	private String finnoppgaverurl;
+
+	@NotNull
+	private String securityservicetokenurl;
 
 	@NotNull
 	private ServiceUserProperties serviceuser;
+
+	//Denne kan vaere null da et soek på et tomt tema betyr et generelt soek paa alle temaer
+	private String temaer;
+
 
 }
 

@@ -1,0 +1,5 @@
+{
+  "accessToken": "thisIsATokenHappySmile",
+  "tokenType": "Bearer",
+  "expiresIn": "1000"
+}

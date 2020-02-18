@@ -9,11 +9,15 @@ spec:
   env:
     - name: DOKSIKKERHETSNETT_FINNMOTTATTEJOURNALPOSTERURL
       value: {{ DOKSIKKERHETSNETT_FINNMOTTATTEJOURNALPOSTERURL }}
+    - name: DOKSIKKERHETSNETT_SECURITYSERVICETOKENURL
+      value: {{ DOKSIKKERHETSNETT_SECURITYSERVICETOKENURL }}
+    - name: DOKSIKKERHETSNETT_FINNOPPGAVERURL
+      value: {{ DOKSIKKERHETSNETT_FINNOPPGAVERURL }}
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
        - {{this }}
-    {{/each}}
+      {{/each}}
   liveness:
     path: /isAlive
     port: 8080
