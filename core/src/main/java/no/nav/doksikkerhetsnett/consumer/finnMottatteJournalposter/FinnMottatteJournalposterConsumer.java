@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.consumer.finnMottateJournalposter;
+package no.nav.doksikkerhetsnett.consumer.finnMottatteJournalposter;
 
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_ID;

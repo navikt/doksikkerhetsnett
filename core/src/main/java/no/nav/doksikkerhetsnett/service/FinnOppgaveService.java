@@ -3,7 +3,7 @@ package no.nav.doksikkerhetsnett.service;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.consumer.finnOppgave.FinnOppgaveConsumer;
 import no.nav.doksikkerhetsnett.consumer.finnOppgave.FinnOppgaveResponse;
-import no.nav.doksikkerhetsnett.consumer.finnMottateJournalposter.UbehandletJournalpost;
+import no.nav.doksikkerhetsnett.consumer.finnMottatteJournalposter.UbehandletJournalpost;
 import no.nav.doksikkerhetsnett.utils.Utils;
 import org.springframework.stereotype.Service;
 

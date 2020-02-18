@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.consumer.finnMottateJournalposter;
+package no.nav.doksikkerhetsnett.consumer.finnMottatteJournalposter;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;

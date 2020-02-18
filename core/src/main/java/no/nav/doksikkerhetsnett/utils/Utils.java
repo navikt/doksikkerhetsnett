@@ -1,6 +1,6 @@
 package no.nav.doksikkerhetsnett.utils;
 
-import no.nav.doksikkerhetsnett.consumer.finnMottateJournalposter.UbehandletJournalpost;
+import no.nav.doksikkerhetsnett.consumer.finnMottatteJournalposter.UbehandletJournalpost;
 
 import java.util.ArrayList;
 import java.util.List;

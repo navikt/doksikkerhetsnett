@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.consumer.finnMottateJournalposter;
+package no.nav.doksikkerhetsnett.consumer.finnMottatteJournalposter;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
