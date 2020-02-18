@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.consumer.finnMottatteJournalposter;
+package no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -15,11 +15,11 @@ import java.util.List;
 @NoArgsConstructor
 public class FinnMottatteJournalposterResponse {
 
-	@NotNull(message = "FinnMottatteJournalposterResponse mangler Journalposter")
-	@ApiModelProperty(
-			dataType = "List",
-			value = "journalposter",
-			required = true
-	)
-	private List<UbehandletJournalpost> journalposter;
+    @NotNull(message = "FinnMottatteJournalposterResponse mangler Journalposter")
+    @ApiModelProperty(
+            dataType = "List",
+            value = "journalposter",
+            required = true
+    )
+    private List<UbehandletJournalpost> journalposter;
 }

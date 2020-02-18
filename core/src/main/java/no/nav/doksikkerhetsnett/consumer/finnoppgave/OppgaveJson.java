@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.consumer.finnOppgave;
+package no.nav.doksikkerhetsnett.consumer.finnoppgave;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OppgaveJson {
 
-	private String journalpostId;
+    private String journalpostId;
 }

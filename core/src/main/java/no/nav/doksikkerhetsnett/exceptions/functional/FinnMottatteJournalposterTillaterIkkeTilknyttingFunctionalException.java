@@ -5,9 +5,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.CONFLICT)
 public class FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException extends
-		AbstractDoksikkerhetsnettFunctionalException {
-	
-	public FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException(String message, Throwable cause) {
-		super(message, cause);
-	}
+        AbstractDoksikkerhetsnettFunctionalException {
+
+    public FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

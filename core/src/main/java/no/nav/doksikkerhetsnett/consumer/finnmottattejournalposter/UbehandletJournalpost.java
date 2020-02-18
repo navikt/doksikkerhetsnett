@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.consumer.finnMottatteJournalposter;
+package no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
@@ -72,4 +72,9 @@ public class UbehandletJournalpost {
     )
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private Date datoOpprettet;
+
+    @Override
+    public String toString() {
+        return "" + journalpostId;
+    }
 }

@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.consumer.finnOppgave;
+package no.nav.doksikkerhetsnett.consumer.finnoppgave;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -15,15 +15,15 @@ import java.util.List;
 @NoArgsConstructor
 public class FinnOppgaveResponse {
 
-	@NotNull(message = "Feilet ved henting av oppgaver")
+    @NotNull(message = "Feilet ved henting av oppgaver")
 
 
-	private int antallTreffTotalt;
-	
-	@ApiModelProperty(
-			dataType = "List",
-			value = "oppgaver",
-			required = true
-	)
-	private List<OppgaveJson> oppgaver;
+    private int antallTreffTotalt;
+
+    @ApiModelProperty(
+            dataType = "List",
+            value = "oppgaver",
+            required = true
+    )
+    private List<OppgaveJson> oppgaver;
 }

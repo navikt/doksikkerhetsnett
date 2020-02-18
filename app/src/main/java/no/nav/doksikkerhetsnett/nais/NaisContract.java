@@ -17,26 +17,26 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RestController
 public class NaisContract {
 
-	private static final String APPLICATION_ALIVE = "Application is alive!";
-	private static final String APPLICATION_READY = "Application is ready for traffic!";
+    private static final String APPLICATION_ALIVE = "Application is alive!";
+    private static final String APPLICATION_READY = "Application is ready for traffic!";
 
 
-	private AtomicInteger appStatus = new AtomicInteger(1);
+    private AtomicInteger appStatus = new AtomicInteger(1);
 
-	@Inject
-	public NaisContract( MeterRegistry registry) {
-		Gauge.builder("dok_app_is_ready", appStatus, AtomicInteger::get).register(registry);
-	}
+    @Inject
+    public NaisContract(MeterRegistry registry) {
+        Gauge.builder("dok_app_is_ready", appStatus, AtomicInteger::get).register(registry);
+    }
 
-	@GetMapping("/isAlive")
-	public String isAlive() {
-		return APPLICATION_ALIVE;
-	}
+    @GetMapping("/isAlive")
+    public String isAlive() {
+        return APPLICATION_ALIVE;
+    }
 
-	@RequestMapping(value = "/isReady", produces = MediaType.TEXT_PLAIN_VALUE)
-	public ResponseEntity isReady() {
-		appStatus.set(1);
+    @RequestMapping(value = "/isReady", produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity isReady() {
+        appStatus.set(1);
 
-		return new ResponseEntity<>(APPLICATION_READY, HttpStatus.OK);
-	}
+        return new ResponseEntity<>(APPLICATION_READY, HttpStatus.OK);
+    }
 }
