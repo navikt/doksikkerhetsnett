@@ -70,7 +70,7 @@ public class FinnOppgaveConsumer {
 
 			for (String journalpostIdsAsString : idStrings) {
 				FinnOppgaveResponse oppgaveResponse =
-						doCall(journalpostIdsAsString + "&statuskategori=" + status + DEFAULT_URL_P1 + DEFAULT_URL_P2, requestEntity);
+						executeGetRequest(journalpostIdsAsString + "&statuskategori=" + status + DEFAULT_URL_P1 + DEFAULT_URL_P2, requestEntity);
 				oppgaveResponses.add(oppgaveResponse);
 				int differenceBetweenTotalReponsesAndResponseList = oppgaveResponse.getAntallTreffTotalt() - oppgaveResponse.getOppgaver()
 						.size();
@@ -78,17 +78,17 @@ public class FinnOppgaveConsumer {
 					int extraPages = differenceBetweenTotalReponsesAndResponseList / 20;
 
 					for (int i = 1; i <= extraPages + 1; i++) {
-						oppgaveResponses.add(doCall(
+						oppgaveResponses.add(executeGetRequest(
 								journalpostIdsAsString + "&statuskategori=" + status + DEFAULT_URL_P1 + "offset=" + i * 20 + DEFAULT_URL_P2, requestEntity));
 					}
 				}
 			}
-			List<OppgaveJson> wip = oppgaveResponses.stream()
+			List<OppgaveJson> allOppgaveResponses = oppgaveResponses.stream()
 					.flatMap(FinnOppgaveResponse -> FinnOppgaveResponse.getOppgaver().stream())
 					.collect(Collectors.toList());
 
 			return FinnOppgaveResponse.builder()
-					.oppgaver(wip)
+					.oppgaver(allOppgaveResponses)
 					.build();
 
 		} catch (HttpClientErrorException e) {
@@ -108,7 +108,7 @@ public class FinnOppgaveConsumer {
 		}
 	}
 
-	public FinnOppgaveResponse doCall(String param, HttpEntity<?> requestEntity) {
+	private FinnOppgaveResponse executeGetRequest(String param, HttpEntity<?> requestEntity) {
 		URI uri = UriComponentsBuilder.fromHttpUrl(finnOppgaverUrl)
 				.queryParam(param)
 				.build().toUri();

@@ -16,7 +16,6 @@
 	<name>doksikkerhetsnett</name>
 
 	<packaging>pom</packaging>
-
 	<modules>
 		<module>core</module>
 		<module>app</module>

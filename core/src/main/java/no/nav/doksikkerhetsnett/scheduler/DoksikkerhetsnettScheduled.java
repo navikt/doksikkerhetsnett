@@ -24,6 +24,7 @@ public class DoksikkerhetsnettScheduled {
 	private final FinnOppgaveService finnOppgaveService;
 	private final DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
 	private final int MINUTE = 60_000;
+	private final int HOUR = 60*MINUTE;
 
 	public DoksikkerhetsnettScheduled(FinnMottatteJournalposterService finnMottatteJournalposterService,
 									  DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
@@ -33,33 +34,34 @@ public class DoksikkerhetsnettScheduled {
 		this.finnOppgaveService = finnOppgaveService;
 	}
 
-	@Scheduled(initialDelay = 1000, fixedDelay = 10 * MINUTE)
+	@Scheduled(initialDelay = 1000, fixedDelay = 24 * HOUR)
 	public void triggerOppdatering() {
 		lagOppgaverForGlemteJournalposter();
 	}
 
 	public void lagOppgaverForGlemteJournalposter() {
+
 		log.info("doksikkerhetsnett henter alle ubehandlede journalposter med alder > 1 uke (evt med tema i: {})", dokSikkerhetsnettProperties
 				.getTemaer());
-
+		FinnMottatteJournalposterResponse finnMottatteJournalposterResponse;
 		try {
-			finnJournalposterUtenTilknyttetOppgave();
+			finnMottatteJournalposterResponse = finnMottatteJournalposterService.finnMottatteJournalPoster(dokSikkerhetsnettProperties
+					.getTemaer());
 		} catch (Exception e) {
 			log.error("doksikkerhetsnett feilet under hentingen av alle journalposter (evt med tema i: {}): " + e.getMessage(), dokSikkerhetsnettProperties
 					.getTemaer());
 			return;
 		}
-	}
 
-	private void finnJournalposterUtenTilknyttetOppgave() {
-		FinnMottatteJournalposterResponse finnMottatteJournalposterResponse = finnMottatteJournalposterService.finnMottatteJournalPoster(dokSikkerhetsnettProperties
-				.getTemaer());
-
-		ArrayList<UbehandletJournalpost> ubehandletJournalposts = finnEksisterendeOppgaverFraUbehandledeJournalpostList(finnMottatteJournalposterResponse
-				.getJournalposter());
-		log.info("doksikkerhetsnett fant {} journalposter uten oppgave (evt med tema i: {})",
-				ubehandletJournalposts.size(), dokSikkerhetsnettProperties.getTemaer());
-		log.info("journalpostene hadde ID'ene: {}", ubehandletJournalposts);
+		try{
+			ArrayList<UbehandletJournalpost> ubehandletJournalposts = finnEksisterendeOppgaverFraUbehandledeJournalpostList(finnMottatteJournalposterResponse
+					.getJournalposter());
+			log.info("doksikkerhetsnett fant {} journalposter uten oppgave (evt med tema i: {})",
+					ubehandletJournalposts.size(), dokSikkerhetsnettProperties.getTemaer());
+			log.info("journalpostene hadde ID'ene: {}", ubehandletJournalposts);
+		}  catch (Exception e){
+			log.error("doksikkerhetsnett feilet under hentingen av alle oppgaver");
+		}
 	}
 
 	private ArrayList<UbehandletJournalpost> finnEksisterendeOppgaverFraUbehandledeJournalpostList(List<UbehandletJournalpost> ubehandledeJournalpostList) {

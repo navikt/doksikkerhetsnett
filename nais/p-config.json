@@ -6,5 +6,5 @@
   "DOKSIKKERHETSNETT_FINNMOTTATTEJOURNALPOSTERURL": "https://dokarkiv.nais.adeo.no/rest/intern/journalpostapi/v1/finnMottatteJournalposter",
   "INGRESSES": [
     "https://doksikkerhetsnett.nais.adeo.no"
-  ]
+  ] 
 }

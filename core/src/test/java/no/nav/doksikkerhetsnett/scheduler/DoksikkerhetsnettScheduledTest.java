@@ -7,10 +7,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import com.google.common.cache.Cache;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
-import no.nav.doksikkerhetsnett.consumer.finnMottateJournalposter.FinnMottatteJournalposterConsumer;
-import no.nav.doksikkerhetsnett.consumer.finnOppgave.FinnOppgaveConsumer;
+import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.FinnMottatteJournalposterConsumer;
+import no.nav.doksikkerhetsnett.consumer.finnoppgave.FinnOppgaveConsumer;
 import no.nav.doksikkerhetsnett.consumer.sts.StsRestConsumer;
 import no.nav.doksikkerhetsnett.service.FinnMottatteJournalposterService;
 import no.nav.doksikkerhetsnett.service.FinnOppgaveService;
@@ -18,11 +17,8 @@ import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-
-import javax.inject.Inject;
 
 class DoksikkerhetsnettScheduledTest {
 	private static final String URL_FINNMOTTATTEJOURNALPOSTER = "/rest/intern/journalpostapi/v1/finnMottatteJournalposter/";
