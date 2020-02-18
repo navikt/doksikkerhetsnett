@@ -1,9 +1,9 @@
 package no.nav.doksikkerhetsnett.service;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.doksikkerhetsnett.consumer.finnOppgave.FinnOppgaveConsumer;
-import no.nav.doksikkerhetsnett.consumer.finnOppgave.FinnOppgaveResponse;
-import no.nav.doksikkerhetsnett.consumer.finnMottateJournalposter.UbehandletJournalpost;
+import no.nav.doksikkerhetsnett.consumer.finnoppgave.FinnOppgaveConsumer;
+import no.nav.doksikkerhetsnett.consumer.finnoppgave.FinnOppgaveResponse;
+import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.UbehandletJournalpost;
 import no.nav.doksikkerhetsnett.utils.Utils;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +16,7 @@ import java.util.List;
 public class FinnOppgaveService {
 	private final String AAPEN = "AAPEN";
 	private final String AVSLUTTET = "AVSLUTTET";
-	private final String DEFAULT_URL_P1 = "&sorteringsrekkefolge=ASC&";
-	private final String DEFAULT_URL_P2 = "&limit=20";
+
 
 	FinnOppgaveConsumer finnOppgaveConsumer;
 
@@ -26,28 +25,9 @@ public class FinnOppgaveService {
 		this.finnOppgaveConsumer = finnOppgaveConsumer;
 	}
 
-	public ArrayList<FinnOppgaveResponse> finnOppgaver(List<UbehandletJournalpost> ubehandledeJournalposter, boolean checkForOpenJournalPosts) {
-		ArrayList<String> idStrings = Utils.journalpostListToJournalpostIdList(ubehandledeJournalposter);
-		String status = getStatus(checkForOpenJournalPosts);
-		ArrayList<FinnOppgaveResponse> oppgaveResponses = new ArrayList<>();
+	public FinnOppgaveResponse finnOppgaver(List<UbehandletJournalpost> ubehandledeJournalposter, boolean checkForOpenJournalPosts) {
 
-		for (String journalpostIdsAsString : idStrings) {
-			FinnOppgaveResponse oppgaveResponse =
-					finnOppgaveConsumer.finnOppgaveForJournalposter(journalpostIdsAsString + "&statuskategori=" + status + DEFAULT_URL_P1 + DEFAULT_URL_P2);
-			oppgaveResponses.add(oppgaveResponse);
-			int differenceBetweenTotalReponsesAndResponseList = oppgaveResponse.getAntallTreffTotalt() - oppgaveResponse.getOppgaver()
-					.size();
-			if (differenceBetweenTotalReponsesAndResponseList != 0) {
-				int extraPages = differenceBetweenTotalReponsesAndResponseList / 20;
-
-				for (int i = 1; i <= extraPages + 1; i++) {
-					oppgaveResponses.add(
-							finnOppgaveConsumer.finnOppgaveForJournalposter(
-									journalpostIdsAsString + "&statuskategori=" + status + DEFAULT_URL_P1 + "offset=" + i * 20 + DEFAULT_URL_P2));
-				}
-			}
-		}
-		return oppgaveResponses;
+		return finnOppgaveConsumer.finnOppgaveForJournalposter(ubehandledeJournalposter, getStatus(checkForOpenJournalPosts));
 	}
 
 	public String getStatus(boolean checkForOpenJournalPosts) {

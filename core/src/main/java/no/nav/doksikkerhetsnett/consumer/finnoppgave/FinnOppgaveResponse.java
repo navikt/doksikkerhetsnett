@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.consumer.finnOppgave;
+package no.nav.doksikkerhetsnett.consumer.finnoppgave;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;

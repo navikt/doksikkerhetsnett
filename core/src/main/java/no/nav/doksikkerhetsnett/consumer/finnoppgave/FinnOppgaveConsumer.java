@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.consumer.finnOppgave;
+package no.nav.doksikkerhetsnett.consumer.finnoppgave;
 
 import static no.nav.doksikkerhetsnett.constants.DomainConstants.APP_NAME;
 import static no.nav.doksikkerhetsnett.constants.DomainConstants.BEARER_PREFIX;
@@ -7,6 +7,7 @@ import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_I
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 
+import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.UbehandletJournalpost;
 import no.nav.doksikkerhetsnett.jaxws.MDCGenerate;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.constants.MDCConstants;
@@ -15,6 +16,7 @@ import no.nav.doksikkerhetsnett.exceptions.functional.FinOppgaveTillaterIkkeTilk
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFinnesIkkeFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnOppgaveTechnicalException;
 import no.nav.doksikkerhetsnett.metrics.Metrics;
+import no.nav.doksikkerhetsnett.utils.Utils;
 import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
@@ -30,6 +32,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class FinnOppgaveConsumer {
@@ -39,6 +44,8 @@ public class FinnOppgaveConsumer {
 	private final String finnOppgaverUrl;
 	private final RestTemplate restTemplate;
 	private final StsRestConsumer stsRestConsumer;
+	private final String DEFAULT_URL_P1 = "&sorteringsrekkefolge=ASC&";
+	private final String DEFAULT_URL_P2 = "&limit=20";
 
 	public FinnOppgaveConsumer(RestTemplateBuilder restTemplateBuilder,
 							   DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
@@ -54,16 +61,35 @@ public class FinnOppgaveConsumer {
 	}
 
 	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnOppgaveForJournalposter"}, percentiles = {0.5, 0.95}, histogram = true)
-	public FinnOppgaveResponse finnOppgaveForJournalposter(String journalpostIds) {
+	public FinnOppgaveResponse finnOppgaveForJournalposter(List<UbehandletJournalpost> ubehandledeJournalposter, String status) {
 		try {
 			HttpHeaders headers = createHeaders();
 			HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+			ArrayList<String> idStrings = Utils.journalpostListToJournalpostIdList(ubehandledeJournalposter);
+			ArrayList<FinnOppgaveResponse> oppgaveResponses = new ArrayList<>();
 
-			URI uri = UriComponentsBuilder.fromHttpUrl(finnOppgaverUrl)
-					.queryParam(journalpostIds)
-					.build().toUri();
-			return restTemplate.exchange(uri, HttpMethod.GET, requestEntity, FinnOppgaveResponse.class)
-					.getBody();
+			for (String journalpostIdsAsString : idStrings) {
+				FinnOppgaveResponse oppgaveResponse =
+						doCall(journalpostIdsAsString + "&statuskategori=" + status + DEFAULT_URL_P1 + DEFAULT_URL_P2, requestEntity);
+				oppgaveResponses.add(oppgaveResponse);
+				int differenceBetweenTotalReponsesAndResponseList = oppgaveResponse.getAntallTreffTotalt() - oppgaveResponse.getOppgaver()
+						.size();
+				if (differenceBetweenTotalReponsesAndResponseList != 0) {
+					int extraPages = differenceBetweenTotalReponsesAndResponseList / 20;
+
+					for (int i = 1; i <= extraPages + 1; i++) {
+						oppgaveResponses.add(doCall(
+								journalpostIdsAsString + "&statuskategori=" + status + DEFAULT_URL_P1 + "offset=" + i * 20 + DEFAULT_URL_P2, requestEntity));
+					}
+				}
+			}
+			List<OppgaveJson> wip = oppgaveResponses.stream()
+					.flatMap(FinnOppgaveResponse -> FinnOppgaveResponse.getOppgaver().stream())
+					.collect(Collectors.toList());
+
+			return FinnOppgaveResponse.builder()
+					.oppgaver(wip)
+					.build();
 
 		} catch (HttpClientErrorException e) {
 			if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
@@ -82,10 +108,19 @@ public class FinnOppgaveConsumer {
 		}
 	}
 
+	public FinnOppgaveResponse doCall(String param, HttpEntity<?> requestEntity) {
+		URI uri = UriComponentsBuilder.fromHttpUrl(finnOppgaverUrl)
+				.queryParam(param)
+				.build().toUri();
+		return restTemplate.exchange(uri, HttpMethod.GET, requestEntity, FinnOppgaveResponse.class)
+				.getBody();
+	}
+
+
 	private HttpHeaders createHeaders() {
 		MDCGenerate.generateNewCallIdIfThereAreNone();
 		HttpHeaders headers = new HttpHeaders();
-		
+
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.set(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + stsRestConsumer.getOidcToken());
 		headers.add(CORRELATION_HEADER, MDC.get(MDCConstants.MDC_CALL_ID));
@@ -94,4 +129,4 @@ public class FinnOppgaveConsumer {
 		headers.add(MDC_NAV_CALL_ID, MDC.get(MDC_NAV_CALL_ID));
 		return headers;
 	}
-	}
+}

@@ -26,7 +26,8 @@ public class DokSikkerhetsnettProperties {
 
 	@NotNull
 	private ServiceUserProperties serviceuser;
-	
+
+	//Denne kan vaere null da et soek på et tomt tema betyr et generelt soek paa alle temaer
 	private String temaer;
 
 

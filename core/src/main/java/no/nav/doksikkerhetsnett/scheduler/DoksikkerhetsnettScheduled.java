@@ -3,10 +3,10 @@ package no.nav.doksikkerhetsnett.scheduler;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
-import no.nav.doksikkerhetsnett.consumer.finnMottateJournalposter.FinnMottatteJournalposterResponse;
-import no.nav.doksikkerhetsnett.consumer.finnMottateJournalposter.UbehandletJournalpost;
-import no.nav.doksikkerhetsnett.consumer.finnOppgave.FinnOppgaveResponse;
-import no.nav.doksikkerhetsnett.consumer.finnOppgave.OppgaveJson;
+import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.FinnMottatteJournalposterResponse;
+import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.UbehandletJournalpost;
+import no.nav.doksikkerhetsnett.consumer.finnoppgave.FinnOppgaveResponse;
+import no.nav.doksikkerhetsnett.consumer.finnoppgave.OppgaveJson;
 import no.nav.doksikkerhetsnett.service.FinnMottatteJournalposterService;
 import no.nav.doksikkerhetsnett.service.FinnOppgaveService;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -39,12 +39,14 @@ public class DoksikkerhetsnettScheduled {
 	}
 
 	public void lagOppgaverForGlemteJournalposter() {
-		log.info("doksikkerhetsnett henter alle ubehandlede journalposter med alder > 1 uke (evt med tema i: {})", dokSikkerhetsnettProperties.getTemaer());
+		log.info("doksikkerhetsnett henter alle ubehandlede journalposter med alder > 1 uke (evt med tema i: {})", dokSikkerhetsnettProperties
+				.getTemaer());
 
 		try {
 			finnJournalposterUtenTilknyttetOppgave();
 		} catch (Exception e) {
-			log.error("doksikkerhetsnett feilet under hentingen av alle journalposter (evt med tema i: {}): " + e.getMessage(), dokSikkerhetsnettProperties.getTemaer());
+			log.error("doksikkerhetsnett feilet under hentingen av alle journalposter (evt med tema i: {}): " + e.getMessage(), dokSikkerhetsnettProperties
+					.getTemaer());
 			return;
 		}
 	}
@@ -52,35 +54,33 @@ public class DoksikkerhetsnettScheduled {
 	private void finnJournalposterUtenTilknyttetOppgave() {
 		FinnMottatteJournalposterResponse finnMottatteJournalposterResponse = finnMottatteJournalposterService.finnMottatteJournalPoster(dokSikkerhetsnettProperties
 				.getTemaer());
-		
-		finnEksisterendeOppgaverFraUbehandledeJournalpostList( finnMottatteJournalposterResponse.getJournalposter());
+
+		ArrayList<UbehandletJournalpost> ubehandletJournalposts = finnEksisterendeOppgaverFraUbehandledeJournalpostList(finnMottatteJournalposterResponse
+				.getJournalposter());
 		log.info("doksikkerhetsnett fant {} journalposter uten oppgave (evt med tema i: {})",
-				finnMottatteJournalposterResponse.getJournalposter().size(), dokSikkerhetsnettProperties.getTemaer());
+				ubehandletJournalposts.size(), dokSikkerhetsnettProperties.getTemaer());
+		log.info("journalpostene hadde ID'ene: {}", ubehandletJournalposts);
+	}
 
-		//TODO: burde fjernes at some point. For lettere testing av resultatet.
-		String ret = "";
-		for(UbehandletJournalpost ubhjp : finnMottatteJournalposterResponse.getJournalposter()) {
-			ret += ubhjp.getJournalpostId() + " ";
+	private ArrayList<UbehandletJournalpost> finnEksisterendeOppgaverFraUbehandledeJournalpostList(List<UbehandletJournalpost> ubehandledeJournalpostList) {
+		ArrayList<UbehandletJournalpost> retList = fjernJournalposterMedEksisterendeOppgaverFraListe(ubehandledeJournalpostList, true);
+		return fjernJournalposterMedEksisterendeOppgaverFraListe(retList, false);
+	}
+
+	private ArrayList<UbehandletJournalpost> fjernJournalposterMedEksisterendeOppgaverFraListe(List<UbehandletJournalpost> ubehandledeJournalpostList, boolean searchforOpenJournalposts) {
+		FinnOppgaveResponse oppgaveResponse = finnOppgaveService.finnOppgaver(ubehandledeJournalpostList, searchforOpenJournalposts);
+
+		if (oppgaveResponse.getOppgaver() == null) {
+			return new ArrayList<UbehandletJournalpost>();
 		}
-		log.info("journalpostene hadde ID'ene: " + ret);
-	}
 
-	private void finnEksisterendeOppgaverFraUbehandledeJournalpostList(List<UbehandletJournalpost> ubehandledeJournalpostList){
-		fjernJournalposterMedEksisterendeOppgaverFraListe(ubehandledeJournalpostList, true);
-		fjernJournalposterMedEksisterendeOppgaverFraListe(ubehandledeJournalpostList, false);
-	}
-
-	private void fjernJournalposterMedEksisterendeOppgaverFraListe(List<UbehandletJournalpost> ubehandledeJournalpostList, boolean searchforOpenJournalposts){
-		ArrayList<FinnOppgaveResponse> oppgaveResponseList = finnOppgaveService.finnOppgaver(ubehandledeJournalpostList, searchforOpenJournalposts);
-		oppgaveResponseList.removeIf((oppgave -> oppgave.getOppgaver() == null));
-
-		List<String> journalposterMedOppgaver = oppgaveResponseList.stream()
-				.flatMap(FinnOppgaveResponse -> FinnOppgaveResponse.getOppgaver().stream())
+		List<String> journalposterMedOppgaver = oppgaveResponse.getOppgaver().stream()
 				.map(OppgaveJson::getJournalpostId)
 				.collect(Collectors.toList());
 
-		ubehandledeJournalpostList.removeIf(ubehandletJournalpost -> journalposterMedOppgaver.contains(""+ubehandletJournalpost.getJournalpostId()));
-
+		return new ArrayList<>(ubehandledeJournalpostList.stream()
+				.filter(ubehandletJournalpost -> !journalposterMedOppgaver.contains("" + ubehandletJournalpost.getJournalpostId()))
+				.collect(Collectors.toList()));
 	}
 
 }

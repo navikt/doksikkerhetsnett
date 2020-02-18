@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.consumer.finnOppgave;
+package no.nav.doksikkerhetsnett.consumer.finnoppgave;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
