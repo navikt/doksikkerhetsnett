@@ -46,7 +46,7 @@ import java.util.List;
 @ActiveProfiles("itest")
 public class FinnMottatteJournalposterIT {
 
-    private static final String URL_FINNMOTTATTEJOURNALPOSTER = "/rest/intern/journalpostapi/v1/finnMottatteJournalposter/";
+    private static final String URL_FINNMOTTATTEJOURNALPOSTER = "/rest/intern/journalpostapi/v1/finnmottatteournalposter/";
     private static final String TEMA_SINGLE = "UFO";
     private static final String TEMA_MULTI = "UFO,PEN,BAR";
     private static final String TEMA_NONE = "";
@@ -101,7 +101,7 @@ public class FinnMottatteJournalposterIT {
         stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER + ""))
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
                         .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                        .withBodyFile("finnMottatteJournalposter/mottatteJournalposterMedTemaMulti-happy.json")));
+                        .withBodyFile("finnmottatteournalposter/mottatteJournalposterMedTemaMulti-happy.json")));
         assertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(null, 2,
                 "mottatteJournalposterMedTemaMulti-happy.json", "UFO", "BAR");
     }
@@ -110,7 +110,7 @@ public class FinnMottatteJournalposterIT {
         stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER + temaer))
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
                         .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                        .withBodyFile("finnMottatteJournalposter/" + filename)));
+                        .withBodyFile("finnmottatteournalposter/" + filename)));
 
         ArrayList<Date> datoOpprettet = new ArrayList<>();
         try {
