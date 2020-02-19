@@ -63,7 +63,7 @@ class DoksikkerhetsnettScheduledIT {
         stubFor(get(urlMatching(URL_OPPGAVE + JOURNALPOST_SEARCH + QUERY_PARAM_AAPNEOPPGAVER))
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
                         .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                        .withBodyFile("finnOppgave/finnOppgaverAAPNE-happy.json")));
+                        .withBodyFile("finnoppgave/finnOppgaverAAPNE-happy.json")));
         stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER))
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
                         .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
