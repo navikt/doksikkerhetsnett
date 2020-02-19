@@ -75,10 +75,10 @@ public class DoksikkerhetsnettScheduled {
         }
 
         int antallMottatteJournalposter = finnMottatteJournalposterResponse.getJournalposter().size();
-        int antallMatch = ubehandletJournalposts.size();
-        int antallMismatch = antallMottatteJournalposter - antallMatch;
+        int antallJournalposterUtenOppgave = ubehandletJournalposts.size();
+        int antallJournalposterMedOppgave = antallMottatteJournalposter - antallJournalposterUtenOppgave;
 
-        incrementMetrics(antallMottatteJournalposter, antallMatch, antallMismatch);
+        incrementMetrics(antallMottatteJournalposter, antallJournalposterUtenOppgave, antallJournalposterMedOppgave);
     }
 
     private ArrayList<UbehandletJournalpost> finnEksisterendeOppgaverFraUbehandledeJournalpostList(List<UbehandletJournalpost> ubehandledeJournalpostList) {
@@ -101,7 +101,7 @@ public class DoksikkerhetsnettScheduled {
                 .collect(Collectors.toList()));
     }
 
-    private void incrementMetrics(int antallMottatteJournalposter, int antallMatch, int antallMismatch) {
+    private void incrementMetrics(int antallMottatteJournalposter, int antallUtenOppgave, int antallMedOppgave) {
         Counter.builder("mottatte.journalposter.antall")
                 .description("Counter for antall ubehandlede journalposter funnet")
                 .tags(CLASS, this.getClass().getCanonicalName())
@@ -109,19 +109,19 @@ public class DoksikkerhetsnettScheduled {
                 .register(meterRegistry)
                 .increment(antallMottatteJournalposter);
 
-        Counter.builder("finn.oppgave.matches")
-                .description("Counter for antall oppgaver som finnes for de ubehandlede journalpostene")
+        Counter.builder("uten.oppgave.antall")
+                .description("Counter for antall ubehandlede journalposter som ikke har en åpen oppgave")
                 .tags(CLASS, this.getClass().getCanonicalName())
                 .tags(PROCESS_NAME, "finnJournalposterUtenTilknyttetOppgave")
                 .register(meterRegistry)
-                .increment(antallMatch);
+                .increment(antallUtenOppgave);
 
-        Counter.builder("finn.oppgave.mismatches")
-                .description("Counter for antall ubehandlede journalposter som ikke har en oppgave")
+        Counter.builder("med.oppgave.antall")
+                .description("Counter for antall ubehandlede journalposter som allerede har en åpen oppgave")
                 .tags(CLASS, this.getClass().getCanonicalName())
                 .tags(PROCESS_NAME, "finnJournalposterUtenTilknyttetOppgave")
                 .register(meterRegistry)
-                .increment(antallMismatch);
+                .increment(antallMedOppgave);
     }
 }
 
