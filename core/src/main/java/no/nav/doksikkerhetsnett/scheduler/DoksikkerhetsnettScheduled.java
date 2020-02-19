@@ -103,21 +103,21 @@ public class DoksikkerhetsnettScheduled {
     }
 
     private void incrementMetrics(int antallMottatteJournalposter, int antallUtenOppgave, int antallMedOppgave) {
-        Counter.builder(DOK_METRIC + "mottatte.journalposter.antall")
+        Counter.builder(DOK_METRIC + ".mottatte.journalposter.antall")
                 .description("Counter for antall ubehandlede journalposter funnet")
                 .tags(CLASS, this.getClass().getCanonicalName())
                 .tags(PROCESS_NAME, "finnJournalposterUtenTilknyttetOppgave")
                 .register(meterRegistry)
                 .increment(antallMottatteJournalposter);
 
-        Counter.builder(DOK_METRIC + "uten.oppgave.antall")
+        Counter.builder(DOK_METRIC + ".uten.oppgave.antall")
                 .description("Counter for antall ubehandlede journalposter som ikke har en åpen oppgave")
                 .tags(CLASS, this.getClass().getCanonicalName())
                 .tags(PROCESS_NAME, "finnJournalposterUtenTilknyttetOppgave")
                 .register(meterRegistry)
                 .increment(antallUtenOppgave);
 
-        Counter.builder(DOK_METRIC + "med.oppgave.antall")
+        Counter.builder(DOK_METRIC + ".med.oppgave.antall")
                 .description("Counter for antall ubehandlede journalposter som allerede har en åpen oppgave")
                 .tags(CLASS, this.getClass().getCanonicalName())
                 .tags(PROCESS_NAME, "finnJournalposterUtenTilknyttetOppgave")
