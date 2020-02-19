@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.CLASS;
+import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 
 @Slf4j
@@ -102,21 +103,21 @@ public class DoksikkerhetsnettScheduled {
     }
 
     private void incrementMetrics(int antallMottatteJournalposter, int antallUtenOppgave, int antallMedOppgave) {
-        Counter.builder("mottatte.journalposter.antall")
+        Counter.builder(DOK_METRIC + "mottatte.journalposter.antall")
                 .description("Counter for antall ubehandlede journalposter funnet")
                 .tags(CLASS, this.getClass().getCanonicalName())
                 .tags(PROCESS_NAME, "finnJournalposterUtenTilknyttetOppgave")
                 .register(meterRegistry)
                 .increment(antallMottatteJournalposter);
 
-        Counter.builder("uten.oppgave.antall")
+        Counter.builder(DOK_METRIC + "uten.oppgave.antall")
                 .description("Counter for antall ubehandlede journalposter som ikke har en åpen oppgave")
                 .tags(CLASS, this.getClass().getCanonicalName())
                 .tags(PROCESS_NAME, "finnJournalposterUtenTilknyttetOppgave")
                 .register(meterRegistry)
                 .increment(antallUtenOppgave);
 
-        Counter.builder("med.oppgave.antall")
+        Counter.builder(DOK_METRIC + "med.oppgave.antall")
                 .description("Counter for antall ubehandlede journalposter som allerede har en åpen oppgave")
                 .tags(CLASS, this.getClass().getCanonicalName())
                 .tags(PROCESS_NAME, "finnJournalposterUtenTilknyttetOppgave")

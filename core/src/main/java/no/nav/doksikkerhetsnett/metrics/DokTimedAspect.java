@@ -61,9 +61,9 @@ public class DokTimedAspect {
             }
 
             if (metrics.createErrorMetric()) {
-                Counter.builder(metrics.value() + "_exception")
-                        .tags("error_type", isFunctionalException(method, e) ? "functional" : "technical")
-                        .tags("exception_name", e.getClass().getSimpleName())
+                Counter.builder(metrics.value() + ".exception")
+                        .tags("error.type", isFunctionalException(method, e) ? "functional" : "technical")
+                        .tags("exception.name", e.getClass().getSimpleName())
                         .tags(metrics.extraTags())
                         .tags(tagsBasedOnJoinpoint.apply(pjp))
                         .register(registry)
