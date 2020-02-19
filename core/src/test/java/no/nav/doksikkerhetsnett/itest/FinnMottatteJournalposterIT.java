@@ -46,7 +46,7 @@ import java.util.List;
 @ActiveProfiles("itest")
 public class FinnMottatteJournalposterIT {
 
-    private static final String URL_FINNMOTTATTEJOURNALPOSTER = "/rest/intern/journalpostapi/v1/finnmottattejournalposter/";
+    private static final String URL_FINNMOTTATTEJOURNALPOSTER = "/rest/intern/journalpostapi/v1/finnMottatteJournalposter/";
     private static final String TEMA_SINGLE = "UFO";
     private static final String TEMA_MULTI = "UFO,PEN,BAR";
     private static final String TEMA_NONE = "";
