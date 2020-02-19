@@ -22,6 +22,9 @@ public class FinnMottatteJournalposterService {
 	}
 
 	public FinnMottatteJournalposterResponse finnMottatteJournalPoster(String temaer) {
+		if (temaer == null) {
+			return finnMottatteJournalPoster();
+		}
 		return finnMottatteJournalposterConsumer.finnMottateJournalposter(temaer);
 	}
 

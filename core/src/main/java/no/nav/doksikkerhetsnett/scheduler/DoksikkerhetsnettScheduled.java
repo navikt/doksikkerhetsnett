@@ -40,11 +40,7 @@ public class DoksikkerhetsnettScheduled {
 	}
 
 	public void lagOppgaverForGlemteJournalposter() {
-		List<UbehandletJournalpost> ubehandletJournalpostsUtenOppgave = finnjournalposterUtenOppgaver();
-		//TODO: Del 2; sikkerhetsnett i skriv-modus.
-	}
 
-	public ArrayList<UbehandletJournalpost> finnjournalposterUtenOppgaver(){
 		log.info("doksikkerhetsnett henter alle ubehandlede journalposter med alder > 1 uke (evt med tema i: {})", dokSikkerhetsnettProperties
 				.getTemaer());
 		FinnMottatteJournalposterResponse finnMottatteJournalposterResponse;
@@ -54,23 +50,20 @@ public class DoksikkerhetsnettScheduled {
 		} catch (Exception e) {
 			log.error("doksikkerhetsnett feilet under hentingen av alle journalposter (evt med tema i: {}): " + e.getMessage(), dokSikkerhetsnettProperties
 					.getTemaer());
-			return null;
+			return;
 		}
 
-		ArrayList<UbehandletJournalpost> ubehandledeJournalposterUtenOppgave = null;
 		try {
-			ubehandledeJournalposterUtenOppgave= finnEksisterendeOppgaverFraUbehandledeJournalpostList(finnMottatteJournalposterResponse
+			ArrayList<UbehandletJournalpost> ubehandletJournalposts = finnEksisterendeOppgaverFraUbehandledeJournalpostList(finnMottatteJournalposterResponse
 					.getJournalposter());
 			log.info("doksikkerhetsnett fant {} journalposter uten oppgave (evt med tema i: {})",
-					ubehandledeJournalposterUtenOppgave.size(), dokSikkerhetsnettProperties.getTemaer());
-			if (ubehandledeJournalposterUtenOppgave.size() > 0) {
-				log.info("journalpostene hadde ID'ene: {}", ubehandledeJournalposterUtenOppgave);
+					ubehandletJournalposts.size(), dokSikkerhetsnettProperties.getTemaer());
+			if (ubehandletJournalposts.size() > 0) {
+				log.info("journalpostene hadde ID'ene: {}", ubehandletJournalposts);
 			}
 		} catch (Exception e) {
 			log.error("doksikkerhetsnett feilet under hentingen av alle oppgaver");
 		}
-
-		return ubehandledeJournalposterUtenOppgave;
 	}
 
 	private ArrayList<UbehandletJournalpost> finnEksisterendeOppgaverFraUbehandledeJournalpostList(List<UbehandletJournalpost> ubehandledeJournalpostList) {
@@ -81,7 +74,7 @@ public class DoksikkerhetsnettScheduled {
 		FinnOppgaveResponse oppgaveResponse = finnOppgaveService.finnOppgaver(ubehandledeJournalpostList);
 
 		if (oppgaveResponse.getOppgaver() == null) {
-			return new ArrayList<>();
+			return new ArrayList<UbehandletJournalpost>();
 		}
 
 		List<String> journalposterMedOppgaver = oppgaveResponse.getOppgaver().stream()

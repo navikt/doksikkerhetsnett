@@ -2,10 +2,10 @@
   "antallTreffTotalt": "2",
   "oppgaver": [
     {
-      "journalpostId" : 111111111
-    } ,
-    {
       "journalpostId" : 222222222
+    },
+    {
+      "journalpostId" : 333333333
     }
   ]
 }
