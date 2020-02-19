@@ -34,7 +34,7 @@ import java.util.List;
 @AutoConfigureWireMock(port = 0)
 @ActiveProfiles("itest")
 class DoksikkerhetsnettScheduledIT {
-    private static final String URL_FINNMOTTATTEJOURNALPOSTER = "/rest/intern/journalpostapi/v1/finnmottatteournalposter/";
+    private static final String URL_FINNMOTTATTEJOURNALPOSTER = "/rest/intern/journalpostapi/v1/finnmottattejournalposter/";
     private static final String QUERY_PARAM_AAPNEOPPGAVER = "&statuskategori=AAPEN&sorteringsrekkefolge=ASC&&limit=50";
     private static final String URL_STSAUTH = "/rest/v1/sts/token\\?grant_type=client_credentials&scope=openid";
     private static final String URL_OPPGAVE = "/api/v1/oppgaver\\?";
@@ -67,7 +67,7 @@ class DoksikkerhetsnettScheduledIT {
         stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER))
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
                         .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                        .withBodyFile("finnmottatteournalposter/mottatteJournalposterForSchedulerTest-happy.json")));
+                        .withBodyFile("finnmottattejournalposter/mottatteJournalposterForSchedulerTest-happy.json")));
     }
 
     @Test
