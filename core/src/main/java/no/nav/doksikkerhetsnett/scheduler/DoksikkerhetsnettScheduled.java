@@ -48,10 +48,11 @@ public class DoksikkerhetsnettScheduled {
     }
 
     public void lagOppgaverForGlemteJournalposter() {
+        FinnMottatteJournalposterResponse finnMottatteJournalposterResponse;
+        ArrayList<UbehandletJournalpost> ubehandletJournalposts;
 
         log.info("doksikkerhetsnett henter alle ubehandlede journalposter eldre enn 1 uke {}", Utils.logWithTema(dokSikkerhetsnettProperties
                 .getTemaer()));
-        FinnMottatteJournalposterResponse finnMottatteJournalposterResponse;
         try {
             finnMottatteJournalposterResponse = finnMottatteJournalposterService.finnMottatteJournalPoster(dokSikkerhetsnettProperties
                     .getTemaer());
@@ -60,24 +61,24 @@ public class DoksikkerhetsnettScheduled {
             return;
         }
 
-
-        // TODO: Fiks  disse med den nye metoden
-        int antallMottatteJournalposter = finnMottatteJournalposterResponse.getJournalposter().size();
-        int antallMatch = finnMottatteJournalposterResponse.getJournalposter().size();
-        int antallMismatch = antallMottatteJournalposter - antallMatch;
-
-        incrementMetrics(antallMottatteJournalposter, antallMatch, antallMismatch);
         try {
-            ArrayList<UbehandletJournalpost> ubehandletJournalposts = finnEksisterendeOppgaverFraUbehandledeJournalpostList(finnMottatteJournalposterResponse
+            ubehandletJournalposts = finnEksisterendeOppgaverFraUbehandledeJournalpostList(finnMottatteJournalposterResponse
                     .getJournalposter());
             log.info("doksikkerhetsnett fant {} journalposter uten oppgave {}",
                     ubehandletJournalposts.size(), Utils.logWithTema(dokSikkerhetsnettProperties.getTemaer()));
             if (ubehandletJournalposts.size() > 0) {
-                log.info("journalpostene hadde ID'ene: {}", ubehandletJournalposts);
+                log.info("journalpostene hadde ID: {}", ubehandletJournalposts);
             }
         } catch (Exception e) {
             log.error("doksikkerhetsnett feilet under hentingen av alle oppgaver");
+            return;
         }
+
+        int antallMottatteJournalposter = finnMottatteJournalposterResponse.getJournalposter().size();
+        int antallMatch = ubehandletJournalposts.size();
+        int antallMismatch = antallMottatteJournalposter - antallMatch;
+
+        incrementMetrics(antallMottatteJournalposter, antallMatch, antallMismatch);
     }
 
     private ArrayList<UbehandletJournalpost> finnEksisterendeOppgaverFraUbehandledeJournalpostList(List<UbehandletJournalpost> ubehandledeJournalpostList) {
@@ -88,7 +89,7 @@ public class DoksikkerhetsnettScheduled {
         FinnOppgaveResponse oppgaveResponse = finnOppgaveService.finnOppgaver(ubehandledeJournalpostList);
 
         if (oppgaveResponse.getOppgaver() == null) {
-            return new ArrayList<UbehandletJournalpost>();
+            return new ArrayList<>();
         }
 
         List<String> journalposterMedOppgaver = oppgaveResponse.getOppgaver().stream()
