@@ -2,7 +2,6 @@ package no.nav.doksikkerhetsnett.scheduler;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
-import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.FinnMottatteJournalposterResponse;
 import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.UbehandletJournalpost;
 import no.nav.doksikkerhetsnett.consumer.finnoppgave.FinnOppgaveResponse;
 import no.nav.doksikkerhetsnett.consumer.finnoppgave.OppgaveJson;

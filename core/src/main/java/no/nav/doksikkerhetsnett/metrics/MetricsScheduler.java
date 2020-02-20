@@ -2,11 +2,9 @@ package no.nav.doksikkerhetsnett.metrics;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
-import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.FinnMottatteJournalposterResponse;
 import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.UbehandletJournalpost;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.CLASS;
@@ -31,7 +29,7 @@ public class MetricsScheduler {
     }
 
     private void counterBuilder(String name, List<UbehandletJournalpost> journalposts) {
-        for (UbehandletJournalpost jp: journalposts) {
+        for (UbehandletJournalpost jp : journalposts) {
             String tema = jp.getTema() != null ? jp.getTema() : "mangler tema";
             String mottakskanal = jp.getMottaksKanal() != null ? jp.getMottaksKanal() : "mangler mottakskanal";
             String journalforendeEnhet = jp.getJournalforendeEnhet() != null ? jp.getJournalforendeEnhet() : "mangler journalførende enhet";
