@@ -16,6 +16,7 @@ import no.nav.doksikkerhetsnett.metrics.MetricsScheduler;
 import no.nav.doksikkerhetsnett.service.FinnMottatteJournalposterService;
 import no.nav.doksikkerhetsnett.service.FinnOppgaveService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import java.util.List;
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWireMock(port = 0)
 @ActiveProfiles("itest")
+@Disabled
 class DoksikkerhetsnettScheduledIT {
     private static final String URL_FINNMOTTATTEJOURNALPOSTER = "/rest/intern/journalpostapi/v1/finnMottatteJournalposter/";
     private static final String QUERY_PARAM_AAPNEOPPGAVER = "&statuskategori=AAPEN&sorteringsrekkefolge=ASC&&limit=50";

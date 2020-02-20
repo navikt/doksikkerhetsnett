@@ -36,7 +36,8 @@ public class DoksikkerhetsnettScheduled {
         this.metricsScheduler = metricsScheduler;
     }
 
-    @Scheduled(initialDelay = 2500, fixedDelay = 24 * HOUR)
+    //@Scheduled(initialDelay = 2500, fixedDelay = 24 * HOUR)
+    @Scheduled(initialDelay = 2500, fixedDelay = 5 * MINUTE)
     public void triggerOppdatering() {
         lagOppgaverForGlemteJournalposter();
     }
@@ -49,23 +50,22 @@ public class DoksikkerhetsnettScheduled {
     public List<UbehandletJournalpost> finnjournalposterUtenOppgaver() {
         List<UbehandletJournalpost> ubehandledeJournalposter;
         List<UbehandletJournalpost> ubehandledeJournalposterUtenOppgave;
+        String temaer = dokSikkerhetsnettProperties.getTemaer();
 
-        log.info("doksikkerhetsnett henter alle ubehandlede journalposter eldre enn 1 uke {}", Utils.logWithTema(dokSikkerhetsnettProperties
-                .getTemaer()));
+        log.info("doksikkerhetsnett henter alle ubehandlede journalposter eldre enn 1 uke {}", Utils.logWithTema(temaer));
 
         try {
-            ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalPoster(dokSikkerhetsnettProperties
-                    .getTemaer())
+            ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalPoster(temaer)
                     .getJournalposter();
         } catch (Exception e) {
-            log.error("doksikkerhetsnett feilet under hentingen av alle journalposter {}: " + e.getMessage(), Utils.logWithTema(dokSikkerhetsnettProperties.getTemaer()), e);
+            log.error("doksikkerhetsnett feilet under hentingen av alle journalposter {}: " + e.getMessage(), Utils.logWithTema(temaer), e);
             return null;
         }
 
         try {
             ubehandledeJournalposterUtenOppgave = finnEksisterendeOppgaverFraUbehandledeJournalpostList(ubehandledeJournalposter);
             log.info("doksikkerhetsnett fant {} journalposter uten oppgave {}",
-                    ubehandledeJournalposterUtenOppgave.size(), Utils.logWithTema(dokSikkerhetsnettProperties.getTemaer()));
+                    ubehandledeJournalposterUtenOppgave.size(), Utils.logWithTema(temaer));
             if (ubehandledeJournalposterUtenOppgave.size() > 0) {
                 log.info("journalpostene hadde ID'ene: {}", ubehandledeJournalposterUtenOppgave);
             }
