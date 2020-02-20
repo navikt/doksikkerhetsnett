@@ -35,12 +35,10 @@ public class MetricsScheduler {
 
         for (String key : metrics.keySet()) {
             String[] tags = key.split(";");
-            int value = metrics.get(key);
 
-            Gauge.builder(name, value, n -> n)
+            Gauge.builder(name, metrics, m -> m.get(key))
                     .description(description)
                     .tags(CLASS, parentClass.getCanonicalName())
-                    .tags(PROCESS_NAME, "finnJournalposterUtenTilknyttetOppgave")
                     .tag(TEMA, tags[0])
                     .tags(MOTTAKSKANAL, tags[1])
                     .tags(JOURNALFORENDE_ENHET, tags[2])

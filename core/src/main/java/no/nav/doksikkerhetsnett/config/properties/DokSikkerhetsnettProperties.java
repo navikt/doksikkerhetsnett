@@ -34,6 +34,7 @@ public class DokSikkerhetsnettProperties {
 	public String getTemaer() {
 		String[] temaListe = {"AAP", "GRU", "HEL", "MED", "SUP", "TIL", "UFM", "BIL", "FUL", "GRA", "KON", "STO", "TSO", "ERS", "UKJ", "GEN", "TRY", "UFO", "RVE", "SAP", "BAR", "HJE", "PER", "TSR", "VEN", "AGR", "ENF", "FOR", "FOS", "IAR", "IND", "KTR", "OMS", "MOB", "REK", "DAG", "OPA", "SYK", "FEI", "OPP", "SER", "TRK", "PEN", "REH", "SAK", "SYM", "YRK"};
 		return temaListe[new Random().nextInt(temaListe.length - 1)];
+		//return "SYK";
 	}
 }
 
