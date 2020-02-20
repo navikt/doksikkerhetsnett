@@ -1,11 +1,13 @@
 package no.nav.doksikkerhetsnett.metrics;
 
-import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.UbehandletJournalpost;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.CLASS;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
@@ -23,26 +25,40 @@ public class MetricsScheduler {
         this.meterRegistry = meterRegistry;
     }
 
-    public void incrementMetrics(List<UbehandletJournalpost> ubehandledeJournalposter, List<UbehandletJournalpost> ubehandledeJournalposterUtenOppgave) {
-        counterBuilder(DOK_METRIC + ".antall.mottatte.journalposter", ubehandledeJournalposter);
-        counterBuilder(DOK_METRIC + ".antall.uten.oppgave", ubehandledeJournalposterUtenOppgave);
+    public void incrementMetrics(List<UbehandletJournalpost> ubehandledeJournalposter, List<UbehandletJournalpost> ubehandledeJournalposterUtenOppgave, Class parentClass) {
+        counterBuilder(DOK_METRIC + ".antall.mottatte.journalposter", "Gauge for antall ubehandlede journalposter funnet", ubehandledeJournalposter, parentClass);
+        counterBuilder(DOK_METRIC + ".antall.uten.oppgave", "Gauge for antall ubehandlede journalposter funnet som ikke har en åpen oppgave", ubehandledeJournalposterUtenOppgave, parentClass);
     }
 
-    private void counterBuilder(String name, List<UbehandletJournalpost> journalposts) {
+    private void counterBuilder(String name, String description, List<UbehandletJournalpost> journalposts, Class parentClass) {
+        Map<String, Integer> metrics = extractMetrics(journalposts);
+
+        for (String key : metrics.keySet()) {
+            String[] tags = key.split(";");
+            int value = metrics.get(key);
+
+            Gauge.builder(name, value, n -> n)
+                    .description(description)
+                    .tags(CLASS, parentClass.getCanonicalName())
+                    .tags(PROCESS_NAME, "finnJournalposterUtenTilknyttetOppgave")
+                    .tag(TEMA, tags[0])
+                    .tags(MOTTAKSKANAL, tags[1])
+                    .tags(JOURNALFORENDE_ENHET, tags[2])
+                    .register(meterRegistry);
+        }
+    }
+
+    private Map<String, Integer> extractMetrics(List<UbehandletJournalpost> journalposts) {
+        Map<String, Integer> metrics = new HashMap<>();
         for (UbehandletJournalpost jp : journalposts) {
             String tema = jp.getTema() != null ? jp.getTema() : "mangler tema";
             String mottakskanal = jp.getMottaksKanal() != null ? jp.getMottaksKanal() : "mangler mottakskanal";
             String journalforendeEnhet = jp.getJournalforendeEnhet() != null ? jp.getJournalforendeEnhet() : "mangler journalførende enhet";
 
-            Counter.builder(name)
-                    .description("Counter for antall ubehandlede journalposter funnet")
-                    .tags(CLASS, this.getClass().getCanonicalName())
-                    .tags(PROCESS_NAME, "finnJournalposterUtenTilknyttetOppgave")
-                    .tags(TEMA, tema)
-                    .tags(MOTTAKSKANAL, mottakskanal)
-                    .tags(JOURNALFORENDE_ENHET, journalforendeEnhet)
-                    .register(meterRegistry)
-                    .increment();
+            String key = tema + ";" + mottakskanal + ";" + journalforendeEnhet;
+            int count = metrics.containsKey(key) ? metrics.get(key) : 0;
+            metrics.put(key, count + 1);
         }
+        return metrics;
     }
 }

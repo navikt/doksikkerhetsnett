@@ -74,7 +74,7 @@ public class DoksikkerhetsnettScheduled {
             return null;
         }
 
-        metricsScheduler.incrementMetrics(ubehandledeJournalposter, ubehandledeJournalposterUtenOppgave);
+        metricsScheduler.incrementMetrics(ubehandledeJournalposter, ubehandledeJournalposterUtenOppgave, this.getClass());
         return ubehandledeJournalposterUtenOppgave;
     }
 
