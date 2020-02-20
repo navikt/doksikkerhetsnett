@@ -30,12 +30,12 @@ class UtilsTest {
             ubehandledeJournalposter.add(new UbehandletJournalpost().builder().journalpostId(startId++).build());
         }
         ArrayList<String> expectedAns = new ArrayList<>();
-        expectedAns.add("journalpostId=33333333333&journalpostId=33333333334");
-        expectedAns.add("journalpostId=33333333335&journalpostId=33333333336");
-        expectedAns.add("journalpostId=33333333337");
+        expectedAns.add("journalpostId=33333333333&journalpostId=33333333334&");
+        expectedAns.add("journalpostId=33333333335&journalpostId=33333333336&");
+        expectedAns.add("journalpostId=33333333337&");
 
-        ArrayList<String> strings = Utils.journalpostListToJournalpostIdList(ubehandledeJournalposter, 2);
-        assertEquals(strings, expectedAns);
+        ArrayList<String> strings = Utils.journalpostListToJournalpostIdListQueryString(ubehandledeJournalposter, 2);
+        assertEquals(expectedAns, strings);
     }
 
     @Test
