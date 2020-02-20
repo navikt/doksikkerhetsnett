@@ -7,6 +7,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.FinnMottatteJournalposterConsumer;
 import no.nav.doksikkerhetsnett.consumer.finnoppgave.FinnOppgaveConsumer;
@@ -48,6 +49,9 @@ class DoksikkerhetsnettScheduledIT {
     @Autowired
     private StsRestConsumer stsRestConsumer;
 
+    @Autowired
+    private MeterRegistry meterRegistry;
+
     @BeforeEach
     void setUpConsumer() {
         setUpStubs();
@@ -73,7 +77,7 @@ class DoksikkerhetsnettScheduledIT {
     @Test
     public void Test() {
         DoksikkerhetsnettScheduled doksikkerhetsnettScheduled = new DoksikkerhetsnettScheduled(
-                finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService);
+                finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService, meterRegistry);
         List journalposterUtenOppgaver = doksikkerhetsnettScheduled.finnjournalposterUtenOppgaver();
         assertEquals(journalposterUtenOppgaver.size(), 4);
     }

@@ -18,6 +18,7 @@ public class Utils {
                 .collect(Collectors.joining(","));
     }
 
+
     private static ArrayList<String> formatFinnOppgaveStringAsIdQueryString(List<Long> ubehandledeJournalposter, int limit) {
         ArrayList<String> journalpostListAs = new ArrayList<>();
 
@@ -41,6 +42,18 @@ public class Utils {
                 .collect(Collectors.toList());
 
         return formatFinnOppgaveStringAsIdQueryString(retList, limit);
+
+    }
+
+    // Hjelpefunksjon for finere logging ut ifra hvor mange temaer som er i kallet
+    public static String logWithTema(String temaer) {
+        if (temaer == null || temaer.isEmpty()) {
+            return "for alle temaer";
+        }
+        if (temaer.contains(",")) {
+            return "med tema blandt " + temaer;
+        }
+        return "med tema " + temaer;
     }
 }
 

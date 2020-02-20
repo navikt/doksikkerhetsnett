@@ -26,29 +26,29 @@ import java.time.Duration;
 @Component
 public class StsRestConsumer {
 
-	private final RestTemplate restTemplate;
-	private final String stsUrl;
+    private final RestTemplate restTemplate;
+    private final String stsUrl;
 
-	@Inject
-	public StsRestConsumer(RestTemplateBuilder restTemplateBuilder,
-						   DokSikkerhetsnettProperties dokSikkerhetsnettProperties) {
-		this.stsUrl = dokSikkerhetsnettProperties.getSecurityservicetokenurl();
-		this.restTemplate = restTemplateBuilder
-				.setReadTimeout(Duration.ofSeconds(20))
-				.setConnectTimeout(Duration.ofSeconds(5))
-				.basicAuthentication(dokSikkerhetsnettProperties.getServiceuser().getUsername(), dokSikkerhetsnettProperties.getServiceuser().getPassword())
-				.build();
-	}
+    @Inject
+    public StsRestConsumer(RestTemplateBuilder restTemplateBuilder,
+                           DokSikkerhetsnettProperties dokSikkerhetsnettProperties) {
+        this.stsUrl = dokSikkerhetsnettProperties.getSecurityservicetokenurl();
+        this.restTemplate = restTemplateBuilder
+                .setReadTimeout(Duration.ofSeconds(20))
+                .setConnectTimeout(Duration.ofSeconds(5))
+                .basicAuthentication(dokSikkerhetsnettProperties.getServiceuser().getUsername(), dokSikkerhetsnettProperties.getServiceuser().getPassword())
+                .build();
+    }
 
-	@Retryable(include = AbstractDoksikkerhetsnettTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT))
-	@Cacheable(STS_CACHE)
-	public String getOidcToken() {
-		try {
-			return restTemplate.getForObject(stsUrl + "?grant_type=client_credentials&scope=openid", StsResponseTo.class)
-					.getAccessToken();
-		} catch (HttpStatusCodeException e) {
-			throw new StsTechnicalException(String.format("Kall mot STS feilet med status=%s feilmelding=%s.", e.getStatusCode(), e
-					.getMessage()), e);
-		}
-	}
+    @Retryable(include = AbstractDoksikkerhetsnettTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT))
+    @Cacheable(STS_CACHE)
+    public String getOidcToken() {
+        try {
+            return restTemplate.getForObject(stsUrl + "?grant_type=client_credentials&scope=openid", StsResponseTo.class)
+                    .getAccessToken();
+        } catch (HttpStatusCodeException e) {
+            throw new StsTechnicalException(String.format("Kall mot STS feilet med status=%s feilmelding=%s.", e.getStatusCode(), e
+                    .getMessage()), e);
+        }
+    }
 }

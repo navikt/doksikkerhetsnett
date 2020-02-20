@@ -48,6 +48,7 @@ public class FinnOppgaveConsumer {
     private final String DEFAULT_URL_P1 = "&sorteringsrekkefolge=ASC&";
     private final String DEFAULT_URL_P2 = "&limit=";
     private final String STATUSKATEGORI_AAPEN = "statuskategori=AAPEN";
+
     private static final int LIMIT = 50;
 
     public FinnOppgaveConsumer(RestTemplateBuilder restTemplateBuilder,

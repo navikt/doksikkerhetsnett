@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 public class FinnMottatteJournalposterFunctionalException extends AbstractDoksikkerhetsnettFunctionalException {
-	
-	public FinnMottatteJournalposterFunctionalException(String message, Throwable cause) {
-		super(message, cause);
-	}
+
+    public FinnMottatteJournalposterFunctionalException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

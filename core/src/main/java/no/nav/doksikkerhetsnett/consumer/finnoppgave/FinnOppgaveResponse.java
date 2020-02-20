@@ -15,15 +15,15 @@ import java.util.List;
 @NoArgsConstructor
 public class FinnOppgaveResponse {
 
-	@NotNull(message = "Feilet ved henting av oppgaver")
+    @NotNull(message = "Feilet ved henting av oppgaver")
 
 
-	private int antallTreffTotalt;
-	
-	@ApiModelProperty(
-			dataType = "List",
-			value = "oppgaver",
-			required = true
-	)
-	private List<OppgaveJson> oppgaver;
+    private int antallTreffTotalt;
+
+    @ApiModelProperty(
+            dataType = "List",
+            value = "oppgaver",
+            required = true
+    )
+    private List<OppgaveJson> oppgaver;
 }

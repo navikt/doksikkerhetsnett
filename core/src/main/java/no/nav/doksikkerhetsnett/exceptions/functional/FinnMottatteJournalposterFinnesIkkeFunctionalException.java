@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 public class FinnMottatteJournalposterFinnesIkkeFunctionalException extends AbstractDoksikkerhetsnettFunctionalException {
 
-	public FinnMottatteJournalposterFinnesIkkeFunctionalException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public FinnMottatteJournalposterFinnesIkkeFunctionalException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
