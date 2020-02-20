@@ -22,16 +22,16 @@ public class FinnMottatteJournalposterService {
 	}
 
 	public FinnMottatteJournalposterResponse finnMottatteJournalPoster(String temaer) {
-		return finnMottatteJournalposterConsumer.finnMottateJournalposter(temaer);
+		return finnMottatteJournalposterConsumer.finnMottatteJournalposter(temaer);
 	}
 
 	public FinnMottatteJournalposterResponse finnMottatteJournalPoster(List<String> temaer) {
-		return finnMottatteJournalposterConsumer.finnMottateJournalposter(Utils.formatTemaList(temaer));
+		return finnMottatteJournalposterConsumer.finnMottatteJournalposter(Utils.formatTemaList(temaer));
 	}
 
 
 	public FinnMottatteJournalposterResponse finnMottatteJournalPoster() {
-		return finnMottatteJournalposterConsumer.finnMottateJournalposter("");
+		return finnMottatteJournalposterConsumer.finnMottatteJournalposter("");
 	}
 
 

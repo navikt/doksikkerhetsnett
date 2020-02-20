@@ -127,9 +127,9 @@ public class FinnOppgaveConsumerIT {
                         .withBodyFile("finnoppgave/stsResponse-happy.json")));
     }
 
-    private ArrayList<UbehandletJournalpost> getJournalpostList(int... ints) {
+    private ArrayList<UbehandletJournalpost> getJournalpostList(int... journalpostIds) {
         ArrayList<UbehandletJournalpost> ubehandledeJournalpostList = new ArrayList<>();
-        for (int journalpostId : ints) {
+        for (int journalpostId : journalpostIds) {
             ubehandledeJournalpostList.add(new UbehandletJournalpost().builder().journalpostId(journalpostId).build());
         }
         return ubehandledeJournalpostList;

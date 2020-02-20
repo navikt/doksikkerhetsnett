@@ -20,17 +20,18 @@ public class Utils {
 
 
     private static ArrayList<String> formatFinnOppgaveStringAsIdQueryString(List<Long> ubehandledeJournalposter, int limit) {
-        ArrayList<String> journalpostListAs = new ArrayList<>();
+        ArrayList<String> journalpostListAsQueryString = new ArrayList<>();
 
         for (List<Long> partition : Lists.partition(ubehandledeJournalposter, limit)) {
             String arbeidsString = "";
+
             for (Long journalpostId : partition) {
                 arbeidsString += "journalpostId=" + journalpostId + "&";
             }
-            journalpostListAs.add(arbeidsString);
+            journalpostListAsQueryString.add(arbeidsString);
         }
 
-        return journalpostListAs;
+        return journalpostListAsQueryString;
     }
 
     public static ArrayList<String> journalpostListToJournalpostIdListQueryString(List<UbehandletJournalpost> ubehandledeJournalposter, int limit) {
@@ -42,7 +43,6 @@ public class Utils {
                 .collect(Collectors.toList());
 
         return formatFinnOppgaveStringAsIdQueryString(retList, limit);
-
     }
 
     // Hjelpefunksjon for finere logging ut ifra hvor mange temaer som er i kallet
