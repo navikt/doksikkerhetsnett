@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OppgaveJson {
 
-	private String journalpostId;
+    private String journalpostId;
 }

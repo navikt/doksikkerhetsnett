@@ -20,18 +20,18 @@ import java.util.concurrent.TimeUnit;
 @EnableCaching
 public class LokalCacheConfig {
 
-	public static final String STS_CACHE = "stsCache";
+    public static final String STS_CACHE = "stsCache";
 
-	@Bean
-	@Primary
-	@Profile({"nais", "local"})
-	CacheManager cacheManager() {
-		SimpleCacheManager manager = new SimpleCacheManager();
-		manager.setCaches(Arrays.asList(
-				new CaffeineCache(STS_CACHE, Caffeine.newBuilder()
-						.expireAfterWrite(55, TimeUnit.MINUTES)
-						.build()))
-		);
-		return manager;
-	}
+    @Bean
+    @Primary
+    @Profile({"nais", "local"})
+    CacheManager cacheManager() {
+        SimpleCacheManager manager = new SimpleCacheManager();
+        manager.setCaches(Arrays.asList(
+                new CaffeineCache(STS_CACHE, Caffeine.newBuilder()
+                        .expireAfterWrite(55, TimeUnit.MINUTES)
+                        .build()))
+        );
+        return manager;
+    }
 }

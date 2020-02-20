@@ -28,64 +28,60 @@ import java.time.Duration;
 
 @Component
 public class FinnMottatteJournalposterConsumer {
-	private final RestTemplate restTemplate;
-	private final String finnMottatteJournalposterUrl;
+    private final RestTemplate restTemplate;
+    private final String finnMottatteJournalposterUrl;
 
-	public FinnMottatteJournalposterConsumer(RestTemplateBuilder restTemplateBuilder,
-											 DokSikkerhetsnettProperties dokSikkerhetsnettProperties) {
-		this.finnMottatteJournalposterUrl = dokSikkerhetsnettProperties.getFinnmottattejournalposterurl();
-		this.restTemplate = restTemplateBuilder
-				/* TODO: Hvor liberal skal timeouten være?
-				 *  Første kallet vil ta lang tid da det kan være 3 år gamle journalposter
-				 *  alle kall etter dette burde ta langt mindre tid.
-				 */
-				.setReadTimeout(Duration.ofSeconds(3600))
-				.setConnectTimeout(Duration.ofSeconds(5))
-				.basicAuthentication(dokSikkerhetsnettProperties.getServiceuser().getUsername(),
-						dokSikkerhetsnettProperties.getServiceuser().getPassword())
-				.build();
-	}
+    public FinnMottatteJournalposterConsumer(RestTemplateBuilder restTemplateBuilder,
+                                             DokSikkerhetsnettProperties dokSikkerhetsnettProperties) {
+        this.finnMottatteJournalposterUrl = dokSikkerhetsnettProperties.getFinnmottattejournalposterurl();
+        this.restTemplate = restTemplateBuilder
+                .setReadTimeout(Duration.ofSeconds(150))
+                .setConnectTimeout(Duration.ofSeconds(5))
+                .basicAuthentication(dokSikkerhetsnettProperties.getServiceuser().getUsername(),
+                        dokSikkerhetsnettProperties.getServiceuser().getPassword())
+                .build();
+    }
 
-	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnMottateJournalposter"}, percentiles = {0.5, 0.95}, histogram = true)
-	public FinnMottatteJournalposterResponse finnMottateJournalposter(String temaer) {
-		try {
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_JSON);
-			headers = createHeader(headers);
-			HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+    @Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnMottatteJournalposter"}, percentiles = {0.5, 0.95}, histogram = true)
+    public FinnMottatteJournalposterResponse finnMottatteJournalposter(String temaer) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers = createHeader(headers);
+            HttpEntity<?> requestEntity = new HttpEntity<>(headers);
 
-			URI uri = UriComponentsBuilder.fromHttpUrl(finnMottatteJournalposterUrl)
-					.path(temaer)
-					.build().toUri();
-			return restTemplate.exchange(uri, HttpMethod.GET, requestEntity, FinnMottatteJournalposterResponse.class)
-					.getBody();
+            URI uri = UriComponentsBuilder.fromHttpUrl(finnMottatteJournalposterUrl)
+                    .path(temaer)
+                    .build().toUri();
+            return restTemplate.exchange(uri, HttpMethod.GET, requestEntity, FinnMottatteJournalposterResponse.class)
+                    .getBody();
 
-		} catch (HttpClientErrorException e) {
-			if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
-				throw new FinnMottatteJournalposterFinnesIkkeFunctionalException(String.format("finnMottateJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
-						.getStatusCode(), e.getMessage(), finnMottatteJournalposterUrl), e);
-			} else if (HttpStatus.CONFLICT.equals(e.getStatusCode())) {
-				throw new FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException(String.format("finnMottateJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
-						.getStatusCode(), e.getMessage()), e);
-			} else {
-				throw new FinnMottatteJournalposterFinnesIkkeFunctionalException(String.format("finnMottateJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
-						.getStatusCode(), e.getMessage(), finnMottatteJournalposterUrl), e);
-			}
-		} catch (HttpServerErrorException e) {
-			throw new FinnMottatteJournalposterTechnicalException(String.format("finnMottateJournalposter feilet teknisk med statusKode=%s. Feilmelding=%s", e
-					.getStatusCode(), e.getMessage()), e);
-		}
-	}
+        } catch (HttpClientErrorException e) {
+            if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
+                throw new FinnMottatteJournalposterFinnesIkkeFunctionalException(String.format("finnMottatteJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
+                        .getStatusCode(), e.getMessage(), finnMottatteJournalposterUrl), e);
+            } else if (HttpStatus.CONFLICT.equals(e.getStatusCode())) {
+                throw new FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException(String.format("finnMottatteJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
+                        .getStatusCode(), e.getMessage()), e);
+            } else {
+                throw new FinnMottatteJournalposterFinnesIkkeFunctionalException(String.format("finnMottatteJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
+                        .getStatusCode(), e.getMessage(), finnMottatteJournalposterUrl), e);
+            }
+        } catch (HttpServerErrorException e) {
+            throw new FinnMottatteJournalposterTechnicalException(String.format("finnMottatteJournalposter feilet teknisk med statusKode=%s. Feilmelding=%s", e
+                    .getStatusCode(), e.getMessage()), e);
+        }
+    }
 
 
-	private HttpHeaders createHeader(HttpHeaders headers) {
-		if (MDC.get(MDC_NAV_CALL_ID) != null) {
-			headers.add(MDC_NAV_CALL_ID, MDC.get(MDC_NAV_CALL_ID));
-		}
+    private HttpHeaders createHeader(HttpHeaders headers) {
+        if (MDC.get(MDC_NAV_CALL_ID) != null) {
+            headers.add(MDC_NAV_CALL_ID, MDC.get(MDC_NAV_CALL_ID));
+        }
 
-		if (MDC.get(MDC_NAV_CONSUMER_ID) != null) {
-			headers.add(MDC_NAV_CONSUMER_ID, MDC.get(MDC_NAV_CONSUMER_ID));
-		}
-		return headers;
-	}
+        if (MDC.get(MDC_NAV_CONSUMER_ID) != null) {
+            headers.add(MDC_NAV_CONSUMER_ID, MDC.get(MDC_NAV_CONSUMER_ID));
+        }
+        return headers;
+    }
 }

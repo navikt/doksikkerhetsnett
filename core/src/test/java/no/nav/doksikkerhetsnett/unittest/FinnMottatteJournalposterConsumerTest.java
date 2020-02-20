@@ -9,50 +9,50 @@ import java.util.ArrayList;
 import java.util.List;
 
 class FinnMottatteJournalposterConsumerTest {
-	private static final String TEMA_LIST_AS_STRING = "UFO,BAR,PEN";
+    private static final String TEMA_LIST_AS_STRING = "UFO,BAR,PEN";
 
-	@Test
-	public void shouldFormatListOfTema() {
-		List<String> temaer = new ArrayList<>();
-		temaer.add("UFO");
-		temaer.add("BAR");
-		temaer.add("PEN");
+    @Test
+    public void shouldFormatListOfTema() {
+        List<String> temaer = new ArrayList<>();
+        temaer.add("UFO");
+        temaer.add("BAR");
+        temaer.add("PEN");
 
-		assertEquals(TEMA_LIST_AS_STRING, Utils.formatTemaList(temaer));
-	}
+        assertEquals(TEMA_LIST_AS_STRING, Utils.formatTemaList(temaer));
+    }
 
-	@Test
-	public void shouldFormatEmptyListOfTema() {
-		List<String> temaer = new ArrayList<>();
+    @Test
+    public void shouldFormatEmptyListOfTema() {
+        List<String> temaer = new ArrayList<>();
 
-		assertEquals("", Utils.formatTemaList(temaer));
-	}
+        assertEquals("", Utils.formatTemaList(temaer));
+    }
 
-	@Test
-	public void shouldFormatNull() {
-		List<String> temaer = null;
+    @Test
+    public void shouldFormatNull() {
+        List<String> temaer = null;
 
-		assertEquals("", Utils.formatTemaList(temaer));
-	}
+        assertEquals("", Utils.formatTemaList(temaer));
+    }
 
-	@Test
-	public void surr(){
-		ArrayList<String> surreliste = new ArrayList<>();
-		ArrayList<Long> longliste = new ArrayList<>();
-		for(long i = 10; i < 21; i++){
-			longliste.add(i);
-			if(i % 2 == 0)
-				surreliste.add(""+i);
-		}
+    @Test
+    public void surr() {
+        ArrayList<String> surreliste = new ArrayList<>();
+        ArrayList<Long> longliste = new ArrayList<>();
+        for (long i = 10; i < 21; i++) {
+            longliste.add(i);
+            if (i % 2 == 0)
+                surreliste.add("" + i);
+        }
 
-		System.out.println("Før: " + longliste.size());
-		longliste.removeIf(longe -> surreliste.contains(""+longe));
-		System.out.println("Etter: " + longliste.size());
+        System.out.println("Før: " + longliste.size());
+        longliste.removeIf(longe -> surreliste.contains("" + longe));
+        System.out.println("Etter: " + longliste.size());
 
-		
-	}
 
-	//@Test
+    }
+
+    //@Test
 	/*public void shouldFormatJournalpostListToGetRequestFormat() {
 		ArrayList<Long> ubehandledeJournalposter = new ArrayList<>();
 		long startId = 33333333333L;

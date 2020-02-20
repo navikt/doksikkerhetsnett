@@ -22,13 +22,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 class DoksikkerhetsnettScheduledTest {
-	private static final String URL_FINNMOTTATTEJOURNALPOSTER = "/rest/intern/journalpostapi/v1/finnMottatteJournalposter/";
-	private static final String QUERY_PARAM_AAPNEOPPGAVER = "&statuskategori=AAPEN&sorteringsrekkefolge=ASC";
-	private static final String QUERY_PARAM_AVSLUTTETOPPGAVER = "&statuskategori=AAVSLUTTET&sorteringsrekkefolge=ASC";
-	private static final String URL_OPPGAVE= "https://oppgave.nais.preprod.local/api/v1/oppgaver?";
-	private static final String OPPGAVE_ID_STRING_AAPEN =  "journalpostId=11111111";
-	private static final String OPPGAVE_ID_STRING_AVSLUTTET =  "journalpostId=222222222&journalpostId=333333333";
-	private static final String STS_STORE = "https://security-token-service.nais.preprod.local/rest/v1/sts/token?grant_type=client_credentials&scope=openid";
+    private static final String URL_FINNMOTTATTEJOURNALPOSTER = "/rest/intern/journalpostapi/v1/finnMottatteJournalposter/";
+    private static final String QUERY_PARAM_AAPNEOPPGAVER = "&statuskategori=AAPEN&sorteringsrekkefolge=ASC";
+    private static final String QUERY_PARAM_AVSLUTTETOPPGAVER = "&statuskategori=AAVSLUTTET&sorteringsrekkefolge=ASC";
+    private static final String URL_OPPGAVE = "https://oppgave.nais.preprod.local/api/v1/oppgaver?";
+    private static final String OPPGAVE_ID_STRING_AAPEN = "journalpostId=11111111";
+    private static final String OPPGAVE_ID_STRING_AVSLUTTET = "journalpostId=222222222&journalpostId=333333333";
+    private static final String STS_STORE = "https://security-token-service.nais.preprod.local/rest/v1/sts/token?grant_type=client_credentials&scope=openid";
 
 	/*@Autowired
 	private FinnOppgaveConsumer finnOppgaveConsumer;
