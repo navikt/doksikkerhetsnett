@@ -19,18 +19,19 @@ import static no.nav.doksikkerhetsnett.metrics.MetricLabels.TEMA;
 public class MetricsScheduler {
 
     private final MeterRegistry meterRegistry;
-    private Map<String, Integer> gaugeCache = new HashMap<>();
+    private final Map<String, Integer> totalGaugeCache = new HashMap<>();
+    private final Map<String, Integer> utenOppgaveGaugeCache = new HashMap<>();
 
     MetricsScheduler(MeterRegistry meterRegistry) {
         this.meterRegistry = meterRegistry;
     }
 
     public void incrementMetrics(List<UbehandletJournalpost> ubehandledeJournalposter, List<UbehandletJournalpost> ubehandledeJournalposterUtenOppgave, Class parentClass) {
-        counterBuilder(DOK_METRIC + ".antall.mottatte.journalposter", "Gauge for antall ubehandlede journalposter funnet", ubehandledeJournalposter, parentClass);
-        counterBuilder(DOK_METRIC + ".antall.uten.oppgave", "Gauge for antall ubehandlede journalposter funnet som ikke har en åpen oppgave", ubehandledeJournalposterUtenOppgave, parentClass);
+        counterBuilder(DOK_METRIC + ".antall.mottatte.journalposter", "Gauge for antall ubehandlede journalposter funnet", ubehandledeJournalposter, totalGaugeCache, parentClass);
+        counterBuilder(DOK_METRIC + ".antall.uten.oppgave", "Gauge for antall ubehandlede journalposter funnet som ikke har en åpen oppgave", ubehandledeJournalposterUtenOppgave, utenOppgaveGaugeCache, parentClass);
     }
 
-    private void counterBuilder(String name, String description, List<UbehandletJournalpost> journalposts, Class parentClass) {
+    private void counterBuilder(String name, String description, List<UbehandletJournalpost> journalposts,Map<String, Integer> gaugeCache , Class parentClass) {
         gaugeCache = extractMetrics(journalposts);
 
         for (String key : gaugeCache.keySet()) {
