@@ -5,6 +5,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.UbehandletJournalpost;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ public class MetricsScheduler {
 
     private final MeterRegistry meterRegistry;
 
+    private final List<Gauge> gauges = new ArrayList<>();
     private final Map<String, Integer> totalGaugeCache = new HashMap<>();
     private final Map<String, Integer> utenOppgaveGaugeCache = new HashMap<>();
     private final String TOTAL_NAME = DOK_METRIC + ".antall.mottatte.journalposter";
@@ -38,24 +40,24 @@ public class MetricsScheduler {
         for (String key : totalGaugeCache.keySet()) {
             String[] tags = key.split(";");
 
-            Gauge.builder(TOTAL_NAME, totalGaugeCache, gc -> gc.get(key))
+            gauges.add(Gauge.builder(TOTAL_NAME, totalGaugeCache, gc -> gc.get(key))
                     .description("Gauge for antall ubehandlede journalposter funnet")
                     .tags(CLASS, parentClass.getCanonicalName())
                     .tag(TEMA, tags[0])
                     .tags(MOTTAKSKANAL, tags[1])
                     .tags(JOURNALFORENDE_ENHET, tags[2])
-                    .register(meterRegistry);
+                    .register(meterRegistry));
         }
         for (String key : utenOppgaveGaugeCache.keySet()) {
             String[] tags = key.split(";");
 
-            Gauge.builder(UTEN_OPPGAVE_NAME, utenOppgaveGaugeCache, gc -> gc.get(key))
+            gauges.add(Gauge.builder(UTEN_OPPGAVE_NAME, utenOppgaveGaugeCache, gc -> gc.get(key))
                     .description("Gauge for antall ubehandlede journalposter funnet som ikke har en åpen oppgave")
                     .tags(CLASS, parentClass.getCanonicalName())
                     .tag(TEMA, tags[0])
                     .tags(MOTTAKSKANAL, tags[1])
                     .tags(JOURNALFORENDE_ENHET, tags[2])
-                    .register(meterRegistry);
+                    .register(meterRegistry));
         }
     }
 
@@ -74,13 +76,12 @@ public class MetricsScheduler {
     }
 
     private void updateCaches(Map<String, Integer> newMetricsTotal, Map<String, Integer> newMetricsUtenOppgave) {
-        // Resetter cachen, men vil beholde alle nøklene
-        for (String key : totalGaugeCache.keySet()) {
-            totalGaugeCache.put(key, 0);
+        for (Gauge gauge: gauges) {
+            meterRegistry.remove(gauge);
         }
-        for (String key : utenOppgaveGaugeCache.keySet()) {
-            utenOppgaveGaugeCache.put(key, 0);
-        }
+        gauges.clear();
+        totalGaugeCache.clear();
+        utenOppgaveGaugeCache.clear();
         // Setter de nye verdiene
         for (String newKey : newMetricsTotal.keySet()) {
             totalGaugeCache.put(newKey, newMetricsTotal.get(newKey));
