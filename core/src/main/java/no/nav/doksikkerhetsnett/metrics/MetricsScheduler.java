@@ -13,13 +13,13 @@ import static no.nav.doksikkerhetsnett.metrics.MetricLabels.CLASS;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.JOURNALFORENDE_ENHET;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.MOTTAKSKANAL;
-import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.TEMA;
 
 @Component
 public class MetricsScheduler {
 
     private final MeterRegistry meterRegistry;
+    private Map<String, Integer> gaugeCache = new HashMap<>();
 
     MetricsScheduler(MeterRegistry meterRegistry) {
         this.meterRegistry = meterRegistry;
@@ -31,12 +31,12 @@ public class MetricsScheduler {
     }
 
     private void counterBuilder(String name, String description, List<UbehandletJournalpost> journalposts, Class parentClass) {
-        Map<String, Integer> metrics = extractMetrics(journalposts);
+        gaugeCache = extractMetrics(journalposts);
 
-        for (String key : metrics.keySet()) {
+        for (String key : gaugeCache.keySet()) {
             String[] tags = key.split(";");
 
-            Gauge.builder(name, metrics, m -> m.get(key))
+            Gauge.builder(name, gaugeCache, gc -> gc.get(key))
                     .description(description)
                     .tags(CLASS, parentClass.getCanonicalName())
                     .tag(TEMA, tags[0])
