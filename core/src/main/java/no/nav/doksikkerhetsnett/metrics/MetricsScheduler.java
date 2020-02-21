@@ -19,6 +19,7 @@ import static no.nav.doksikkerhetsnett.metrics.MetricLabels.TEMA;
 public class MetricsScheduler {
 
     private final MeterRegistry meterRegistry;
+    
     private final Map<String, Integer> totalGaugeCache = new HashMap<>();
     private final Map<String, Integer> utenOppgaveGaugeCache = new HashMap<>();
 
