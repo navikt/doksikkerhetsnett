@@ -31,7 +31,7 @@ public class MetricsScheduler {
         counterBuilder(DOK_METRIC + ".antall.uten.oppgave", "Gauge for antall ubehandlede journalposter funnet som ikke har en åpen oppgave", ubehandledeJournalposterUtenOppgave, utenOppgaveGaugeCache, parentClass);
     }
 
-    private void counterBuilder(String name, String description, List<UbehandletJournalpost> journalposts,Map<String, Integer> gaugeCache , Class parentClass) {
+    private void counterBuilder(String name, String description, List<UbehandletJournalpost> journalposts, Map<String, Integer> gaugeCache, Class parentClass) {
         gaugeCache = extractMetrics(journalposts);
 
         for (String key : gaugeCache.keySet()) {
