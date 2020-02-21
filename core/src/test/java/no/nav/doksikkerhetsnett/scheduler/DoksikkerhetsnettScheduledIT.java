@@ -16,7 +16,6 @@ import no.nav.doksikkerhetsnett.metrics.MetricsScheduler;
 import no.nav.doksikkerhetsnett.service.FinnMottatteJournalposterService;
 import no.nav.doksikkerhetsnett.service.FinnOppgaveService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,19 +28,21 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
+import java.util.Map;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {TestConfig.class},
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWireMock(port = 0)
 @ActiveProfiles("itest")
-@Disabled
 class DoksikkerhetsnettScheduledIT {
     private static final String URL_FINNMOTTATTEJOURNALPOSTER = "/rest/intern/journalpostapi/v1/finnMottatteJournalposter/";
     private static final String QUERY_PARAM_AAPNEOPPGAVER = "&statuskategori=AAPEN&sorteringsrekkefolge=ASC&&limit=50";
     private static final String URL_STSAUTH = "/rest/v1/sts/token\\?grant_type=client_credentials&scope=openid";
     private static final String URL_OPPGAVE = "/api/v1/oppgaver\\?";
     private static final String JOURNALPOST_SEARCH = "journalpostId=111111111&journalpostId=222222222&journalpostId=333333333&journalpostId=444444444&journalpostId=555555555&journalpostId=666666666";
+    private static final String METRIC_TAGS = "UFO;ALTINN;0000";
+
     private FinnMottatteJournalposterService finnMottatteJournalposterService;
     private FinnOppgaveService finnOppgaveService;
 
@@ -80,7 +81,17 @@ class DoksikkerhetsnettScheduledIT {
     public void Test() {
         DoksikkerhetsnettScheduled doksikkerhetsnettScheduled = new DoksikkerhetsnettScheduled(
                 finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService, metricsScheduler);
-        List journalposterUtenOppgaver = doksikkerhetsnettScheduled.finnjournalposterUtenOppgaver();
+        List journalposterUtenOppgaver = doksikkerhetsnettScheduled.finnJournalposterUtenOppgaver();
         assertEquals(journalposterUtenOppgaver.size(), 4);
+
+        Map<String, Integer> totalMetricsCache = metricsScheduler.getCaches().get(0);
+        Map<String, Integer> utenOppgaveMetricsCache = metricsScheduler.getCaches().get(1);
+        assertCorrectMetrics(totalMetricsCache, 6, METRIC_TAGS);
+        assertCorrectMetrics(utenOppgaveMetricsCache, 4, METRIC_TAGS);
+    }
+
+    private void assertCorrectMetrics(Map<String, Integer> metricsCache, int expectedValue, String expectedString) {
+        assertEquals(expectedValue, (int) metricsCache.entrySet().iterator().next().getValue());
+        assertEquals(expectedString, metricsCache.entrySet().iterator().next().getKey());
     }
 }

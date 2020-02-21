@@ -36,18 +36,17 @@ public class DoksikkerhetsnettScheduled {
         this.metricsScheduler = metricsScheduler;
     }
 
-    //@Scheduled(initialDelay = 2500, fixedDelay = 24 * HOUR)
-    @Scheduled(initialDelay = 2500, fixedDelay = 2 * MINUTE)
+    @Scheduled(initialDelay = 2500, fixedDelay = 24 * HOUR)
     public void triggerOppdatering() {
         lagOppgaverForGlemteJournalposter();
     }
 
     public void lagOppgaverForGlemteJournalposter() {
-        List<UbehandletJournalpost> ubehandletJournalpostsUtenOppgave = finnjournalposterUtenOppgaver();
+        List<UbehandletJournalpost> ubehandletJournalpostsUtenOppgave = finnJournalposterUtenOppgaver();
         //TODO: Del 2; sikkerhetsnett i skriv-modus.
     }
 
-    public List<UbehandletJournalpost> finnjournalposterUtenOppgaver() {
+    public List<UbehandletJournalpost> finnJournalposterUtenOppgaver() {
         List<UbehandletJournalpost> ubehandledeJournalposter;
         List<UbehandletJournalpost> ubehandledeJournalposterUtenOppgave;
         String temaer = dokSikkerhetsnettProperties.getTemaer();

@@ -6,15 +6,17 @@ import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.UbehandletJou
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.CLASS;
-import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.JOURNALFORENDE_ENHET;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.MOTTAKSKANAL;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.TEMA;
+import static no.nav.doksikkerhetsnett.metrics.MetricLabels.TOTAL_NAME;
+import static no.nav.doksikkerhetsnett.metrics.MetricLabels.UTEN_OPPGAVE_NAME;
 
 @Component
 public class MetricsScheduler {
@@ -24,36 +26,31 @@ public class MetricsScheduler {
     private final List<Gauge> gauges = new ArrayList<>();
     private final Map<String, Integer> totalGaugeCache = new HashMap<>();
     private final Map<String, Integer> utenOppgaveGaugeCache = new HashMap<>();
-    private final String TOTAL_NAME = DOK_METRIC + ".antall.mottatte.journalposter";
-    private final String UTEN_OPPGAVE_NAME = DOK_METRIC + ".antall.uten.oppgave";
 
     MetricsScheduler(MeterRegistry meterRegistry) {
         this.meterRegistry = meterRegistry;
     }
 
     public void incrementMetrics(List<UbehandletJournalpost> ubehandledeJournalposter, List<UbehandletJournalpost> ubehandledeJournalposterUtenOppgave, Class parentClass) {
-
         Map<String, Integer> newMetricsTotal = extractMetrics(ubehandledeJournalposter);
         Map<String, Integer> newMetricsUtenOppgave = extractMetrics(ubehandledeJournalposterUtenOppgave);
         updateCaches(newMetricsTotal, newMetricsUtenOppgave);
 
         for (String key : totalGaugeCache.keySet()) {
-            String[] tags = key.split(";");
-
+            String[] tags = key.split(";"); // [tema,mottakskanal,journalforendeEnhet]
             gauges.add(Gauge.builder(TOTAL_NAME, totalGaugeCache, gc -> gc.get(key))
                     .description("Gauge for antall ubehandlede journalposter funnet")
-                    .tags(CLASS, parentClass.getCanonicalName())
+                    .tags(CLASS, new Exception().getStackTrace()[1].getClassName())
                     .tag(TEMA, tags[0])
                     .tags(MOTTAKSKANAL, tags[1])
                     .tags(JOURNALFORENDE_ENHET, tags[2])
                     .register(meterRegistry));
         }
         for (String key : utenOppgaveGaugeCache.keySet()) {
-            String[] tags = key.split(";");
-
+            String[] tags = key.split(";"); // [tema,mottakskanal,journalforendeEnhet]
             gauges.add(Gauge.builder(UTEN_OPPGAVE_NAME, utenOppgaveGaugeCache, gc -> gc.get(key))
                     .description("Gauge for antall ubehandlede journalposter funnet som ikke har en åpen oppgave")
-                    .tags(CLASS, parentClass.getCanonicalName())
+                    .tags(CLASS, new Exception().getStackTrace()[1].getClassName())
                     .tag(TEMA, tags[0])
                     .tags(MOTTAKSKANAL, tags[1])
                     .tags(JOURNALFORENDE_ENHET, tags[2])
@@ -76,18 +73,24 @@ public class MetricsScheduler {
     }
 
     private void updateCaches(Map<String, Integer> newMetricsTotal, Map<String, Integer> newMetricsUtenOppgave) {
-        for (Gauge gauge: gauges) {
+        // Vil ikke lage metrikker på gammel data, så må fjerne de eksisterende cachene og meterne
+        for (Gauge gauge : gauges) {
             meterRegistry.remove(gauge);
         }
         gauges.clear();
         totalGaugeCache.clear();
         utenOppgaveGaugeCache.clear();
-        // Setter de nye verdiene
+
+        // Populerer cachene med de nye verdiene
         for (String newKey : newMetricsTotal.keySet()) {
             totalGaugeCache.put(newKey, newMetricsTotal.get(newKey));
         }
         for (String newKey : newMetricsUtenOppgave.keySet()) {
-            utenOppgaveGaugeCache.put(newKey, newMetricsTotal.get(newKey));
+            utenOppgaveGaugeCache.put(newKey, newMetricsUtenOppgave.get(newKey));
         }
+    }
+
+    public List<Map<String, Integer>> getCaches() {
+        return Arrays.asList(totalGaugeCache, utenOppgaveGaugeCache);
     }
 }
