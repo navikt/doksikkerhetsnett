@@ -29,7 +29,7 @@ public class DoksikkerhetsnettScheduled {
     public DoksikkerhetsnettScheduled(FinnMottatteJournalposterService finnMottatteJournalposterService,
                                       DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
                                       FinnOppgaveService finnOppgaveService,
-									  MetricsScheduler metricsScheduler) {
+                                      MetricsScheduler metricsScheduler) {
         this.finnMottatteJournalposterService = finnMottatteJournalposterService;
         this.dokSikkerhetsnettProperties = dokSikkerhetsnettProperties;
         this.finnOppgaveService = finnOppgaveService;
