@@ -16,26 +16,26 @@ import java.util.Random;
 @Validated
 public class DokSikkerhetsnettProperties {
 
-	@NotNull
-	private String finnmottattejournalposterurl;
+    @NotNull
+    private String finnmottattejournalposterurl;
 
-	@NotNull
-	private String finnoppgaverurl;
+    @NotNull
+    private String finnoppgaverurl;
 
-	@NotNull
-	private String securityservicetokenurl;
+    @NotNull
+    private String securityservicetokenurl;
 
-	@NotNull
-	private ServiceUserProperties serviceuser;
+    @NotNull
+    private ServiceUserProperties serviceuser;
 
-	// Denne kan være null da et søk på et tomt tema betyr et generelt søk på alle temaer
-	private String temaer;
+    // Denne kan være null da et søk på et tomt tema betyr et generelt søk på alle temaer
+    private String temaer;
 
-	public String getTemaer() {
-		String[] temaListe = {"AAP", "GRU", "HEL", "MED", "SUP", "TIL", "UFM", "BIL", "FUL", "GRA", "KON", "STO", "TSO", "ERS", "UKJ", "GEN", "TRY", "UFO", "RVE", "SAP", "BAR", "HJE", "PER", "TSR", "VEN", "AGR", "ENF", "FOR", "FOS", "IAR", "IND", "KTR", "OMS", "MOB", "REK", "DAG", "OPA", "SYK", "FEI", "OPP", "SER", "TRK", "PEN", "REH", "SAK", "SYM", "YRK"};
-		return temaListe[new Random().nextInt(temaListe.length - 1)];
-		//return "SYK";
-	}
+    public String getTemaer() {
+        String[] temaListe = {"AAP", "GRU", "HEL", "MED", "SUP", "TIL", "UFM", "BIL", "FUL", "GRA", "KON", "STO", "TSO", "ERS", "UKJ", "GEN", "TRY", "UFO", "RVE", "SAP", "BAR", "HJE", "PER", "TSR", "VEN", "AGR", "ENF", "FOR", "FOS", "IAR", "IND", "KTR", "OMS", "MOB", "REK", "DAG", "OPA", "SYK", "FEI", "OPP", "SER", "TRK", "PEN", "REH", "SAK", "SYM", "YRK"};
+        return temaListe[new Random().nextInt(temaListe.length - 1)];
+        //return "SYK";
+    }
 }
 
 
