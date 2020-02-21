@@ -74,25 +74,25 @@ public class FinnMottatteJournalposterIT {
 
     @Test
     public void finnMottatteJournalposterHappyPathTemaSingle() {
-        assertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(TEMA_SINGLE, 2,
+        assertFinnMottatteJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(TEMA_SINGLE, 2,
                 "mottatteJournalposterMedTemaSingle-happy.json", TEMA_SINGLE);
     }
 
     @Test
     public void finnMottatteJournalposterHappyPathTemaMulti() {
-        assertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(TEMA_MULTI, 2,
+        assertFinnMottatteJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(TEMA_MULTI, 2,
                 "mottatteJournalposterMedTemaMulti-happy.json", "UFO", "BAR");
     }
 
     @Test
     public void finnMottatteJournalposterHappyPathTemaNone() {
-        assertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(TEMA_NONE, 2,
+        assertFinnMottatteJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(TEMA_NONE, 2,
                 "mottatteJournalposterMedTemaNone-happy.json", "UFO", "PEN");
     }
 
     @Test
     public void finnMottatteJournalposterInvalidTema() {
-        assertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(TEMA_INVALID, 0,
+        assertFinnMottatteJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(TEMA_INVALID, 0,
                 "mottatteJournalposterMedInvalidTema.json", "");
     }
 
@@ -102,11 +102,11 @@ public class FinnMottatteJournalposterIT {
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
                         .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
                         .withBodyFile("finnmottattejournalposter/mottatteJournalposterMedTemaMulti-happy.json")));
-        assertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(null, 2,
+        assertFinnMottatteJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(null, 2,
                 "mottatteJournalposterMedTemaMulti-happy.json", "UFO", "BAR");
     }
 
-    private void assertFinnMottateJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(String temaer, int expectedOutcome, String filename, String... resultTemaer) {
+    private void assertFinnMottatteJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(String temaer, int expectedOutcome, String filename, String... resultTemaer) {
         stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER + temaer))
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
                         .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
