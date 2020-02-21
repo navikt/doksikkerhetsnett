@@ -8,6 +8,7 @@ import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 
 import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.UbehandletJournalpost;
+import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFunctionalException;
 import no.nav.doksikkerhetsnett.jaxws.MDCGenerate;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.constants.MDCConstants;
@@ -46,7 +47,8 @@ public class FinnOppgaveConsumer {
     private final StsRestConsumer stsRestConsumer;
     private final String DEFAULT_URL_P1 = "&sorteringsrekkefolge=ASC&";
     private final String DEFAULT_URL_P2 = "&limit=";
-    private final String STATUSKATEGORI_AAPEN = "&statuskategori=AAPEN";
+    private final String STATUSKATEGORI_AAPEN = "statuskategori=AAPEN";
+
     private static final int LIMIT = 50;
 
     public FinnOppgaveConsumer(RestTemplateBuilder restTemplateBuilder,
@@ -67,7 +69,7 @@ public class FinnOppgaveConsumer {
         try {
             HttpHeaders headers = createHeaders();
             HttpEntity<?> requestEntity = new HttpEntity<>(headers);
-            ArrayList<String> idStrings = Utils.journalpostListToJournalpostIdList(ubehandledeJournalposter, LIMIT);
+            ArrayList<String> idStrings = Utils.journalpostListToJournalpostIdListQueryString(ubehandledeJournalposter, LIMIT);
             ArrayList<FinnOppgaveResponse> oppgaveResponses = new ArrayList<>();
 
             for (String journalpostIdsAsString : idStrings) {
@@ -100,7 +102,7 @@ public class FinnOppgaveConsumer {
                 throw new FinOppgaveTillaterIkkeTilknyttingFunctionalException(String.format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
                         .getStatusCode(), e.getMessage()), e);
             } else {
-                throw new FinnOppgaveFinnesIkkeFunctionalException(String.format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
+                throw new FinnOppgaveFunctionalException(String.format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
                         .getStatusCode(), e.getMessage(), finnOppgaverUrl), e);
             }
         } catch (HttpServerErrorException e) {

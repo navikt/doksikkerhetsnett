@@ -1,5 +1,6 @@
 package no.nav.doksikkerhetsnett.utils;
 
+import com.google.common.collect.Lists;
 import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.UbehandletJournalpost;
 
 import java.util.ArrayList;
@@ -17,35 +18,36 @@ public class Utils {
                 .collect(Collectors.joining(","));
     }
 
-    private static ArrayList<String> formatFinnOppgaveString(List<Long> ubehandledeJournalposter, int limit) {
-        ArrayList<String> retList = new ArrayList<>();
-        String arbeidsString = "";
-        int ii = 0;
-        for (int i = 0; i < ubehandledeJournalposter.size(); i++) {
-            arbeidsString += "journalpostId=" + ubehandledeJournalposter.get(i);
-            if (ii == limit - 1 || i == ubehandledeJournalposter.size() - 1) {
-                ii = 0;
-                retList.add(arbeidsString);
-                arbeidsString = "";
-            } else {
-                arbeidsString += "&";
-                ii++;
+
+    private static ArrayList<String> formatFinnOppgaveStringAsIdQueryString(List<Long> ubehandledeJournalposter, int limit) {
+        ArrayList<String> journalpostListAsQueryString = new ArrayList<>();
+
+        for (List<Long> partition : Lists.partition(ubehandledeJournalposter, limit)) {
+            String arbeidsString = "";
+
+            for (Long journalpostId : partition) {
+                arbeidsString += "journalpostId=" + journalpostId + "&";
             }
+            journalpostListAsQueryString.add(arbeidsString);
         }
-        return retList;
+
+        return journalpostListAsQueryString;
     }
 
-    public static ArrayList<String> journalpostListToJournalpostIdList(List<UbehandletJournalpost> ubehandledeJournalposter, int limit) {
+    public static ArrayList<String> journalpostListToJournalpostIdListQueryString(List<UbehandletJournalpost> ubehandledeJournalposter, int limit) {
+        if (ubehandledeJournalposter == null) {
+            return new ArrayList<>();
+        }
         List<Long> retList = ubehandledeJournalposter.stream()
                 .map(UbehandletJournalpost::getJournalpostId)
                 .collect(Collectors.toList());
 
-        return formatFinnOppgaveString(retList, limit);
+        return formatFinnOppgaveStringAsIdQueryString(retList, limit);
     }
 
     // Hjelpefunksjon for finere logging ut ifra hvor mange temaer som er i kallet
     public static String logWithTema(String temaer) {
-        if (temaer.isEmpty()) {
+        if (temaer == null || temaer.isEmpty()) {
             return "for alle temaer";
         }
         if (temaer.contains(",")) {

@@ -25,7 +25,6 @@ import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 @Slf4j
 @Component
 public class DoksikkerhetsnettScheduled {
-
     private final FinnMottatteJournalposterService finnMottatteJournalposterService;
     private final FinnOppgaveService finnOppgaveService;
     private final DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
@@ -36,11 +35,11 @@ public class DoksikkerhetsnettScheduled {
     public DoksikkerhetsnettScheduled(FinnMottatteJournalposterService finnMottatteJournalposterService,
                                       DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
                                       FinnOppgaveService finnOppgaveService,
-                                      MeterRegistry meterRegistry) {
+									  MeterRegistry meterRegistry) {
         this.finnMottatteJournalposterService = finnMottatteJournalposterService;
         this.dokSikkerhetsnettProperties = dokSikkerhetsnettProperties;
         this.finnOppgaveService = finnOppgaveService;
-        this.meterRegistry = meterRegistry;
+		this.meterRegistry = meterRegistry;
     }
 
     @Scheduled(initialDelay = 1000, fixedDelay = 24 * HOUR)
@@ -49,37 +48,44 @@ public class DoksikkerhetsnettScheduled {
     }
 
     public void lagOppgaverForGlemteJournalposter() {
+        List<UbehandletJournalpost> ubehandletJournalpostsUtenOppgave = finnjournalposterUtenOppgaver();
+        //TODO: Del 2; sikkerhetsnett i skriv-modus.
+    }
+
+    public ArrayList<UbehandletJournalpost> finnjournalposterUtenOppgaver() {
         FinnMottatteJournalposterResponse finnMottatteJournalposterResponse;
-        ArrayList<UbehandletJournalpost> ubehandletJournalposts;
+        ArrayList<UbehandletJournalpost> ubehandledeJournalposterUtenOppgave;
 
         log.info("doksikkerhetsnett henter alle ubehandlede journalposter eldre enn 1 uke {}", Utils.logWithTema(dokSikkerhetsnettProperties
                 .getTemaer()));
+
         try {
             finnMottatteJournalposterResponse = finnMottatteJournalposterService.finnMottatteJournalPoster(dokSikkerhetsnettProperties
                     .getTemaer());
         } catch (Exception e) {
             log.error("doksikkerhetsnett feilet under hentingen av alle journalposter {}: " + e.getMessage(), Utils.logWithTema(dokSikkerhetsnettProperties.getTemaer()), e);
-            return;
+            return null;
         }
 
         try {
-            ubehandletJournalposts = finnEksisterendeOppgaverFraUbehandledeJournalpostList(finnMottatteJournalposterResponse
+            ubehandledeJournalposterUtenOppgave = finnEksisterendeOppgaverFraUbehandledeJournalpostList(finnMottatteJournalposterResponse
                     .getJournalposter());
             log.info("doksikkerhetsnett fant {} journalposter uten oppgave {}",
-                    ubehandletJournalposts.size(), Utils.logWithTema(dokSikkerhetsnettProperties.getTemaer()));
-            if (ubehandletJournalposts.size() > 0) {
-                log.info("journalpostene hadde ID: {}", ubehandletJournalposts);
+                    ubehandledeJournalposterUtenOppgave.size(), Utils.logWithTema(dokSikkerhetsnettProperties.getTemaer()));
+            if (ubehandledeJournalposterUtenOppgave.size() > 0) {
+                log.info("journalpostene hadde ID'ene: {}", ubehandledeJournalposterUtenOppgave);
             }
         } catch (Exception e) {
             log.error("doksikkerhetsnett feilet under hentingen av alle oppgaver");
-            return;
+            return null;
         }
 
         int antallMottatteJournalposter = finnMottatteJournalposterResponse.getJournalposter().size();
-        int antallJournalposterUtenOppgave = ubehandletJournalposts.size();
+        int antallJournalposterUtenOppgave = ubehandledeJournalposterUtenOppgave.size();
         int antallJournalposterMedOppgave = antallMottatteJournalposter - antallJournalposterUtenOppgave;
 
         incrementMetrics(antallMottatteJournalposter, antallJournalposterUtenOppgave, antallJournalposterMedOppgave);
+        return ubehandledeJournalposterUtenOppgave;
     }
 
     private ArrayList<UbehandletJournalpost> finnEksisterendeOppgaverFraUbehandledeJournalpostList(List<UbehandletJournalpost> ubehandledeJournalpostList) {

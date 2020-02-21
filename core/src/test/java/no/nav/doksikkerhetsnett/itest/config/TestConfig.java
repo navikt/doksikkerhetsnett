@@ -11,6 +11,6 @@ import org.springframework.context.annotation.Import;
 @EnableAutoConfiguration
 @EnableConfigurationProperties(DokSikkerhetsnettProperties.class)
 @Import(CoreConfig.class)
-public class FinnMottatteJournalposterTestConfig {
+public class TestConfig {
 
 }
