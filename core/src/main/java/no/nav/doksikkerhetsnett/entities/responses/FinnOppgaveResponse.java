@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import no.nav.doksikkerhetsnett.entities.OppgaveJson;
+import no.nav.doksikkerhetsnett.entities.Oppgave;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -17,8 +17,6 @@ import java.util.List;
 public class FinnOppgaveResponse {
 
     @NotNull(message = "Feilet ved henting av oppgaver")
-
-
     private int antallTreffTotalt;
 
     @ApiModelProperty(
@@ -26,5 +24,5 @@ public class FinnOppgaveResponse {
             value = "oppgaver",
             required = true
     )
-    private List<OppgaveJson> oppgaver;
+    private List<Oppgave> oppgaver;
 }

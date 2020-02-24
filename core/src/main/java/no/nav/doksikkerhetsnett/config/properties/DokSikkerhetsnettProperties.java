@@ -23,6 +23,9 @@ public class DokSikkerhetsnettProperties {
     private String finnoppgaverurl;
 
     @NotNull
+    private String opprettoppgaveUrl;
+
+    @NotNull
     private String securityservicetokenurl;
 
     @NotNull

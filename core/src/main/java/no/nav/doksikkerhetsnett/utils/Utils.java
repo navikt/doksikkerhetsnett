@@ -1,7 +1,7 @@
 package no.nav.doksikkerhetsnett.utils;
 
 import com.google.common.collect.Lists;
-import no.nav.doksikkerhetsnett.entities.UbehandletJournalpost;
+import no.nav.doksikkerhetsnett.entities.Journalpost;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,12 +34,12 @@ public class Utils {
         return journalpostListAsQueryString;
     }
 
-    public static ArrayList<String> journalpostListToJournalpostIdListQueryString(List<UbehandletJournalpost> ubehandledeJournalposter, int limit) {
+    public static ArrayList<String> journalpostListToJournalpostIdListQueryString(List<Journalpost> ubehandledeJournalposter, int limit) {
         if (ubehandledeJournalposter == null) {
             return new ArrayList<>();
         }
         List<Long> retList = ubehandledeJournalposter.stream()
-                .map(UbehandletJournalpost::getJournalpostId)
+                .map(Journalpost::getJournalpostId)
                 .collect(Collectors.toList());
 
         return formatFinnOppgaveStringAsIdQueryString(retList, limit);

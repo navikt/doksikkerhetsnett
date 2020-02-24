@@ -2,7 +2,7 @@ package no.nav.doksikkerhetsnett.unittest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import no.nav.doksikkerhetsnett.entities.UbehandletJournalpost;
+import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.utils.Utils;
 import org.junit.jupiter.api.Test;
 
@@ -24,10 +24,10 @@ class UtilsTest {
 
     @Test
     public void shouldFormatfinnOppgaveString() {
-        ArrayList<UbehandletJournalpost> ubehandledeJournalposter = new ArrayList<>();
+        ArrayList<Journalpost> ubehandledeJournalposter = new ArrayList<>();
         long startId = 33333333333L;
         for (int i = 0; i < 5; i++) {
-            ubehandledeJournalposter.add(new UbehandletJournalpost().builder().journalpostId(startId++).build());
+            ubehandledeJournalposter.add(new Journalpost().builder().journalpostId(startId++).build());
         }
         ArrayList<String> expectedAns = new ArrayList<>();
         expectedAns.add("journalpostId=33333333333&journalpostId=33333333334&");

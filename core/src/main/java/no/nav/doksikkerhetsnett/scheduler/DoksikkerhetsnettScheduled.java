@@ -2,18 +2,20 @@ package no.nav.doksikkerhetsnett.scheduler;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
-import no.nav.doksikkerhetsnett.entities.UbehandletJournalpost;
+import no.nav.doksikkerhetsnett.entities.Journalpost;
+import no.nav.doksikkerhetsnett.entities.Bruker;
 import no.nav.doksikkerhetsnett.entities.responses.FinnOppgaveResponse;
-import no.nav.doksikkerhetsnett.entities.OppgaveJson;
+import no.nav.doksikkerhetsnett.entities.Oppgave;
 import no.nav.doksikkerhetsnett.metrics.MetricsScheduler;
 import no.nav.doksikkerhetsnett.services.FinnMottatteJournalposterService;
 import no.nav.doksikkerhetsnett.services.FinnOppgaveService;
-import no.nav.doksikkerhetsnett.services.LagOppgaveService;
+import no.nav.doksikkerhetsnett.services.OpprettOppgaveService;
 import no.nav.doksikkerhetsnett.utils.Utils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,7 +24,7 @@ import java.util.stream.Collectors;
 public class DoksikkerhetsnettScheduled {
     private final FinnMottatteJournalposterService finnMottatteJournalposterService;
     private final FinnOppgaveService finnOppgaveService;
-    private final LagOppgaveService lagOppgaveService;
+    private final OpprettOppgaveService opprettOppgaveService;
     private final DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
     private final MetricsScheduler metricsScheduler;
     private final int MINUTE = 60_000;
@@ -31,12 +33,12 @@ public class DoksikkerhetsnettScheduled {
     public DoksikkerhetsnettScheduled(FinnMottatteJournalposterService finnMottatteJournalposterService,
                                       DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
                                       FinnOppgaveService finnOppgaveService,
-                                      LagOppgaveService lagOppgaveService,
+                                      OpprettOppgaveService opprettOppgaveService,
                                       MetricsScheduler metricsScheduler) {
         this.finnMottatteJournalposterService = finnMottatteJournalposterService;
         this.dokSikkerhetsnettProperties = dokSikkerhetsnettProperties;
         this.finnOppgaveService = finnOppgaveService;
-        this.lagOppgaveService = lagOppgaveService;
+        this.opprettOppgaveService = opprettOppgaveService;
         this.metricsScheduler = metricsScheduler;
     }
 
@@ -46,13 +48,27 @@ public class DoksikkerhetsnettScheduled {
     }
 
     public void lagOppgaverForGlemteJournalposter() {
-        List<UbehandletJournalpost> ubehandletJournalpostsUtenOppgave = finnJournalposterUtenOppgaver();
-        lagOppgaveService.lagOppgave(ubehandletJournalpostsUtenOppgave);
+        //List<Journalpost> ubehandletJournalpostsUtenOppgave = finnJournalposterUtenOppgaver();
+        //opprettOppgaveService.lagOppgave(ubehandletJournalpostsUtenOppgave);
+        Journalpost dummyJp = Journalpost.builder()
+                .behandlingstema("ab0001")
+                .bruker(Bruker.builder()
+                        .id("22345678")
+                        .type("PERSON")
+                        .build())
+                .datoOpprettet(new Date())
+                .journalStatus("M")
+                .journalforendeEnhet("0001")
+                .journalpostId(22345678)
+                .mottaksKanal("NAV_NO")
+                .tema("PEN")
+                .build();
+        opprettOppgaveService.opprettOppgave(dummyJp);
     }
 
-    public List<UbehandletJournalpost> finnJournalposterUtenOppgaver() {
-        List<UbehandletJournalpost> ubehandledeJournalposter;
-        List<UbehandletJournalpost> ubehandledeJournalposterUtenOppgave;
+    public List<Journalpost> finnJournalposterUtenOppgaver() {
+        List<Journalpost> ubehandledeJournalposter;
+        List<Journalpost> ubehandledeJournalposterUtenOppgave;
         String temaer = dokSikkerhetsnettProperties.getTemaer();
 
         log.info("doksikkerhetsnett henter alle ubehandlede journalposter eldre enn 1 uke {}", Utils.logWithTema(temaer));
@@ -81,11 +97,11 @@ public class DoksikkerhetsnettScheduled {
         return ubehandledeJournalposterUtenOppgave;
     }
 
-    private ArrayList<UbehandletJournalpost> finnEksisterendeOppgaverFraUbehandledeJournalpostList(List<UbehandletJournalpost> ubehandledeJournalpostList) {
+    private ArrayList<Journalpost> finnEksisterendeOppgaverFraUbehandledeJournalpostList(List<Journalpost> ubehandledeJournalpostList) {
         return fjernJournalposterMedEksisterendeOppgaverFraListe(ubehandledeJournalpostList);
     }
 
-    private ArrayList<UbehandletJournalpost> fjernJournalposterMedEksisterendeOppgaverFraListe(List<UbehandletJournalpost> ubehandledeJournalpostList) {
+    private ArrayList<Journalpost> fjernJournalposterMedEksisterendeOppgaverFraListe(List<Journalpost> ubehandledeJournalpostList) {
         FinnOppgaveResponse oppgaveResponse = finnOppgaveService.finnOppgaver(ubehandledeJournalpostList);
 
         if (oppgaveResponse.getOppgaver() == null) {
@@ -93,7 +109,7 @@ public class DoksikkerhetsnettScheduled {
         }
 
         List<String> journalposterMedOppgaver = oppgaveResponse.getOppgaver().stream()
-                .map(OppgaveJson::getJournalpostId)
+                .map(Oppgave::getJournalpostId)
                 .collect(Collectors.toList());
 
         return new ArrayList<>(ubehandledeJournalpostList.stream()

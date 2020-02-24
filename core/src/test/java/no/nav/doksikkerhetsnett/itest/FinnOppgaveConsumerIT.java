@@ -10,7 +10,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
-import no.nav.doksikkerhetsnett.entities.UbehandletJournalpost;
+import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.consumers.FinnOppgaveConsumer;
 import no.nav.doksikkerhetsnett.entities.responses.FinnOppgaveResponse;
 import no.nav.doksikkerhetsnett.consumers.StsRestConsumer;
@@ -127,10 +127,10 @@ public class FinnOppgaveConsumerIT {
                         .withBodyFile("finnoppgave/stsResponse-happy.json")));
     }
 
-    private ArrayList<UbehandletJournalpost> getJournalpostList(int... journalpostIds) {
-        ArrayList<UbehandletJournalpost> ubehandledeJournalpostList = new ArrayList<>();
+    private ArrayList<Journalpost> getJournalpostList(int... journalpostIds) {
+        ArrayList<Journalpost> ubehandledeJournalpostList = new ArrayList<>();
         for (int journalpostId : journalpostIds) {
-            ubehandledeJournalpostList.add(new UbehandletJournalpost().builder().journalpostId(journalpostId).build());
+            ubehandledeJournalpostList.add(new Journalpost().builder().journalpostId(journalpostId).build());
         }
         return ubehandledeJournalpostList;
     }

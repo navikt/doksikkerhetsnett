@@ -10,7 +10,11 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UbehandletBruker {
+public class Bruker {
+
+    public static final String TYPE_ORGANISASJON = "ORGANISASJON";
+    public static final String TYPE_PERSON = "PERSON";
+
     @ApiModelProperty(
             value = "ID til bruker i Joark",
             example = "22345678"

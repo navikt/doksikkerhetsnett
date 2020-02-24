@@ -10,13 +10,14 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.consumers.FinnMottatteJournalposterConsumer;
 import no.nav.doksikkerhetsnett.consumers.FinnOppgaveConsumer;
+import no.nav.doksikkerhetsnett.consumers.OpprettOppgaveConsumer;
 import no.nav.doksikkerhetsnett.consumers.StsRestConsumer;
 import no.nav.doksikkerhetsnett.itest.config.TestConfig;
 import no.nav.doksikkerhetsnett.metrics.MetricsScheduler;
 import no.nav.doksikkerhetsnett.scheduler.DoksikkerhetsnettScheduled;
 import no.nav.doksikkerhetsnett.services.FinnMottatteJournalposterService;
 import no.nav.doksikkerhetsnett.services.FinnOppgaveService;
-import no.nav.doksikkerhetsnett.services.LagOppgaveService;
+import no.nav.doksikkerhetsnett.services.OpprettOppgaveService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,7 +48,7 @@ class DoksikkerhetsnettScheduledIT {
 
     private FinnMottatteJournalposterService finnMottatteJournalposterService;
     private FinnOppgaveService finnOppgaveService;
-    private LagOppgaveService lagOppgaveService;
+    private OpprettOppgaveService opprettOppgaveService;
 
     @Autowired
     private DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
@@ -63,7 +64,7 @@ class DoksikkerhetsnettScheduledIT {
         setUpStubs();
         finnOppgaveService = new FinnOppgaveService(new FinnOppgaveConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties, stsRestConsumer));
         finnMottatteJournalposterService = new FinnMottatteJournalposterService(new FinnMottatteJournalposterConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties));
-        lagOppgaveService = new LagOppgaveService();
+        opprettOppgaveService = new OpprettOppgaveService(new OpprettOppgaveConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties, stsRestConsumer));
     }
 
     void setUpStubs() {
@@ -84,7 +85,7 @@ class DoksikkerhetsnettScheduledIT {
     @Test
     public void Test() {
         DoksikkerhetsnettScheduled doksikkerhetsnettScheduled = new DoksikkerhetsnettScheduled(
-                finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService, lagOppgaveService, metricsScheduler);
+                finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService, opprettOppgaveService, metricsScheduler);
         List journalposterUtenOppgaver = doksikkerhetsnettScheduled.finnJournalposterUtenOppgaver();
         assertEquals(journalposterUtenOppgaver.size(), 4);
 

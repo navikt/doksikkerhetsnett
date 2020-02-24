@@ -2,13 +2,15 @@ package no.nav.doksikkerhetsnett.consumers;
 
 import static no.nav.doksikkerhetsnett.constants.DomainConstants.APP_NAME;
 import static no.nav.doksikkerhetsnett.constants.DomainConstants.BEARER_PREFIX;
+import static no.nav.doksikkerhetsnett.constants.MDCConstants.CORRELATION_HEADER;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_ID;
+import static no.nav.doksikkerhetsnett.constants.MDCConstants.UUID_HEADER;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 
-import no.nav.doksikkerhetsnett.entities.UbehandletJournalpost;
-import no.nav.doksikkerhetsnett.entities.OppgaveJson;
+import no.nav.doksikkerhetsnett.entities.Journalpost;
+import no.nav.doksikkerhetsnett.entities.Oppgave;
 import no.nav.doksikkerhetsnett.entities.responses.FinnOppgaveResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFunctionalException;
 import no.nav.doksikkerhetsnett.jaxws.MDCGenerate;
@@ -41,8 +43,6 @@ import java.util.stream.Collectors;
 @Component
 public class FinnOppgaveConsumer {
 
-    private static final String CORRELATION_HEADER = "X-Correlation-Id";
-    private static final String UUID_HEADER = "X-Uuid";
     private final String finnOppgaverUrl;
     private final RestTemplate restTemplate;
     private final StsRestConsumer stsRestConsumer;
@@ -66,7 +66,7 @@ public class FinnOppgaveConsumer {
     }
 
     @Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnOppgaveForJournalposter"}, percentiles = {0.5, 0.95}, histogram = true)
-    public FinnOppgaveResponse finnOppgaveForJournalposter(List<UbehandletJournalpost> ubehandledeJournalposter) {
+    public FinnOppgaveResponse finnOppgaveForJournalposter(List<Journalpost> ubehandledeJournalposter) {
         try {
             HttpHeaders headers = createHeaders();
             HttpEntity<?> requestEntity = new HttpEntity<>(headers);
@@ -87,7 +87,7 @@ public class FinnOppgaveConsumer {
                     }
                 }
             }
-            List<OppgaveJson> allOppgaveResponses = oppgaveResponses.stream()
+            List<Oppgave> allOppgaveResponses = oppgaveResponses.stream()
                     .flatMap(FinnOppgaveResponse -> FinnOppgaveResponse.getOppgaver().stream())
                     .collect(Collectors.toList());
 
@@ -98,13 +98,13 @@ public class FinnOppgaveConsumer {
         } catch (HttpClientErrorException e) {
             if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
                 throw new FinnOppgaveFinnesIkkeFunctionalException(String.format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
-                        .getStatusCode(), e.getMessage(), finnOppgaverUrl), e);
+                        .getStatusCode(), e.getResponseBodyAsString(), finnOppgaverUrl), e);
             } else if (HttpStatus.CONFLICT.equals(e.getStatusCode())) {
                 throw new FinOppgaveTillaterIkkeTilknyttingFunctionalException(String.format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
-                        .getStatusCode(), e.getMessage()), e);
+                        .getStatusCode(), e.getResponseBodyAsString()), e);
             } else {
                 throw new FinnOppgaveFunctionalException(String.format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
-                        .getStatusCode(), e.getMessage(), finnOppgaverUrl), e);
+                        .getStatusCode(), e.getResponseBodyAsString(), finnOppgaverUrl), e);
             }
         } catch (HttpServerErrorException e) {
             throw new FinnOppgaveTechnicalException(String.format("finnOppgaveForJournalposter feilet teknisk med statusKode=%s. Feilmelding=%s", e

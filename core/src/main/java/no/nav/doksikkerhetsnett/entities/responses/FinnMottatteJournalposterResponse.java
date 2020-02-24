@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import no.nav.doksikkerhetsnett.entities.UbehandletJournalpost;
+import no.nav.doksikkerhetsnett.entities.Journalpost;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -22,5 +22,5 @@ public class FinnMottatteJournalposterResponse {
             value = "journalposter",
             required = true
     )
-    private List<UbehandletJournalpost> journalposter;
+    private List<Journalpost> journalposter;
 }
