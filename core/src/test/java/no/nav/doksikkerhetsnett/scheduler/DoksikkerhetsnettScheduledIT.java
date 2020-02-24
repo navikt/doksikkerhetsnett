@@ -7,12 +7,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.FinnMottatteJournalposterConsumer;
 import no.nav.doksikkerhetsnett.consumer.finnoppgave.FinnOppgaveConsumer;
 import no.nav.doksikkerhetsnett.consumer.sts.StsRestConsumer;
 import no.nav.doksikkerhetsnett.itest.config.TestConfig;
+import no.nav.doksikkerhetsnett.metrics.MetricsScheduler;
 import no.nav.doksikkerhetsnett.service.FinnMottatteJournalposterService;
 import no.nav.doksikkerhetsnett.service.FinnOppgaveService;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +28,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
+import java.util.Map;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {TestConfig.class},
@@ -40,6 +41,8 @@ class DoksikkerhetsnettScheduledIT {
     private static final String URL_STSAUTH = "/rest/v1/sts/token\\?grant_type=client_credentials&scope=openid";
     private static final String URL_OPPGAVE = "/api/v1/oppgaver\\?";
     private static final String JOURNALPOST_SEARCH = "journalpostId=111111111&journalpostId=222222222&journalpostId=333333333&journalpostId=444444444&journalpostId=555555555&journalpostId=666666666";
+    private static final String METRIC_TAGS = "UFO;ALTINN;0000";
+
     private FinnMottatteJournalposterService finnMottatteJournalposterService;
     private FinnOppgaveService finnOppgaveService;
 
@@ -50,7 +53,7 @@ class DoksikkerhetsnettScheduledIT {
     private StsRestConsumer stsRestConsumer;
 
     @Autowired
-    private MeterRegistry meterRegistry;
+    private MetricsScheduler metricsScheduler;
 
     @BeforeEach
     void setUpConsumer() {
@@ -77,8 +80,18 @@ class DoksikkerhetsnettScheduledIT {
     @Test
     public void Test() {
         DoksikkerhetsnettScheduled doksikkerhetsnettScheduled = new DoksikkerhetsnettScheduled(
-                finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService, meterRegistry);
-        List journalposterUtenOppgaver = doksikkerhetsnettScheduled.finnjournalposterUtenOppgaver();
+                finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService, metricsScheduler);
+        List journalposterUtenOppgaver = doksikkerhetsnettScheduled.finnJournalposterUtenOppgaver();
         assertEquals(journalposterUtenOppgaver.size(), 4);
+
+        Map<String, Integer> totalMetricsCache = metricsScheduler.getCaches().get(0);
+        Map<String, Integer> utenOppgaveMetricsCache = metricsScheduler.getCaches().get(1);
+        assertCorrectMetrics(totalMetricsCache, 6, METRIC_TAGS);
+        assertCorrectMetrics(utenOppgaveMetricsCache, 4, METRIC_TAGS);
+    }
+
+    private void assertCorrectMetrics(Map<String, Integer> metricsCache, int expectedValue, String expectedString) {
+        assertEquals(expectedValue, (int) metricsCache.entrySet().iterator().next().getValue());
+        assertEquals(expectedString, metricsCache.entrySet().iterator().next().getKey());
     }
 }

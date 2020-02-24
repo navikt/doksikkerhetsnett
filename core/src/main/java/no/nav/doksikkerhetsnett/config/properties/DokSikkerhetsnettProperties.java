@@ -7,6 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
+import java.util.Random;
 
 @Getter
 @Setter
@@ -15,22 +16,20 @@ import javax.validation.constraints.NotNull;
 @Validated
 public class DokSikkerhetsnettProperties {
 
-	@NotNull
-	private String finnmottattejournalposterurl;
+    @NotNull
+    private String finnmottattejournalposterurl;
 
-	@NotNull
-	private String finnoppgaverurl;
+    @NotNull
+    private String finnoppgaverurl;
 
-	@NotNull
-	private String securityservicetokenurl;
+    @NotNull
+    private String securityservicetokenurl;
 
-	@NotNull
-	private ServiceUserProperties serviceuser;
+    @NotNull
+    private ServiceUserProperties serviceuser;
 
-	// Denne kan være null da et søk på et tomt tema betyr et generelt søk på alle temaer
-	private String temaer;
-
-
+    // Denne kan være null da et søk på et tomt tema betyr et generelt søk på alle temaer
+    private String temaer;
 }
 
 
