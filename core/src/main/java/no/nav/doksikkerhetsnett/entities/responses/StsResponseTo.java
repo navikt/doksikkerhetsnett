@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.consumer.sts;
+package no.nav.doksikkerhetsnett.entities.responses;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

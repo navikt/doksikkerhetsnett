@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.consumer.finnoppgave;
+package no.nav.doksikkerhetsnett.consumers;
 
 import static no.nav.doksikkerhetsnett.constants.DomainConstants.APP_NAME;
 import static no.nav.doksikkerhetsnett.constants.DomainConstants.BEARER_PREFIX;
@@ -7,12 +7,13 @@ import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_I
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 
-import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.UbehandletJournalpost;
+import no.nav.doksikkerhetsnett.entities.UbehandletJournalpost;
+import no.nav.doksikkerhetsnett.entities.OppgaveJson;
+import no.nav.doksikkerhetsnett.entities.responses.FinnOppgaveResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFunctionalException;
 import no.nav.doksikkerhetsnett.jaxws.MDCGenerate;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.constants.MDCConstants;
-import no.nav.doksikkerhetsnett.consumer.sts.StsRestConsumer;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinOppgaveTillaterIkkeTilknyttingFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFinnesIkkeFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnOppgaveTechnicalException;

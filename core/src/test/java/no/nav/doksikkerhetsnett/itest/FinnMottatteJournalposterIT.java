@@ -12,9 +12,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
-import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.FinnMottatteJournalposterConsumer;
-import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.FinnMottatteJournalposterResponse;
-import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.UbehandletJournalpost;
+import no.nav.doksikkerhetsnett.consumers.FinnMottatteJournalposterConsumer;
+import no.nav.doksikkerhetsnett.entities.responses.FinnMottatteJournalposterResponse;
+import no.nav.doksikkerhetsnett.entities.UbehandletJournalpost;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFinnesIkkeFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException;

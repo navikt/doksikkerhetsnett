@@ -2,7 +2,7 @@ package no.nav.doksikkerhetsnett.metrics;
 
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
-import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.UbehandletJournalpost;
+import no.nav.doksikkerhetsnett.entities.UbehandletJournalpost;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;

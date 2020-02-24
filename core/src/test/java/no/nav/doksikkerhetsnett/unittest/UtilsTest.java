@@ -2,7 +2,7 @@ package no.nav.doksikkerhetsnett.unittest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.UbehandletJournalpost;
+import no.nav.doksikkerhetsnett.entities.UbehandletJournalpost;
 import no.nav.doksikkerhetsnett.utils.Utils;
 import org.junit.jupiter.api.Test;
 

@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.scheduler;
+package no.nav.doksikkerhetsnett.itest;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -8,13 +8,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
-import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.FinnMottatteJournalposterConsumer;
-import no.nav.doksikkerhetsnett.consumer.finnoppgave.FinnOppgaveConsumer;
-import no.nav.doksikkerhetsnett.consumer.sts.StsRestConsumer;
+import no.nav.doksikkerhetsnett.consumers.FinnMottatteJournalposterConsumer;
+import no.nav.doksikkerhetsnett.consumers.FinnOppgaveConsumer;
+import no.nav.doksikkerhetsnett.consumers.StsRestConsumer;
 import no.nav.doksikkerhetsnett.itest.config.TestConfig;
 import no.nav.doksikkerhetsnett.metrics.MetricsScheduler;
-import no.nav.doksikkerhetsnett.service.FinnMottatteJournalposterService;
-import no.nav.doksikkerhetsnett.service.FinnOppgaveService;
+import no.nav.doksikkerhetsnett.scheduler.DoksikkerhetsnettScheduled;
+import no.nav.doksikkerhetsnett.services.FinnMottatteJournalposterService;
+import no.nav.doksikkerhetsnett.services.FinnOppgaveService;
+import no.nav.doksikkerhetsnett.services.LagOppgaveService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,6 +47,7 @@ class DoksikkerhetsnettScheduledIT {
 
     private FinnMottatteJournalposterService finnMottatteJournalposterService;
     private FinnOppgaveService finnOppgaveService;
+    private LagOppgaveService lagOppgaveService;
 
     @Autowired
     private DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
@@ -60,6 +63,7 @@ class DoksikkerhetsnettScheduledIT {
         setUpStubs();
         finnOppgaveService = new FinnOppgaveService(new FinnOppgaveConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties, stsRestConsumer));
         finnMottatteJournalposterService = new FinnMottatteJournalposterService(new FinnMottatteJournalposterConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties));
+        lagOppgaveService = new LagOppgaveService();
     }
 
     void setUpStubs() {
@@ -80,7 +84,7 @@ class DoksikkerhetsnettScheduledIT {
     @Test
     public void Test() {
         DoksikkerhetsnettScheduled doksikkerhetsnettScheduled = new DoksikkerhetsnettScheduled(
-                finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService, metricsScheduler);
+                finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService, lagOppgaveService, metricsScheduler);
         List journalposterUtenOppgaver = doksikkerhetsnettScheduled.finnJournalposterUtenOppgaver();
         assertEquals(journalposterUtenOppgaver.size(), 4);
 

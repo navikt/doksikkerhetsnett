@@ -2,12 +2,13 @@ package no.nav.doksikkerhetsnett.scheduler;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
-import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.UbehandletJournalpost;
-import no.nav.doksikkerhetsnett.consumer.finnoppgave.FinnOppgaveResponse;
-import no.nav.doksikkerhetsnett.consumer.finnoppgave.OppgaveJson;
+import no.nav.doksikkerhetsnett.entities.UbehandletJournalpost;
+import no.nav.doksikkerhetsnett.entities.responses.FinnOppgaveResponse;
+import no.nav.doksikkerhetsnett.entities.OppgaveJson;
 import no.nav.doksikkerhetsnett.metrics.MetricsScheduler;
-import no.nav.doksikkerhetsnett.service.FinnMottatteJournalposterService;
-import no.nav.doksikkerhetsnett.service.FinnOppgaveService;
+import no.nav.doksikkerhetsnett.services.FinnMottatteJournalposterService;
+import no.nav.doksikkerhetsnett.services.FinnOppgaveService;
+import no.nav.doksikkerhetsnett.services.LagOppgaveService;
 import no.nav.doksikkerhetsnett.utils.Utils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 public class DoksikkerhetsnettScheduled {
     private final FinnMottatteJournalposterService finnMottatteJournalposterService;
     private final FinnOppgaveService finnOppgaveService;
+    private final LagOppgaveService lagOppgaveService;
     private final DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
     private final MetricsScheduler metricsScheduler;
     private final int MINUTE = 60_000;
@@ -29,10 +31,12 @@ public class DoksikkerhetsnettScheduled {
     public DoksikkerhetsnettScheduled(FinnMottatteJournalposterService finnMottatteJournalposterService,
                                       DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
                                       FinnOppgaveService finnOppgaveService,
+                                      LagOppgaveService lagOppgaveService,
                                       MetricsScheduler metricsScheduler) {
         this.finnMottatteJournalposterService = finnMottatteJournalposterService;
         this.dokSikkerhetsnettProperties = dokSikkerhetsnettProperties;
         this.finnOppgaveService = finnOppgaveService;
+        this.lagOppgaveService = lagOppgaveService;
         this.metricsScheduler = metricsScheduler;
     }
 
@@ -43,7 +47,7 @@ public class DoksikkerhetsnettScheduled {
 
     public void lagOppgaverForGlemteJournalposter() {
         List<UbehandletJournalpost> ubehandletJournalpostsUtenOppgave = finnJournalposterUtenOppgaver();
-        //TODO: Del 2; sikkerhetsnett i skriv-modus.
+        lagOppgaveService.lagOppgave(ubehandletJournalpostsUtenOppgave);
     }
 
     public List<UbehandletJournalpost> finnJournalposterUtenOppgaver() {

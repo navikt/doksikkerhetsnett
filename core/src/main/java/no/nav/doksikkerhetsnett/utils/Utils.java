@@ -1,7 +1,7 @@
 package no.nav.doksikkerhetsnett.utils;
 
 import com.google.common.collect.Lists;
-import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.UbehandletJournalpost;
+import no.nav.doksikkerhetsnett.entities.UbehandletJournalpost;
 
 import java.util.ArrayList;
 import java.util.List;

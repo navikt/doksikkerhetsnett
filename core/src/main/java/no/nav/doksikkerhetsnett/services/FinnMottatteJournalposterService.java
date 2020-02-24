@@ -1,9 +1,9 @@
-package no.nav.doksikkerhetsnett.service;
+package no.nav.doksikkerhetsnett.services;
 
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.FinnMottatteJournalposterConsumer;
-import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.FinnMottatteJournalposterResponse;
+import no.nav.doksikkerhetsnett.consumers.FinnMottatteJournalposterConsumer;
+import no.nav.doksikkerhetsnett.entities.responses.FinnMottatteJournalposterResponse;
 import no.nav.doksikkerhetsnett.utils.Utils;
 import org.springframework.stereotype.Service;
 

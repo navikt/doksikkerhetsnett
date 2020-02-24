@@ -1,10 +1,11 @@
-package no.nav.doksikkerhetsnett.consumer.finnoppgave;
+package no.nav.doksikkerhetsnett.entities.responses;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import no.nav.doksikkerhetsnett.entities.OppgaveJson;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
