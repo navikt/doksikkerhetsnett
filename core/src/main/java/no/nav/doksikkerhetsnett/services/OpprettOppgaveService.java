@@ -3,8 +3,10 @@ package no.nav.doksikkerhetsnett.services;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.consumers.OpprettOppgaveConsumer;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
+import no.nav.doksikkerhetsnett.entities.responses.OpprettOppgaveResponse;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -17,13 +19,16 @@ public class OpprettOppgaveService {
         this.opprettOppgaveConsumer = opprettOppgaveConsumer;
     }
 
-    public void opprettOppgave(List<Journalpost> journalposts) {
+    public List<OpprettOppgaveResponse> opprettOppgaver(List<Journalpost> journalposts) {
+        List<OpprettOppgaveResponse> responses = new ArrayList<>();
         for (Journalpost jp : journalposts) {
-            opprettOppgave(jp);
+            responses.add(opprettOppgave(jp));
         }
+        return responses;
     }
 
-    public void opprettOppgave(Journalpost jp) {
-        opprettOppgaveConsumer.opprettOppgave(jp);
+    public OpprettOppgaveResponse opprettOppgave(Journalpost jp) {
+        OpprettOppgaveResponse response = opprettOppgaveConsumer.opprettOppgave(jp);
+        return response;
     }
 }

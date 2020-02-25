@@ -6,6 +6,7 @@ import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.Bruker;
 import no.nav.doksikkerhetsnett.entities.responses.FinnOppgaveResponse;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
+import no.nav.doksikkerhetsnett.entities.responses.OpprettOppgaveResponse;
 import no.nav.doksikkerhetsnett.metrics.MetricsScheduler;
 import no.nav.doksikkerhetsnett.services.FinnMottatteJournalposterService;
 import no.nav.doksikkerhetsnett.services.FinnOppgaveService;
@@ -48,22 +49,25 @@ public class DoksikkerhetsnettScheduled {
     }
 
     public void lagOppgaverForGlemteJournalposter() {
-        //List<Journalpost> ubehandletJournalpostsUtenOppgave = finnJournalposterUtenOppgaver();
-        //opprettOppgaveService.lagOppgave(ubehandletJournalpostsUtenOppgave);
-        Journalpost dummyJp = Journalpost.builder()
-                .behandlingstema("ab0001")
+        List<Journalpost> ubehandletJournalpostsUtenOppgave = finnJournalposterUtenOppgaver();
+        List<OpprettOppgaveResponse> opprettedeOppgaver = opprettOppgaveService.opprettOppgaver(ubehandletJournalpostsUtenOppgave);
+
+        log.info("doksikkerhetsnett har opprettet oppgaver med ID'ene: {}", opprettedeOppgaver.stream().map(opg -> opg.getId()).collect(Collectors.toList()));
+
+        /*Journalpost dummyJp = Journalpost.builder()
+                .behandlingstema("ab0335")
                 .bruker(Bruker.builder()
                         .id("22345678")
                         .type("PERSON")
                         .build())
                 .datoOpprettet(new Date())
                 .journalStatus("M")
-                .journalforendeEnhet("0001")
+                .journalforendeEnhet("0100")
                 .journalpostId(22345678)
                 .mottaksKanal("NAV_NO")
-                .tema("PEN")
+                .tema("TIL")
                 .build();
-        opprettOppgaveService.opprettOppgave(dummyJp);
+        opprettOppgaveService.opprettOppgave(exampleJp);*/
     }
 
     public List<Journalpost> finnJournalposterUtenOppgaver() {
