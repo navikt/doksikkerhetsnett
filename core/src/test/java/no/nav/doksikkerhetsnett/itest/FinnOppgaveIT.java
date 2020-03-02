@@ -39,7 +39,7 @@ import java.util.ArrayList;
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWireMock(port = 0)
 @ActiveProfiles("itest")
-public class FinnOppgaveConsumerIT {
+public class FinnOppgaveIT {
     private static final String URL_FINNOPPGAVER = "/api/v1/oppgaver\\?";
     private static final String URL_STSAUTH = "/rest/v1/sts/token\\?grant_type=client_credentials&scope=openid";
     private static final String OPPGAVER_HAPPY_PATH = "journalpostId=111111111&statuskategori=AAPEN&sorteringsrekkefolge=ASC&&limit=50";
@@ -124,7 +124,7 @@ public class FinnOppgaveConsumerIT {
         stubFor(get(urlMatching(URL_STSAUTH))
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
                         .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                        .withBodyFile("finnoppgave/stsResponse-happy.json")));
+                        .withBodyFile("oppgave/stsResponse-happy.json")));
     }
 
     private ArrayList<Journalpost> getJournalpostList(int... journalpostIds) {

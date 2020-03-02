@@ -60,7 +60,8 @@ public class OpprettOppgaveConsumer {
         Oppgave oppgave = createOppgave(jp);
         return postOpprettOppgave(oppgave);
     }
-    public OpprettOppgaveResponse postOpprettOppgave(Oppgave oppgave) {
+
+    private OpprettOppgaveResponse postOpprettOppgave(Oppgave oppgave) {
         try {
             HttpHeaders headers = createHeaders();
             HttpEntity<Oppgave> requestEntity = new HttpEntity<>(oppgave, headers);
