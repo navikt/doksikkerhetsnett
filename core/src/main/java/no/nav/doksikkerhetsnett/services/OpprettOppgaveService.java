@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -20,11 +21,9 @@ public class OpprettOppgaveService {
     }
 
     public List<OpprettOppgaveResponse> opprettOppgaver(List<Journalpost> journalposts) {
-        List<OpprettOppgaveResponse> responses = new ArrayList<>();
-        for (Journalpost jp : journalposts) {
-            responses.add(opprettOppgave(jp));
-        }
-        return responses;
+        return journalposts.stream()
+                .map(jp -> opprettOppgave(jp))
+                .collect(Collectors.toList());
     }
 
     public OpprettOppgaveResponse opprettOppgave(Journalpost jp) {

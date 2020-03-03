@@ -52,9 +52,9 @@ public class DoksikkerhetsnettScheduled {
         List<Journalpost> ubehandletJournalpostsUtenOppgave = finnJournalposterUtenOppgaver();
         List<OpprettOppgaveResponse> opprettedeOppgaver = opprettOppgaveService.opprettOppgaver(ubehandletJournalpostsUtenOppgave);
 
-        log.info("doksikkerhetsnett har opprettet oppgaver med ID'ene: {}", opprettedeOppgaver.stream().map(opg -> opg.getId()).collect(Collectors.toList()));
+        //log.info("doksikkerhetsnett har opprettet oppgaver med ID'ene: {}", opprettedeOppgaver.stream().map(opg -> opg.getId()).collect(Collectors.toList()));
 
-        /*Journalpost dummyJp = Journalpost.builder()
+        Journalpost dummyJp = Journalpost.builder()
                 .behandlingstema("ab0335")
                 .bruker(Bruker.builder()
                         .id("22345678")
@@ -65,9 +65,9 @@ public class DoksikkerhetsnettScheduled {
                 .journalforendeEnhet("0100")
                 .journalpostId(22345678)
                 .mottaksKanal("NAV_NO")
-                .tema("TIL")
+                .tema("TEST")
                 .build();
-        opprettOppgaveService.opprettOppgave(exampleJp);*/
+        opprettOppgaveService.opprettOppgave(dummyJp);
     }
 
     public List<Journalpost> finnJournalposterUtenOppgaver() {

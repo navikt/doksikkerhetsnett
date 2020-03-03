@@ -19,4 +19,8 @@ public class ServiceUserProperties {
     @NotEmpty
     private String password;
 
+    // TODO: Fjern disse når servicebrukere får tilgang til Jira
+    private String tmpusername;
+    private String tmppassword;
+
 } 

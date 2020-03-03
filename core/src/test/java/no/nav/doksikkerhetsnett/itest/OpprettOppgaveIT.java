@@ -2,11 +2,10 @@ package no.nav.doksikkerhetsnett.itest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
-import no.nav.doksikkerhetsnett.consumers.FinnMottatteJournalposterConsumer;
+import no.nav.doksikkerhetsnett.consumers.JiraConsumer;
 import no.nav.doksikkerhetsnett.consumers.OpprettOppgaveConsumer;
 import no.nav.doksikkerhetsnett.consumers.StsRestConsumer;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
-import no.nav.doksikkerhetsnett.entities.responses.FinnOppgaveResponse;
 import no.nav.doksikkerhetsnett.entities.responses.OpprettOppgaveResponse;
 import no.nav.doksikkerhetsnett.itest.config.TestConfig;
 import org.junit.jupiter.api.AfterEach;
@@ -48,10 +47,13 @@ public class OpprettOppgaveIT {
     @Autowired
     private StsRestConsumer stsRestConsumer;
 
+    @Autowired
+    private JiraConsumer jiraConsumer;
+
     @BeforeEach
     void setup() {
         setupSts();
-        opprettOppgaveConsumer = new OpprettOppgaveConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties, stsRestConsumer);
+        opprettOppgaveConsumer = new OpprettOppgaveConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties, stsRestConsumer, jiraConsumer);
     }
 
     @AfterEach
@@ -72,6 +74,13 @@ public class OpprettOppgaveIT {
         OpprettOppgaveResponse opprettOppgaveResponse = opprettOppgaveConsumer.opprettOppgave(jp);
         assertEquals("555", opprettOppgaveResponse.getJournalpostId());
     }
+
+    /*  TODO: Test de tre feilsituasjonene som er beskrevet i dokumentasjonen
+    **      1. Ugyldig enhet
+    **      2. Finner ikke ansvarlig enhet
+    **      3. Generell hvor en jira-oppgave skal lages
+    */
+
 
     private void setupSts() {
         stubFor(get(urlMatching(URL_STSAUTH))

@@ -6,9 +6,8 @@ import no.nav.doksikkerhetsnett.constants.MDCConstants;
 import no.nav.doksikkerhetsnett.entities.Bruker;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
+import no.nav.doksikkerhetsnett.entities.responses.JiraResponse;
 import no.nav.doksikkerhetsnett.entities.responses.OpprettOppgaveResponse;
-import no.nav.doksikkerhetsnett.exceptions.functional.FinOppgaveTillaterIkkeTilknyttingFunctionalException;
-import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFinnesIkkeFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnOppgaveTechnicalException;
 import no.nav.doksikkerhetsnett.jaxws.MDCGenerate;
@@ -27,25 +26,23 @@ import org.springframework.web.client.RestTemplate;
 import java.time.Duration;
 import java.util.Date;
 
-import static no.nav.doksikkerhetsnett.constants.DomainConstants.APP_NAME;
 import static no.nav.doksikkerhetsnett.constants.DomainConstants.BEARER_PREFIX;
-import static no.nav.doksikkerhetsnett.constants.MDCConstants.CORRELATION_HEADER;
-import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CALL_ID;
-import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_ID;
-import static no.nav.doksikkerhetsnett.constants.MDCConstants.UUID_HEADER;
+import static no.nav.doksikkerhetsnett.constants.DomainConstants.CORRELATION_HEADER;
 
 @Slf4j
 @Component
 public class OpprettOppgaveConsumer {
 
-    RestTemplate restTemplate;
-    StsRestConsumer stsRestConsumer;
+    private final RestTemplate restTemplate;
+    private final StsRestConsumer stsRestConsumer;
+    private final JiraConsumer jiraConsumer;
 
-    private final String opprettOppgaveUrl;
+    private final String oppgaveUrl;
 
     public OpprettOppgaveConsumer(RestTemplateBuilder restTemplateBuilder,
                                   DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
-                                  StsRestConsumer stsRestConsumer) {
+                                  StsRestConsumer stsRestConsumer,
+                                  JiraConsumer jiraConsumer) {
         this.restTemplate = restTemplateBuilder
                 .setReadTimeout(Duration.ofSeconds(250))
                 .setConnectTimeout(Duration.ofSeconds(5))
@@ -53,11 +50,12 @@ public class OpprettOppgaveConsumer {
                         dokSikkerhetsnettProperties.getServiceuser().getPassword())
                 .build();
         this.stsRestConsumer = stsRestConsumer;
-        this.opprettOppgaveUrl = dokSikkerhetsnettProperties.getOpprettoppgaveUrl();
+        this.jiraConsumer = jiraConsumer;
+        this.oppgaveUrl = dokSikkerhetsnettProperties.getOppgaveurl();
     }
 
     public OpprettOppgaveResponse opprettOppgave(Journalpost jp) {
-        Oppgave oppgave = createOppgave(jp);
+        Oppgave oppgave = createOppgaveFromJournalpost(jp);
         return postOpprettOppgave(oppgave);
     }
 
@@ -65,23 +63,15 @@ public class OpprettOppgaveConsumer {
         try {
             HttpHeaders headers = createHeaders();
             HttpEntity<Oppgave> requestEntity = new HttpEntity<>(oppgave, headers);
-             return restTemplate.exchange(opprettOppgaveUrl, HttpMethod.POST, requestEntity, OpprettOppgaveResponse.class)
+             return restTemplate.exchange(oppgaveUrl, HttpMethod.POST, requestEntity, OpprettOppgaveResponse.class)
                     .getBody();
 
         } catch (HttpClientErrorException e) {
             if (HttpStatus.BAD_REQUEST.equals(e.getStatusCode())) {
                 return handterFeilsituasjon(e, oppgave);
-            } else if (HttpStatus.CONFLICT.equals(e.getStatusCode())) {
-            throw new FinOppgaveTillaterIkkeTilknyttingFunctionalException(String.format("opprettOppgave feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
-                    .getStatusCode(), e.getResponseBodyAsString()), e);
-
-            } else if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
-                throw new FinnOppgaveFinnesIkkeFunctionalException(String.format("opprettOppgave feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
-                        .getStatusCode(), e.getResponseBodyAsString(), opprettOppgaveUrl), e);
-            } else {
-                throw new FinnOppgaveFunctionalException(String.format("opprettOppgave feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
-                        .getStatusCode(), e.getResponseBodyAsString(), opprettOppgaveUrl), e);
             }
+            throw new FinnOppgaveFunctionalException(String.format("opprettOppgave feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
+                    .getStatusCode(), e.getResponseBodyAsString(), oppgaveUrl), e);
         } catch (HttpServerErrorException e) {
             throw new FinnOppgaveTechnicalException(String.format("opprettOppgave feilet teknisk med statusKode=%s. Feilmelding=%s", e
                     .getStatusCode(), e.getMessage()), e);
@@ -91,45 +81,58 @@ public class OpprettOppgaveConsumer {
     private OpprettOppgaveResponse handterFeilsituasjon(HttpClientErrorException e, Oppgave oppgave) {
         if (e.getResponseBodyAsString().contains("Enheten med nummeret '" + oppgave.getTildeltEnhetsnr() + "' eksisterer ikke")) {
             log.info("Enheten med nummeret '" + oppgave.getTildeltEnhetsnr() + "' eksisterer ikke, så prøver på nytt uten enhetsnr");
-            Oppgave newOppgave = Oppgave.builder()
-                    .tildeltEnhetsnr(null)
-                    .opprettetAvEnhetsnr(oppgave.getOpprettetAvEnhetsnr())
-                    .journalpostId(oppgave.getJournalpostId())
-                    .orgnr(oppgave.getOrgnr())
-                    .bnr(oppgave.getBnr())
-                    .beskrivelse(oppgave.getBeskrivelse())
-                    .tema(oppgave.getTema())
-                    .behandlingstema(oppgave.getBehandlingstema())
-                    .oppgavetype(oppgave.getOppgavetype())
-                    .prioritet(oppgave.getPrioritet())
-                    .aktivDato(oppgave.getAktivDato())
-                    .build();
-            return postOpprettOppgave(newOppgave);
-        } else {
+            oppgave.setTildeltEnhetsnr(null);
+            return postOpprettOppgave(oppgave);
+        }
+        // TODO: Gjør en sjekk på "Finner ikke ansvarlig enhet" og behandle som beskrevet i dok
+        else {
+            JiraResponse response = jiraConsumer.OpprettJiraIssue(oppgave, e);
+            log.info("Doksikkerhetsnett opprettet en jira-issue med kode {}", response.getKey());
             throw new FinnOppgaveFunctionalException(String.format("opprettOppgave feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
-                    .getStatusCode(), e.getResponseBodyAsString(), opprettOppgaveUrl), e);
+                    .getStatusCode(), e.getResponseBodyAsString(), oppgaveUrl), e);
         }
     }
 
-    private Oppgave createOppgave(Journalpost jp) {
-        String tildeltEnhetsnr = jp.getJournalforendeEnhet() != null ? jp.getJournalforendeEnhet() : null;
-        String orgnr = jp.getBruker() != null && jp.getBruker().getType().equals(Bruker.TYPE_ORGANISASJON) ? jp.getBruker().getId() : null;
-        String bnr = jp.getBruker() != null && jp.getBruker().getType().equals(Bruker.TYPE_PERSON) ? jp.getBruker().getId() : null;
-        String tema = jp.getTema() == null || jp.getTema().equals("UKJ") ? "GEN" : jp.getTema();
+    private Oppgave createOppgaveFromJournalpost(Journalpost jp) {
+        String tildeltEnhetsnr = jp.getJournalforendeEnhet();
+        String orgnr = extractOrgnr(jp);
+        String bnr = extractBnr(jp);
+        String tema = extractTema(jp);
 
         return Oppgave.builder()
                 .tildeltEnhetsnr(tildeltEnhetsnr)
-                .opprettetAvEnhetsnr("9999")
-                .journalpostId(jp.getJournalStatus())
+                .opprettetAvEnhetsnr(Oppgave.ENHETSNUMMER_GENERISK)
+                .journalpostId(jp.getJournalpostId() + "")
                 .orgnr(orgnr)
                 .bnr(bnr)
                 .beskrivelse("")
                 .tema(tema)
                 .behandlingstema(jp.getBehandlingstema())
-                .oppgavetype("JFR")
-                .prioritet("NORM")
+                .oppgavetype(Oppgave.OPPGAVETYPE_JOURNALFOERT)
+                .prioritet(Oppgave.PRIORITET_NORMAL)
                 .aktivDato(new Date())
                 .build();
+    }
+
+    private String extractOrgnr(Journalpost jp) {
+        if (jp.getBruker() != null && jp.getBruker().getType().equals(Bruker.TYPE_ORGANISASJON)) {
+            return jp.getBruker().getId();
+        }
+        return null;
+    }
+
+    private String extractBnr(Journalpost jp) {
+        if (jp.getBruker() != null && jp.getBruker().getType().equals(Bruker.TYPE_PERSON)) {
+            return jp.getBruker().getId();
+        }
+        return null;
+    }
+
+    private String extractTema(Journalpost jp) {
+        if (jp.getTema() == null || jp.getTema().equals(Oppgave.TEMA_UKJENT)) {
+            return Oppgave.TEMA_GENERELL;
+        }
+        return jp.getTema();
     }
 
     private HttpHeaders createHeaders() {
@@ -139,9 +142,6 @@ public class OpprettOppgaveConsumer {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + stsRestConsumer.getOidcToken());
         headers.add(CORRELATION_HEADER, MDC.get(MDCConstants.MDC_CALL_ID));
-        headers.add(UUID_HEADER, MDC.get(MDCConstants.MDC_CALL_ID));
-        headers.add(MDC_NAV_CONSUMER_ID, APP_NAME);
-        headers.add(MDC_NAV_CALL_ID, MDC.get(MDC_NAV_CALL_ID));
         return headers;
     }
 }

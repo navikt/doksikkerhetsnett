@@ -14,7 +14,7 @@ import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.consumers.FinnOppgaveConsumer;
 import no.nav.doksikkerhetsnett.entities.responses.FinnOppgaveResponse;
 import no.nav.doksikkerhetsnett.consumers.StsRestConsumer;
-import no.nav.doksikkerhetsnett.exceptions.functional.FinOppgaveTillaterIkkeTilknyttingFunctionalException;
+import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveTillaterIkkeTilknyttingFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFinnesIkkeFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnOppgaveTechnicalException;
@@ -103,7 +103,7 @@ public class FinnOppgaveIT {
     public void shouldThrowFinnOppgaveTillaterIkkeTilknytningFunctionalException() {
         stubFor(get(urlMatching(URL_FINNOPPGAVER + OPPGAVER_BAD_REQUEST))
                 .willReturn(aResponse().withStatus(HttpStatus.CONFLICT.value())));
-        assertThrows(FinOppgaveTillaterIkkeTilknyttingFunctionalException.class, () -> finnOppgaveConsumer.finnOppgaveForJournalposter(getJournalpostList(BAD_INT)));
+        assertThrows(FinnOppgaveTillaterIkkeTilknyttingFunctionalException.class, () -> finnOppgaveConsumer.finnOppgaveForJournalposter(getJournalpostList(BAD_INT)));
     }
 
     @Test

@@ -2,10 +2,10 @@ package no.nav.doksikkerhetsnett.consumers;
 
 import static no.nav.doksikkerhetsnett.constants.DomainConstants.APP_NAME;
 import static no.nav.doksikkerhetsnett.constants.DomainConstants.BEARER_PREFIX;
-import static no.nav.doksikkerhetsnett.constants.MDCConstants.CORRELATION_HEADER;
+import static no.nav.doksikkerhetsnett.constants.DomainConstants.CORRELATION_HEADER;
+import static no.nav.doksikkerhetsnett.constants.DomainConstants.UUID_HEADER;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_ID;
-import static no.nav.doksikkerhetsnett.constants.MDCConstants.UUID_HEADER;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 
@@ -16,7 +16,7 @@ import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFunctionalExcep
 import no.nav.doksikkerhetsnett.jaxws.MDCGenerate;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.constants.MDCConstants;
-import no.nav.doksikkerhetsnett.exceptions.functional.FinOppgaveTillaterIkkeTilknyttingFunctionalException;
+import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveTillaterIkkeTilknyttingFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFinnesIkkeFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnOppgaveTechnicalException;
 import no.nav.doksikkerhetsnett.metrics.Metrics;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 @Component
 public class FinnOppgaveConsumer {
 
-    private final String finnOppgaverUrl;
+    private final String oppgaveUrl;
     private final RestTemplate restTemplate;
     private final StsRestConsumer stsRestConsumer;
     private final String DEFAULT_URL_P1 = "&sorteringsrekkefolge=ASC&";
@@ -55,7 +55,7 @@ public class FinnOppgaveConsumer {
     public FinnOppgaveConsumer(RestTemplateBuilder restTemplateBuilder,
                                DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
                                StsRestConsumer stsRestConsumer) {
-        this.finnOppgaverUrl = dokSikkerhetsnettProperties.getFinnoppgaverurl();
+        this.oppgaveUrl = dokSikkerhetsnettProperties.getOppgaveurl();
         this.stsRestConsumer = stsRestConsumer;
         this.restTemplate = restTemplateBuilder
                 .setReadTimeout(Duration.ofSeconds(250))
@@ -98,13 +98,13 @@ public class FinnOppgaveConsumer {
         } catch (HttpClientErrorException e) {
             if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
                 throw new FinnOppgaveFinnesIkkeFunctionalException(String.format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
-                        .getStatusCode(), e.getResponseBodyAsString(), finnOppgaverUrl), e);
+                        .getStatusCode(), e.getResponseBodyAsString(), oppgaveUrl), e);
             } else if (HttpStatus.CONFLICT.equals(e.getStatusCode())) {
-                throw new FinOppgaveTillaterIkkeTilknyttingFunctionalException(String.format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
+                throw new FinnOppgaveTillaterIkkeTilknyttingFunctionalException(String.format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
                         .getStatusCode(), e.getResponseBodyAsString()), e);
             } else {
                 throw new FinnOppgaveFunctionalException(String.format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
-                        .getStatusCode(), e.getResponseBodyAsString(), finnOppgaverUrl), e);
+                        .getStatusCode(), e.getResponseBodyAsString(), oppgaveUrl), e);
             }
         } catch (HttpServerErrorException e) {
             throw new FinnOppgaveTechnicalException(String.format("finnOppgaveForJournalposter feilet teknisk med statusKode=%s. Feilmelding=%s", e
@@ -113,7 +113,7 @@ public class FinnOppgaveConsumer {
     }
 
     private FinnOppgaveResponse executeGetRequest(String param, HttpEntity<?> requestEntity) {
-        URI uri = UriComponentsBuilder.fromHttpUrl(finnOppgaverUrl)
+        URI uri = UriComponentsBuilder.fromHttpUrl(oppgaveUrl)
                 .queryParam(param)
                 .build().toUri();
         return restTemplate.exchange(uri, HttpMethod.GET, requestEntity, FinnOppgaveResponse.class)
@@ -128,9 +128,6 @@ public class FinnOppgaveConsumer {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + stsRestConsumer.getOidcToken());
         headers.add(CORRELATION_HEADER, MDC.get(MDCConstants.MDC_CALL_ID));
-        headers.add(UUID_HEADER, MDC.get(MDCConstants.MDC_CALL_ID));
-        headers.add(MDC_NAV_CONSUMER_ID, APP_NAME);
-        headers.add(MDC_NAV_CALL_ID, MDC.get(MDC_NAV_CALL_ID));
         return headers;
     }
 }

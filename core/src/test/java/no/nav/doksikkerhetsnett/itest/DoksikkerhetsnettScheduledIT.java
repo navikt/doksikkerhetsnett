@@ -10,6 +10,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.consumers.FinnMottatteJournalposterConsumer;
 import no.nav.doksikkerhetsnett.consumers.FinnOppgaveConsumer;
+import no.nav.doksikkerhetsnett.consumers.JiraConsumer;
 import no.nav.doksikkerhetsnett.consumers.OpprettOppgaveConsumer;
 import no.nav.doksikkerhetsnett.consumers.StsRestConsumer;
 import no.nav.doksikkerhetsnett.itest.config.TestConfig;
@@ -59,19 +60,22 @@ class DoksikkerhetsnettScheduledIT {
     @Autowired
     private MetricsScheduler metricsScheduler;
 
+    @Autowired
+    private JiraConsumer jiraConsumer;
+
     @BeforeEach
     void setUpConsumer() {
         setUpStubs();
         finnOppgaveService = new FinnOppgaveService(new FinnOppgaveConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties, stsRestConsumer));
         finnMottatteJournalposterService = new FinnMottatteJournalposterService(new FinnMottatteJournalposterConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties));
-        opprettOppgaveService = new OpprettOppgaveService(new OpprettOppgaveConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties, stsRestConsumer));
+        opprettOppgaveService = new OpprettOppgaveService(new OpprettOppgaveConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties, stsRestConsumer, jiraConsumer));
     }
 
     void setUpStubs() {
         stubFor(get(urlMatching(URL_STSAUTH))
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
                         .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                        .withBodyFile("finnoppgave/stsResponse-happy.json")));
+                        .withBodyFile("oppgave/stsResponse-happy.json")));
         stubFor(get(urlMatching(URL_OPPGAVE + JOURNALPOST_SEARCH + QUERY_PARAM_AAPNEOPPGAVER))
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
                         .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)

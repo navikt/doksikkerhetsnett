@@ -8,9 +8,6 @@ public class MDCConstants {
     public static final String MDC_NAV_CONSUMER_ID = "Nav-Consumer-Id";
     public static final String MDC_APP_ID = "appId";
 
-    public static final String CORRELATION_HEADER = "X-Correlation-Id";
-    public static final String UUID_HEADER = "X-Uuid";
-
     private MDCConstants() {
         //no-op
     }
