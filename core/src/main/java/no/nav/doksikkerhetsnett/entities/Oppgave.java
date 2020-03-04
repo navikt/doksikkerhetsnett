@@ -15,9 +15,10 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Oppgave {
+public class Oppgave implements Cloneable {
     public static final String ENHETSNUMMER_GENERISK = "9999";
     public static final String OPPGAVETYPE_JOURNALFOERT = "JFR";
+    public static final String OPPGAVETYPE_FORDELING = "FDR";
     public static final String PRIORITET_NORMAL = "NORM";
     public static final String TEMA_UKJENT = "UKJ";
     public static final String TEMA_GENERELL = "GEN";
@@ -33,8 +34,6 @@ public class Oppgave {
 
     private String bnr;
 
-    private String beskrivelse;
-
     private String tema;
 
     private String behandlingstema;
@@ -45,4 +44,17 @@ public class Oppgave {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date aktivDato;
+
+    public Oppgave(Oppgave o) {
+        this.tildeltEnhetsnr = o.getTildeltEnhetsnr();
+        this.opprettetAvEnhetsnr = o.getOpprettetAvEnhetsnr();
+        this.journalpostId = o.getJournalpostId();
+        this.orgnr = o.getOrgnr();
+        this.bnr = o.getBnr();
+        this.tema = o.getTema();
+        this.behandlingstema = o.getBehandlingstema();
+        this.oppgavetype = o.getOppgavetype();
+        this.prioritet = o.getPrioritet();
+        this.aktivDato = o.getAktivDato();
+    }
 }

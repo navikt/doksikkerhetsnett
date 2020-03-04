@@ -1,0 +1,17 @@
+{
+  "fields": {
+    "project":
+    {
+      "key": "ADMKDL"
+    },
+    "issuetype": {
+      "name": "Avvik"
+    },
+    "labels": [
+      "morgenvakt",
+      "doksikkerhetsnett"
+    ],
+    "summary": "Doksikkerhetsnett feilet med å opprette oppgave",
+    "description": "Doksikkerhetsnett prøvde å lage en oppgave for den ubehandlede journalposten med id 555 og tema AAR.\nForsøkt opprettet oppgave så slik ut:\ntildeltEnhetsnr: 0000\nopprettetAvEnhetsnr: 9999\njournalpostId: 555\norgnr: null\nbnr: 12345678\ntema: AAR\nbehandlingstema: aa01234\noppgavetype: JFR\nprioritet: NORM\naktivDato: Tue Mar 03 13:52:53 CET 2020\n\nOppgave-api kastet denne feilmeldingen:\n\n{\"uuid\":\"11111111-1234-1234-1234-33333333\",\"feilmelding\":\"Ukjent feil, kan være hva som helst!\"}"
+  }
+}

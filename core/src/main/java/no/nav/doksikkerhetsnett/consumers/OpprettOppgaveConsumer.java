@@ -3,6 +3,7 @@ package no.nav.doksikkerhetsnett.consumers;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.constants.MDCConstants;
+import no.nav.doksikkerhetsnett.entities.jira.Issue;
 import no.nav.doksikkerhetsnett.entities.Bruker;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
@@ -63,7 +64,7 @@ public class OpprettOppgaveConsumer {
         try {
             HttpHeaders headers = createHeaders();
             HttpEntity<Oppgave> requestEntity = new HttpEntity<>(oppgave, headers);
-             return restTemplate.exchange(oppgaveUrl, HttpMethod.POST, requestEntity, OpprettOppgaveResponse.class)
+            return restTemplate.exchange(oppgaveUrl, HttpMethod.POST, requestEntity, OpprettOppgaveResponse.class)
                     .getBody();
 
         } catch (HttpClientErrorException e) {
@@ -80,17 +81,22 @@ public class OpprettOppgaveConsumer {
 
     private OpprettOppgaveResponse handterFeilsituasjon(HttpClientErrorException e, Oppgave oppgave) {
         if (e.getResponseBodyAsString().contains("Enheten med nummeret '" + oppgave.getTildeltEnhetsnr() + "' eksisterer ikke")) {
-            log.info("Enheten med nummeret '" + oppgave.getTildeltEnhetsnr() + "' eksisterer ikke, så prøver på nytt uten enhetsnr");
-            oppgave.setTildeltEnhetsnr(null);
-            return postOpprettOppgave(oppgave);
+            log.info("Enheten med nummeret '{}' eksisterer ikke, så prøver på nytt uten enhetsnr", oppgave.getTildeltEnhetsnr());
+            Oppgave oppgaveUtenTildeltEnhetsnr = new Oppgave(oppgave);
+            oppgaveUtenTildeltEnhetsnr.setTildeltEnhetsnr(null);
+            return postOpprettOppgave(oppgaveUtenTildeltEnhetsnr);
         }
-        // TODO: Gjør en sjekk på "Finner ikke ansvarlig enhet" og behandle som beskrevet i dok
-        else {
-            JiraResponse response = jiraConsumer.OpprettJiraIssue(oppgave, e);
-            log.info("Doksikkerhetsnett opprettet en jira-issue med kode {}", response.getKey());
-            throw new FinnOppgaveFunctionalException(String.format("opprettOppgave feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
-                    .getStatusCode(), e.getResponseBodyAsString(), oppgaveUrl), e);
+        if (e.getResponseBodyAsString().contains("Fant ingen gyldig arbeidsfordeling for oppgave")) {
+            log.info("Fant ikke ansvarlig enhet for oppgavetype {}, prøver på nytt med oppgavetype {}", oppgave.getOppgavetype(), Oppgave.OPPGAVETYPE_FORDELING);
+            Oppgave oppgaveMedTypeFordeling = new Oppgave(oppgave);
+            oppgaveMedTypeFordeling.setOppgavetype(Oppgave.OPPGAVETYPE_FORDELING);
+            return postOpprettOppgave(oppgaveMedTypeFordeling);
         }
+
+        JiraResponse response = jiraConsumer.OpprettJiraIssue(oppgave, e);
+        log.info("Doksikkerhetsnett opprettet en jira-issue med kode {}", response.getKey());
+        throw new FinnOppgaveFunctionalException(String.format("opprettOppgave feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
+                .getStatusCode(), e.getResponseBodyAsString(), oppgaveUrl), e);
     }
 
     private Oppgave createOppgaveFromJournalpost(Journalpost jp) {
@@ -105,7 +111,6 @@ public class OpprettOppgaveConsumer {
                 .journalpostId(jp.getJournalpostId() + "")
                 .orgnr(orgnr)
                 .bnr(bnr)
-                .beskrivelse("")
                 .tema(tema)
                 .behandlingstema(jp.getBehandlingstema())
                 .oppgavetype(Oppgave.OPPGAVETYPE_JOURNALFOERT)

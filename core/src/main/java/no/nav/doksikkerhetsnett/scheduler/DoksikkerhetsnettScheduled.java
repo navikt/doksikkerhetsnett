@@ -50,24 +50,14 @@ public class DoksikkerhetsnettScheduled {
 
     public void lagOppgaverForGlemteJournalposter() {
         List<Journalpost> ubehandletJournalpostsUtenOppgave = finnJournalposterUtenOppgaver();
-        List<OpprettOppgaveResponse> opprettedeOppgaver = opprettOppgaveService.opprettOppgaver(ubehandletJournalpostsUtenOppgave);
-
-        //log.info("doksikkerhetsnett har opprettet oppgaver med ID'ene: {}", opprettedeOppgaver.stream().map(opg -> opg.getId()).collect(Collectors.toList()));
-
-        Journalpost dummyJp = Journalpost.builder()
-                .behandlingstema("ab0335")
-                .bruker(Bruker.builder()
-                        .id("22345678")
-                        .type("PERSON")
-                        .build())
-                .datoOpprettet(new Date())
-                .journalStatus("M")
-                .journalforendeEnhet("0100")
-                .journalpostId(22345678)
-                .mottaksKanal("NAV_NO")
-                .tema("TEST")
-                .build();
-        opprettOppgaveService.opprettOppgave(dummyJp);
+        try {
+            List<OpprettOppgaveResponse> opprettedeOppgaver = opprettOppgaveService.opprettOppgaver(ubehandletJournalpostsUtenOppgave);
+            if (opprettedeOppgaver.size() > 0) {
+                log.info("doksikkerhetsnett har opprettet oppgaver med ID'ene: {}", opprettedeOppgaver.stream().map(opg -> opg.getId()).collect(Collectors.toList()));
+            }
+        } catch (Exception e) {
+            log.error("doksikkerhetsnett feilet under oppretting av oppgaver", e);
+        }
     }
 
     public List<Journalpost> finnJournalposterUtenOppgaver() {
@@ -122,4 +112,3 @@ public class DoksikkerhetsnettScheduled {
     }
 
 }
-

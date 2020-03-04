@@ -1,5 +1,6 @@
 package no.nav.doksikkerhetsnett.consumers;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.constants.MDCConstants;
 import no.nav.doksikkerhetsnett.entities.jira.Fields;
@@ -32,6 +33,7 @@ import static no.nav.doksikkerhetsnett.constants.DomainConstants.UUID_HEADER;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_ID;
 
+@Slf4j
 @Component
 public class JiraConsumer {
 
@@ -61,14 +63,15 @@ public class JiraConsumer {
             HttpHeaders headers = createHeaders();
             Issue issue = createIssue(oppgave, exception);
             HttpEntity<Issue> requestEntity = new HttpEntity<>(issue, headers);
+            log.info("doksikkerhetsnett prøver å lage en jira-issue i prosjekt {} med tittel \"{}\"", PROJECT_KEY, issue.getFields().getSummary());
             return restTemplate.exchange(opprettJiraIssueUrl, HttpMethod.POST, requestEntity, JiraResponse.class)
                     .getBody();
         }
         catch (HttpClientErrorException e) {
-            throw new FinnOppgaveFinnesIkkeFunctionalException(String.format("opprettJiraIssue feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
+            throw new FinnOppgaveFinnesIkkeFunctionalException(String.format("OpprettJiraIssue feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
                     .getStatusCode(), e.getResponseBodyAsString(), opprettJiraIssueUrl), e);
         } catch (HttpServerErrorException e) {
-            throw new FinnOppgaveTechnicalException(String.format("opprettJiraIssue feilet teknisk med statusKode=%s. Feilmelding=%s", e
+            throw new FinnOppgaveTechnicalException(String.format("OpprettJiraIssue feilet teknisk med statusKode=%s. Feilmelding=%s", e
                     .getStatusCode(), e.getMessage()), e);
         }
     }
@@ -99,7 +102,6 @@ public class JiraConsumer {
                 + "\njournalpostId: " + oppgave.getJournalpostId()
                 + "\norgnr: " + oppgave.getOrgnr()
                 + "\nbnr: " + oppgave.getBnr()
-                + "\nbeskrivelse: " + oppgave.getBeskrivelse()
                 + "\ntema: " + oppgave.getTema()
                 + "\nbehandlingstema: " + oppgave.getBehandlingstema()
                 + "\noppgavetype: " + oppgave.getOppgavetype()
