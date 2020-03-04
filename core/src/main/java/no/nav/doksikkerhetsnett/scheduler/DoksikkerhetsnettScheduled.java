@@ -3,9 +3,8 @@ package no.nav.doksikkerhetsnett.scheduler;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
-import no.nav.doksikkerhetsnett.entities.Bruker;
-import no.nav.doksikkerhetsnett.entities.responses.FinnOppgaveResponse;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
+import no.nav.doksikkerhetsnett.entities.responses.FinnOppgaveResponse;
 import no.nav.doksikkerhetsnett.entities.responses.OpprettOppgaveResponse;
 import no.nav.doksikkerhetsnett.metrics.MetricsScheduler;
 import no.nav.doksikkerhetsnett.services.FinnMottatteJournalposterService;
@@ -16,7 +15,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 

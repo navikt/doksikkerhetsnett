@@ -1,24 +1,15 @@
 package no.nav.doksikkerhetsnett.consumers;
 
-import static no.nav.doksikkerhetsnett.constants.DomainConstants.APP_NAME;
-import static no.nav.doksikkerhetsnett.constants.DomainConstants.BEARER_PREFIX;
-import static no.nav.doksikkerhetsnett.constants.DomainConstants.CORRELATION_HEADER;
-import static no.nav.doksikkerhetsnett.constants.DomainConstants.UUID_HEADER;
-import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CALL_ID;
-import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_ID;
-import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
-import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
-
+import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
+import no.nav.doksikkerhetsnett.constants.MDCConstants;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
 import no.nav.doksikkerhetsnett.entities.responses.FinnOppgaveResponse;
-import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFunctionalException;
-import no.nav.doksikkerhetsnett.jaxws.MDCGenerate;
-import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
-import no.nav.doksikkerhetsnett.constants.MDCConstants;
-import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveTillaterIkkeTilknyttingFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFinnesIkkeFunctionalException;
+import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFunctionalException;
+import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveTillaterIkkeTilknyttingFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnOppgaveTechnicalException;
+import no.nav.doksikkerhetsnett.jaxws.MDCGenerate;
 import no.nav.doksikkerhetsnett.metrics.Metrics;
 import no.nav.doksikkerhetsnett.utils.Utils;
 import org.slf4j.MDC;
@@ -39,6 +30,11 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static no.nav.doksikkerhetsnett.constants.DomainConstants.BEARER_PREFIX;
+import static no.nav.doksikkerhetsnett.constants.DomainConstants.CORRELATION_HEADER;
+import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
+import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 
 @Component
 public class FinnOppgaveConsumer {

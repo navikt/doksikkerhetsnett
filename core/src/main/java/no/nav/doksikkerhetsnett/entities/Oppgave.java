@@ -15,7 +15,7 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Oppgave implements Cloneable {
+public class Oppgave {
     public static final String ENHETSNUMMER_GENERISK = "9999";
     public static final String OPPGAVETYPE_JOURNALFOERT = "JFR";
     public static final String OPPGAVETYPE_FORDELING = "FDR";

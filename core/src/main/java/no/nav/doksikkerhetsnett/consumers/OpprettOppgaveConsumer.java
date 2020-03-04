@@ -3,7 +3,6 @@ package no.nav.doksikkerhetsnett.consumers;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.constants.MDCConstants;
-import no.nav.doksikkerhetsnett.entities.jira.Issue;
 import no.nav.doksikkerhetsnett.entities.Bruker;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
