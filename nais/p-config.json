@@ -5,7 +5,6 @@
   "DOKSIKKERHETSNETT_SECURITYSERVICETOKENURL": "https://security-token-service.nais.adeo.no/rest/v1/sts/token",
   "DOKSIKKERHETSNETT_OPPGAVEURL": "https://oppgave.nais.adeo.no/api/v1/oppgaver",
   "DOKSIKKERHETSNETT_FINNMOTTATTEJOURNALPOSTERURL": "https://dokarkiv.nais.adeo.no/rest/intern/journalpostapi/v1/finnMottatteJournalposter/",
-  "VAULT": "/kv/prod/fss/doksikkerhetsnett/default",
   "INGRESSES": [
     "https://doksikkerhetsnett.nais.adeo.no"
   ]
