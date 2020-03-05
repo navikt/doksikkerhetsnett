@@ -13,7 +13,7 @@ spec:
       value: {{ DOKSIKKERHETSNETT_SECURITYSERVICETOKENURL }}
     - name: DOKSIKKERHETSNETT_OPPGAVEURL
       value: {{ DOKSIKKERHETSNETT_OPPGAVEURL }}
-    - name: {{ DOKSIKKERHETSNETT_OPPRETTJIRAISSUEURL }}
+    - name: DOKSIKKERHETSNETT_OPPRETTJIRAISSUEURL
       value: https://jira.adeo.no/rest/api/2/issue
   image: {{ image }}
   ingresses:
