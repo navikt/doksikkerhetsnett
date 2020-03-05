@@ -42,10 +42,13 @@ public class FinnOppgaveConsumer {
     private final String oppgaveUrl;
     private final RestTemplate restTemplate;
     private final StsRestConsumer stsRestConsumer;
-    private final String DEFAULT_URL_P1 = "&sorteringsrekkefolge=ASC&";
-    private final String DEFAULT_URL_P2 = "&limit=";
-    private final String STATUSKATEGORI_AAPEN = "statuskategori=AAPEN";
 
+    private final String PARAM_NAME_JOURNALPOSTID = "journalpostId";
+    private final String PARAM_NAME_OPPGAVETYPE = "oppgavetype";
+    private final String PARAM_NAME_STATUSKATEGORI = "statuskategori";
+    private final String PARAM_NAME_SORTERINGSREKKEFOLGE = "sorteringsrekkefolge";
+    private final String PARAM_NAME_LIMIT = "limit";
+    private final String PARAM_NAME_OFFSET = "offset";
     private static final int LIMIT = 50;
 
     public FinnOppgaveConsumer(RestTemplateBuilder restTemplateBuilder,
@@ -66,20 +69,18 @@ public class FinnOppgaveConsumer {
         try {
             HttpHeaders headers = createHeaders();
             HttpEntity<?> requestEntity = new HttpEntity<>(headers);
-            ArrayList<String> idStrings = Utils.journalpostListToJournalpostIdListQueryString(ubehandledeJournalposter, LIMIT);
+            List<List<Long>> partitionedIds = Utils.journalpostListToPartitionedJournalpostIdList(ubehandledeJournalposter, LIMIT);
             ArrayList<FinnOppgaveResponse> oppgaveResponses = new ArrayList<>();
 
-            for (String journalpostIdsAsString : idStrings) {
-                FinnOppgaveResponse oppgaveResponse =
-                        executeGetRequest(journalpostIdsAsString + STATUSKATEGORI_AAPEN + DEFAULT_URL_P1 + DEFAULT_URL_P2 + LIMIT, requestEntity);
+            for (List<Long> ids : partitionedIds) {
+                FinnOppgaveResponse oppgaveResponse = executeGetRequest(ids, requestEntity, 0);
                 oppgaveResponses.add(oppgaveResponse);
                 int differenceBetweenTotalReponsesAndResponseList = oppgaveResponse.getAntallTreffTotalt() - oppgaveResponse.getOppgaver()
                         .size();
                 if (differenceBetweenTotalReponsesAndResponseList != 0) {
                     int extraPages = differenceBetweenTotalReponsesAndResponseList / LIMIT;
                     for (int i = 1; i <= extraPages + 1; i++) {
-                        oppgaveResponses.add(executeGetRequest(
-                                journalpostIdsAsString + STATUSKATEGORI_AAPEN + DEFAULT_URL_P1 + "offset=" + i * LIMIT + DEFAULT_URL_P2 + LIMIT, requestEntity));
+                        oppgaveResponses.add(executeGetRequest(ids, requestEntity, i));
                     }
                 }
             }
@@ -108,10 +109,19 @@ public class FinnOppgaveConsumer {
         }
     }
 
-    private FinnOppgaveResponse executeGetRequest(String param, HttpEntity<?> requestEntity) {
+    private FinnOppgaveResponse executeGetRequest(List<Long> ids, HttpEntity<?> requestEntity, int offset) {
+        String journalpostParams = Utils.listOfLongsToQueryParams(ids, PARAM_NAME_JOURNALPOSTID);
         URI uri = UriComponentsBuilder.fromHttpUrl(oppgaveUrl)
-                .queryParam(param)
+                .query(journalpostParams)
+                .queryParam(PARAM_NAME_OPPGAVETYPE, Oppgave.OPPGAVETYPE_JOURNALFOERT)
+                .queryParam(PARAM_NAME_OPPGAVETYPE, Oppgave.OPPGAVETYPE_FORDELING)
+                .queryParam(PARAM_NAME_STATUSKATEGORI, "AAPEN")
+                .queryParam(PARAM_NAME_SORTERINGSREKKEFOLGE, "ASC")
+                .queryParam(PARAM_NAME_LIMIT, LIMIT)
                 .build().toUri();
+        if (offset > 0) {
+            uri = Utils.appendQuery(uri, PARAM_NAME_OFFSET, offset * LIMIT + "");
+        }
         return restTemplate.exchange(uri, HttpMethod.GET, requestEntity, FinnOppgaveResponse.class)
                 .getBody();
     }

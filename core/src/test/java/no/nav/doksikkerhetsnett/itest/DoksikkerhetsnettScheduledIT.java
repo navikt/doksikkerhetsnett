@@ -1,12 +1,5 @@
 package no.nav.doksikkerhetsnett.itest;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.consumers.FinnMottatteJournalposterConsumer;
 import no.nav.doksikkerhetsnett.consumers.FinnOppgaveConsumer;
@@ -34,6 +27,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.List;
 import java.util.Map;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {TestConfig.class},
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -41,10 +41,8 @@ import java.util.Map;
 @ActiveProfiles("itest")
 class DoksikkerhetsnettScheduledIT {
     private static final String URL_FINNMOTTATTEJOURNALPOSTER = "/rest/intern/journalpostapi/v1/finnMottatteJournalposter/";
-    private static final String QUERY_PARAM_AAPNEOPPGAVER = "&statuskategori=AAPEN&sorteringsrekkefolge=ASC&&limit=50";
     private static final String URL_STSAUTH = "/rest/v1/sts/token\\?grant_type=client_credentials&scope=openid";
-    private static final String URL_OPPGAVE = "/api/v1/oppgaver\\?";
-    private static final String JOURNALPOST_SEARCH = "journalpostId=111111111&journalpostId=222222222&journalpostId=333333333&journalpostId=444444444&journalpostId=555555555&journalpostId=666666666";
+    private static final String URL_OPPGAVE_JOURNALPOST_SEARCH = "/api/v1/oppgaver\\?journalpostId=111111111&journalpostId=222222222&journalpostId=333333333&journalpostId=444444444&journalpostId=555555555&journalpostId=666666666&oppgavetype=JFR&oppgavetype=FDR&statuskategori=AAPEN&sorteringsrekkefolge=ASC&limit=50";
     private static final String METRIC_TAGS = "UFO;ALTINN;0000";
 
     private FinnMottatteJournalposterService finnMottatteJournalposterService;
@@ -76,7 +74,7 @@ class DoksikkerhetsnettScheduledIT {
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
                         .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
                         .withBodyFile("oppgave/stsResponse-happy.json")));
-        stubFor(get(urlMatching(URL_OPPGAVE + JOURNALPOST_SEARCH + QUERY_PARAM_AAPNEOPPGAVER))
+        stubFor(get(urlMatching(URL_OPPGAVE_JOURNALPOST_SEARCH))
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
                         .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
                         .withBodyFile("finnoppgave/finnOppgaverAAPNE-happy.json")));

@@ -47,3 +47,5 @@ spec:
     paths:
       - kvPath: {{ SRVDOKSIKKERHETSNETT }}
         mountPath: /var/run/secrets/nais.io/srvdoksikkerhetsnt
+      - kvPath: {{ VAULT }}
+        mountPath: "/var/run/secrets/nais.io/vault"
