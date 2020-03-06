@@ -57,7 +57,7 @@ public class OpprettOppgaveService {
             return opprettOppgave(oppgaveMedTypeFordeling);
         }
 
-        JiraResponse response = jiraConsumer.OpprettJiraIssue(oppgave, e);
+        JiraResponse response = jiraConsumer.opprettJiraIssue(oppgave, e);
         log.info("Doksikkerhetsnett opprettet en jira-issue med kode {}", response.getKey());
         throw new OpprettOppgaveFunctionalException(String.format("opprettOppgave feilet funksjonelt med statusKode=%s. Feilmelding=%s.", e
                 .getStatusCode(), e.getResponseBodyAsString()), e);

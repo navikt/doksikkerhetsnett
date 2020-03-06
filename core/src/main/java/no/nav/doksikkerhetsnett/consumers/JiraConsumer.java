@@ -57,7 +57,7 @@ public class JiraConsumer {
         this.opprettJiraIssueUrl = dokSikkerhetsnettProperties.getOpprettjiraissueurl();
     }
 
-    public JiraResponse OpprettJiraIssue(Oppgave oppgave, HttpClientErrorException exception) {
+    public JiraResponse opprettJiraIssue(Oppgave oppgave, HttpClientErrorException exception) {
         try {
             HttpHeaders headers = createHeaders();
             Issue issue = createIssue(oppgave, exception);
