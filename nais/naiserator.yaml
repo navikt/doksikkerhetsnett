@@ -14,7 +14,7 @@ spec:
     - name: DOKSIKKERHETSNETT_OPPGAVEURL
       value: {{ DOKSIKKERHETSNETT_OPPGAVEURL }}
     - name: DOKSIKKERHETSNETT_OPPRETTJIRAISSUEURL
-      value: https://jira.adeo.no/rest/api/2/issue
+      value: {{ DOKSIKKERHETSNETT_OPPRETTJIRAISSUEURL }}
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
@@ -48,4 +48,4 @@ spec:
       - kvPath: {{ SRVDOKSIKKERHETSNETT }}
         mountPath: /var/run/secrets/nais.io/srvdoksikkerhetsnt
       - kvPath: {{ DOKSIKKERHETSNETT_VAULT }}
-        mountPath: "/var/run/secrets/nais.io/vault"
+        mountPath: /var/run/secrets/nais.io/vault
