@@ -23,11 +23,12 @@ import org.springframework.web.client.RestTemplate;
 import java.time.Duration;
 
 import static no.nav.doksikkerhetsnett.constants.DomainConstants.BEARER_PREFIX;
-import static no.nav.doksikkerhetsnett.constants.DomainConstants.CORRELATION_HEADER;
 
 @Slf4j
 @Component
 public class OpprettOppgaveConsumer {
+
+    public static final String CORRELATION_HEADER = "X-Correlation-Id";
 
     private final RestTemplate restTemplate;
     private final StsRestConsumer stsRestConsumer;

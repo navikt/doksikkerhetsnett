@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static no.nav.doksikkerhetsnett.constants.DomainConstants.BEARER_PREFIX;
-import static no.nav.doksikkerhetsnett.constants.DomainConstants.CORRELATION_HEADER;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 
@@ -43,6 +42,7 @@ public class FinnOppgaveConsumer {
     private final RestTemplate restTemplate;
     private final StsRestConsumer stsRestConsumer;
 
+    public static final String CORRELATION_HEADER = "X-Correlation-Id";
     private final String PARAM_NAME_JOURNALPOSTID = "journalpostId";
     private final String PARAM_NAME_OPPGAVETYPE = "oppgavetype";
     private final String PARAM_NAME_STATUSKATEGORI = "statuskategori";

@@ -3,10 +3,10 @@ package no.nav.doksikkerhetsnett.consumers;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.constants.MDCConstants;
-import no.nav.doksikkerhetsnett.entities.jira.Fields;
-import no.nav.doksikkerhetsnett.entities.jira.Issuetype;
-import no.nav.doksikkerhetsnett.entities.jira.Issue;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
+import no.nav.doksikkerhetsnett.entities.jira.Fields;
+import no.nav.doksikkerhetsnett.entities.jira.Issue;
+import no.nav.doksikkerhetsnett.entities.jira.Issuetype;
 import no.nav.doksikkerhetsnett.entities.jira.Project;
 import no.nav.doksikkerhetsnett.entities.responses.JiraResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFinnesIkkeFunctionalException;
@@ -14,6 +14,7 @@ import no.nav.doksikkerhetsnett.exceptions.technical.FinnOppgaveTechnicalExcepti
 import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -21,15 +22,11 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import org.springframework.http.HttpHeaders;
-
 import java.time.Duration;
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static no.nav.doksikkerhetsnett.constants.DomainConstants.APP_NAME;
-import static no.nav.doksikkerhetsnett.constants.DomainConstants.CORRELATION_HEADER;
-import static no.nav.doksikkerhetsnett.constants.DomainConstants.UUID_HEADER;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_ID;
 
@@ -37,6 +34,8 @@ import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_I
 @Component
 public class JiraConsumer {
 
+    public static final String CORRELATION_HEADER = "X-Correlation-Id";
+    public static final String UUID_HEADER = "X-Uuid";
     private final String PROJECT_KEY = "ADMKDL";
     private final String ISSUETYPE_NAME = "Avvik";
     private final List<String> LABELS = asList("morgenvakt", "doksikkerhetsnett");
