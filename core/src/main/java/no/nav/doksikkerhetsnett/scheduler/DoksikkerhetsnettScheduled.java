@@ -75,11 +75,12 @@ public class DoksikkerhetsnettScheduled {
 
         try {
             ubehandledeJournalposterUtenOppgave = finnEksisterendeOppgaverFraUbehandledeJournalpostList(ubehandledeJournalposter);
-            log.info("doksikkerhetsnett fant {} journalposter uten oppgave {}",
-                    ubehandledeJournalposterUtenOppgave.size(), Utils.logWithTema(temaer));
-            if (ubehandledeJournalposterUtenOppgave.size() > 0) {
-                log.info("journalpostene hadde ID'ene: {}", ubehandledeJournalposterUtenOppgave);
-            }
+            log.info("doksikkerhetsnett fant {} journalposter uten oppgave {}{}",
+                    ubehandledeJournalposterUtenOppgave.size(),
+                    Utils.logWithTema(temaer),
+                    ubehandledeJournalposter.size() > 0 ?
+                            ". Journalpostene hadde ID'ene:" + ubehandledeJournalposterUtenOppgave :
+                            "");
         } catch (Exception e) {
             log.error("doksikkerhetsnett feilet under hentingen av alle oppgaver");
             return null;
