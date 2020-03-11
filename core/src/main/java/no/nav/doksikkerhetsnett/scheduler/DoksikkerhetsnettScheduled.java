@@ -78,7 +78,7 @@ public class DoksikkerhetsnettScheduled {
             log.info("doksikkerhetsnett fant {} journalposter uten oppgave {}{}",
                     ubehandledeJournalposterUtenOppgave.size(),
                     Utils.logWithTema(temaer),
-                    ubehandledeJournalposter.size() > 0 ?
+                    ubehandledeJournalposterUtenOppgave.size() > 0 ?
                             ". Journalpostene hadde ID'ene:" + ubehandledeJournalposterUtenOppgave :
                             "");
         } catch (Exception e) {
