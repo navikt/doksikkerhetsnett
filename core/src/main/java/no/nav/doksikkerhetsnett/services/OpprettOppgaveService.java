@@ -84,21 +84,21 @@ public class OpprettOppgaveService {
     }
 
     private String extractOrgnr(Journalpost jp) {
-        if (jp.getBruker() != null && jp.getBruker().getType().equals(Bruker.TYPE_ORGANISASJON)) {
+        if (jp.getBruker() != null && Bruker.TYPE_ORGANISASJON.equals(jp.getBruker().getType())) {
             return jp.getBruker().getId();
         }
         return null;
     }
 
     private String extractBnr(Journalpost jp) {
-        if (jp.getBruker() != null && jp.getBruker().getType().equals(Bruker.TYPE_PERSON)) {
+        if (jp.getBruker() != null && Bruker.TYPE_PERSON.equals(jp.getBruker().getType())) {
             return jp.getBruker().getId();
         }
         return null;
     }
 
     private String extractTema(Journalpost jp) {
-        if (jp.getTema() == null || jp.getTema().equals(Oppgave.TEMA_UKJENT)) {
+        if (jp.getTema() == null || Oppgave.TEMA_UKJENT.equals(jp.getTema())) {
             return Oppgave.TEMA_GENERELL;
         }
         return jp.getTema();
