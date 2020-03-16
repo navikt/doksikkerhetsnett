@@ -109,5 +109,4 @@ public class DoksikkerhetsnettScheduled {
                 .filter(ubehandletJournalpost -> !journalposterMedOppgaver.contains("" + ubehandletJournalpost.getJournalpostId()))
                 .collect(Collectors.toList()));
     }
-
 }
