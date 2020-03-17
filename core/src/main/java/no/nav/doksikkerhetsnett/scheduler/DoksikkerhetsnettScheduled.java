@@ -41,7 +41,7 @@ public class DoksikkerhetsnettScheduled {
         this.metricsScheduler = metricsScheduler;
     }
 
-    @Scheduled(initialDelay = 2500, fixedDelay = 24 * HOUR)
+    @Scheduled(initialDelay = 5000, fixedDelay = 24 * HOUR)
     public void triggerOppdatering() {
         lagOppgaverForGlemteJournalposter();
     }
