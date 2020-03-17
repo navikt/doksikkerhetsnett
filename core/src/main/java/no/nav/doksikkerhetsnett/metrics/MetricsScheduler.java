@@ -2,7 +2,7 @@ package no.nav.doksikkerhetsnett.metrics;
 
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
-import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.UbehandletJournalpost;
+import no.nav.doksikkerhetsnett.entities.Journalpost;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class MetricsScheduler {
         this.meterRegistry = meterRegistry;
     }
 
-    public void incrementMetrics(List<UbehandletJournalpost> ubehandledeJournalposter, List<UbehandletJournalpost> ubehandledeJournalposterUtenOppgave, Class parentClass) {
+    public void incrementMetrics(List<Journalpost> ubehandledeJournalposter, List<Journalpost> ubehandledeJournalposterUtenOppgave, Class parentClass) {
         Map<String, Integer> newMetricsTotal = extractMetrics(ubehandledeJournalposter);
         Map<String, Integer> newMetricsUtenOppgave = extractMetrics(ubehandledeJournalposterUtenOppgave);
         updateCaches(newMetricsTotal, newMetricsUtenOppgave);
@@ -58,9 +58,9 @@ public class MetricsScheduler {
         }
     }
 
-    private Map<String, Integer> extractMetrics(List<UbehandletJournalpost> journalposts) {
+    private Map<String, Integer> extractMetrics(List<Journalpost> journalposts) {
         Map<String, Integer> metrics = new HashMap<>();
-        for (UbehandletJournalpost jp : journalposts) {
+        for (Journalpost jp : journalposts) {
             String tema = jp.getTema() != null ? jp.getTema() : "mangler tema";
             String mottakskanal = jp.getMottaksKanal() != null ? jp.getMottaksKanal() : "mangler mottakskanal";
             String journalforendeEnhet = jp.getJournalforendeEnhet() != null ? jp.getJournalforendeEnhet() : "mangler journalførende enhet";

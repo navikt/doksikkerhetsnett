@@ -1,22 +1,14 @@
 package no.nav.doksikkerhetsnett.itest;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
 import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
-import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.UbehandletJournalpost;
-import no.nav.doksikkerhetsnett.consumer.finnoppgave.FinnOppgaveConsumer;
-import no.nav.doksikkerhetsnett.consumer.finnoppgave.FinnOppgaveResponse;
-import no.nav.doksikkerhetsnett.consumer.sts.StsRestConsumer;
-import no.nav.doksikkerhetsnett.exceptions.functional.FinOppgaveTillaterIkkeTilknyttingFunctionalException;
+import no.nav.doksikkerhetsnett.consumers.FinnOppgaveConsumer;
+import no.nav.doksikkerhetsnett.consumers.StsRestConsumer;
+import no.nav.doksikkerhetsnett.entities.Journalpost;
+import no.nav.doksikkerhetsnett.entities.responses.FinnOppgaveResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFinnesIkkeFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFunctionalException;
+import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveTillaterIkkeTilknyttingFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnOppgaveTechnicalException;
 import no.nav.doksikkerhetsnett.itest.config.TestConfig;
 import org.junit.jupiter.api.AfterEach;
@@ -34,18 +26,26 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {TestConfig.class},
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWireMock(port = 0)
 @ActiveProfiles("itest")
-public class FinnOppgaveConsumerIT {
-    private static final String URL_FINNOPPGAVER = "/api/v1/oppgaver\\?";
+public class FinnOppgaveIT {
+    private static final String URL_OPPGAVER = "/api/v1/oppgaver";
     private static final String URL_STSAUTH = "/rest/v1/sts/token\\?grant_type=client_credentials&scope=openid";
-    private static final String OPPGAVER_HAPPY_PATH = "journalpostId=111111111&statuskategori=AAPEN&sorteringsrekkefolge=ASC&&limit=50";
+    private static final String OPPGAVER_HAPPY_PATH = "\\?journalpostId=111111111&oppgavetype=JFR&oppgavetype=FDR&statuskategori=AAPEN&sorteringsrekkefolge=ASC&limit=50";
     private static int HAPPY_INT = 111111111;
     private static int BAD_INT = 222;
-    private static final String OPPGAVER_BAD_REQUEST = "journalpostId=222&statuskategori=AAPEN&sorteringsrekkefolge=ASC&&limit=50";
+    private static final String OPPGAVER_BAD_REQUEST = "\\?journalpostId=222&oppgavetype=JFR&oppgavetype=FDR&statuskategori=AAPEN&sorteringsrekkefolge=ASC&limit=50";
     private FinnOppgaveConsumer finnOppgaveConsumer;
 
     @Autowired
@@ -70,7 +70,7 @@ public class FinnOppgaveConsumerIT {
 
     @Test
     public void testFinnOppgaveMapping() {
-        stubFor(get(urlMatching(URL_FINNOPPGAVER + OPPGAVER_HAPPY_PATH))
+        stubFor(get(urlMatching(URL_OPPGAVER + OPPGAVER_HAPPY_PATH))
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
                         .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
                         .withBodyFile("finnoppgave/finnOppgaverAAPNE-happy.json")));
@@ -94,28 +94,28 @@ public class FinnOppgaveConsumerIT {
 
     @Test
     public void shouldThrowFinnOppgaveFinnesIkkeFunctionalException() {
-        stubFor(get(urlMatching(URL_FINNOPPGAVER + OPPGAVER_BAD_REQUEST))
+        stubFor(get(urlMatching(URL_OPPGAVER + OPPGAVER_BAD_REQUEST))
                 .willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND.value())));
         assertThrows(FinnOppgaveFinnesIkkeFunctionalException.class, () -> finnOppgaveConsumer.finnOppgaveForJournalposter(getJournalpostList(BAD_INT)));
     }
 
     @Test
     public void shouldThrowFinnOppgaveTillaterIkkeTilknytningFunctionalException() {
-        stubFor(get(urlMatching(URL_FINNOPPGAVER + OPPGAVER_BAD_REQUEST))
+        stubFor(get(urlMatching(URL_OPPGAVER + OPPGAVER_BAD_REQUEST))
                 .willReturn(aResponse().withStatus(HttpStatus.CONFLICT.value())));
-        assertThrows(FinOppgaveTillaterIkkeTilknyttingFunctionalException.class, () -> finnOppgaveConsumer.finnOppgaveForJournalposter(getJournalpostList(BAD_INT)));
+        assertThrows(FinnOppgaveTillaterIkkeTilknyttingFunctionalException.class, () -> finnOppgaveConsumer.finnOppgaveForJournalposter(getJournalpostList(BAD_INT)));
     }
 
     @Test
     public void shouldThrowFinnOppgaveFunctionalException() {
-        stubFor(get(urlMatching(URL_FINNOPPGAVER + OPPGAVER_BAD_REQUEST))
+        stubFor(get(urlMatching(URL_OPPGAVER + OPPGAVER_BAD_REQUEST))
                 .willReturn(aResponse().withStatus(HttpStatus.BAD_REQUEST.value())));
         assertThrows(FinnOppgaveFunctionalException.class, () -> finnOppgaveConsumer.finnOppgaveForJournalposter(getJournalpostList(BAD_INT)));
     }
 
     @Test
     public void shouldThrowFinnOppgaveTechnicalException() {
-        stubFor(get(urlMatching(URL_FINNOPPGAVER + OPPGAVER_BAD_REQUEST))
+        stubFor(get(urlMatching(URL_OPPGAVER + OPPGAVER_BAD_REQUEST))
                 .willReturn(aResponse().withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())));
         assertThrows(FinnOppgaveTechnicalException.class, () -> finnOppgaveConsumer.finnOppgaveForJournalposter(getJournalpostList(BAD_INT)));
     }
@@ -124,13 +124,13 @@ public class FinnOppgaveConsumerIT {
         stubFor(get(urlMatching(URL_STSAUTH))
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
                         .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                        .withBodyFile("finnoppgave/stsResponse-happy.json")));
+                        .withBodyFile("oppgave/stsResponse-happy.json")));
     }
 
-    private ArrayList<UbehandletJournalpost> getJournalpostList(int... journalpostIds) {
-        ArrayList<UbehandletJournalpost> ubehandledeJournalpostList = new ArrayList<>();
+    private ArrayList<Journalpost> getJournalpostList(int... journalpostIds) {
+        ArrayList<Journalpost> ubehandledeJournalpostList = new ArrayList<>();
         for (int journalpostId : journalpostIds) {
-            ubehandledeJournalpostList.add(new UbehandletJournalpost().builder().journalpostId(journalpostId).build());
+            ubehandledeJournalpostList.add(new Journalpost().builder().journalpostId(journalpostId).build());
         }
         return ubehandledeJournalpostList;
     }

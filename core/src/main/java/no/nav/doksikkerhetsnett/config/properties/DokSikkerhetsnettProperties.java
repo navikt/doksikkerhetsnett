@@ -7,7 +7,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
-import java.util.Random;
 
 @Getter
 @Setter
@@ -20,10 +19,13 @@ public class DokSikkerhetsnettProperties {
     private String finnmottattejournalposterurl;
 
     @NotNull
-    private String finnoppgaverurl;
+    private String oppgaveurl;
 
     @NotNull
     private String securityservicetokenurl;
+
+    @NotNull
+    private String opprettjiraissueurl;
 
     @NotNull
     private ServiceUserProperties serviceuser;

@@ -4,8 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.CONFLICT)
-public class FinOppgaveTillaterIkkeTilknyttingFunctionalException extends AbstractDoksikkerhetsnettFunctionalException {
-    public FinOppgaveTillaterIkkeTilknyttingFunctionalException(String message, Throwable cause) {
+public class FinnOppgaveTillaterIkkeTilknyttingFunctionalException extends AbstractDoksikkerhetsnettFunctionalException {
+    public FinnOppgaveTillaterIkkeTilknyttingFunctionalException(String message, Throwable cause) {
         super(message, cause);
     }
 }

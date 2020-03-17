@@ -1,10 +1,11 @@
-package no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter;
+package no.nav.doksikkerhetsnett.entities.responses;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import no.nav.doksikkerhetsnett.entities.Oppgave;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -13,13 +14,15 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FinnMottatteJournalposterResponse {
+public class FinnOppgaveResponse {
 
-    @NotNull(message = "FinnMottatteJournalposterResponse mangler Journalposter")
+    @NotNull(message = "Feilet ved henting av oppgaver")
+    private int antallTreffTotalt;
+
     @ApiModelProperty(
             dataType = "List",
-            value = "journalposter",
+            value = "oppgaver",
             required = true
     )
-    private List<UbehandletJournalpost> journalposter;
+    private List<Oppgave> oppgaver;
 }

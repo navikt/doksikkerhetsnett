@@ -1,20 +1,17 @@
-package no.nav.doksikkerhetsnett.scheduler;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+package no.nav.doksikkerhetsnett.itest;
 
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
-import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.FinnMottatteJournalposterConsumer;
-import no.nav.doksikkerhetsnett.consumer.finnoppgave.FinnOppgaveConsumer;
-import no.nav.doksikkerhetsnett.consumer.sts.StsRestConsumer;
+import no.nav.doksikkerhetsnett.consumers.FinnMottatteJournalposterConsumer;
+import no.nav.doksikkerhetsnett.consumers.FinnOppgaveConsumer;
+import no.nav.doksikkerhetsnett.consumers.JiraConsumer;
+import no.nav.doksikkerhetsnett.consumers.OpprettOppgaveConsumer;
+import no.nav.doksikkerhetsnett.consumers.StsRestConsumer;
 import no.nav.doksikkerhetsnett.itest.config.TestConfig;
 import no.nav.doksikkerhetsnett.metrics.MetricsScheduler;
-import no.nav.doksikkerhetsnett.service.FinnMottatteJournalposterService;
-import no.nav.doksikkerhetsnett.service.FinnOppgaveService;
+import no.nav.doksikkerhetsnett.scheduler.DoksikkerhetsnettScheduled;
+import no.nav.doksikkerhetsnett.services.FinnMottatteJournalposterService;
+import no.nav.doksikkerhetsnett.services.FinnOppgaveService;
+import no.nav.doksikkerhetsnett.services.OpprettOppgaveService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +27,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.List;
 import java.util.Map;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {TestConfig.class},
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -37,14 +41,13 @@ import java.util.Map;
 @ActiveProfiles("itest")
 class DoksikkerhetsnettScheduledIT {
     private static final String URL_FINNMOTTATTEJOURNALPOSTER = "/rest/intern/journalpostapi/v1/finnMottatteJournalposter/";
-    private static final String QUERY_PARAM_AAPNEOPPGAVER = "&statuskategori=AAPEN&sorteringsrekkefolge=ASC&&limit=50";
     private static final String URL_STSAUTH = "/rest/v1/sts/token\\?grant_type=client_credentials&scope=openid";
-    private static final String URL_OPPGAVE = "/api/v1/oppgaver\\?";
-    private static final String JOURNALPOST_SEARCH = "journalpostId=111111111&journalpostId=222222222&journalpostId=333333333&journalpostId=444444444&journalpostId=555555555&journalpostId=666666666";
+    private static final String URL_OPPGAVE_JOURNALPOST_SEARCH = "/api/v1/oppgaver\\?journalpostId=111111111&journalpostId=222222222&journalpostId=333333333&journalpostId=444444444&journalpostId=555555555&journalpostId=666666666&oppgavetype=JFR&oppgavetype=FDR&statuskategori=AAPEN&sorteringsrekkefolge=ASC&limit=50";
     private static final String METRIC_TAGS = "UFO;ALTINN;0000";
 
     private FinnMottatteJournalposterService finnMottatteJournalposterService;
     private FinnOppgaveService finnOppgaveService;
+    private OpprettOppgaveService opprettOppgaveService;
 
     @Autowired
     private DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
@@ -55,19 +58,23 @@ class DoksikkerhetsnettScheduledIT {
     @Autowired
     private MetricsScheduler metricsScheduler;
 
+    @Autowired
+    private JiraConsumer jiraConsumer;
+
     @BeforeEach
     void setUpConsumer() {
         setUpStubs();
         finnOppgaveService = new FinnOppgaveService(new FinnOppgaveConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties, stsRestConsumer));
         finnMottatteJournalposterService = new FinnMottatteJournalposterService(new FinnMottatteJournalposterConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties));
+        opprettOppgaveService = new OpprettOppgaveService(new OpprettOppgaveConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties, stsRestConsumer), jiraConsumer);
     }
 
     void setUpStubs() {
         stubFor(get(urlMatching(URL_STSAUTH))
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
                         .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                        .withBodyFile("finnoppgave/stsResponse-happy.json")));
-        stubFor(get(urlMatching(URL_OPPGAVE + JOURNALPOST_SEARCH + QUERY_PARAM_AAPNEOPPGAVER))
+                        .withBodyFile("oppgave/stsResponse-happy.json")));
+        stubFor(get(urlMatching(URL_OPPGAVE_JOURNALPOST_SEARCH))
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
                         .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
                         .withBodyFile("finnoppgave/finnOppgaverAAPNE-happy.json")));
@@ -80,7 +87,7 @@ class DoksikkerhetsnettScheduledIT {
     @Test
     public void Test() {
         DoksikkerhetsnettScheduled doksikkerhetsnettScheduled = new DoksikkerhetsnettScheduled(
-                finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService, metricsScheduler);
+                finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService, opprettOppgaveService, metricsScheduler);
         List journalposterUtenOppgaver = doksikkerhetsnettScheduled.finnJournalposterUtenOppgaver();
         assertEquals(journalposterUtenOppgaver.size(), 4);
 

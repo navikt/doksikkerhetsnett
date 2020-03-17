@@ -4,17 +4,18 @@ Doksikkerhetsnett
 Sikkerhetsnett for Joark 
 
 Sikkerhetsnettet er en skedulert jobb som henter alle ubehandlede journalposter 
-som er eldre enn en uke og oppretter oppgaver for disse om de ikke eksisterer.
+som er eldre enn en uke og oppretter oppgaver for disse om de ikke allerede har.
 
-Tjenesten er nå satt til å kjøre en gang per døgn. Dette kan endres i no.nav.doksikkerhetsnett.scheduler.DoksikkerhetsnettScheduled
+Tjenesten er nå satt til å kjøre én gang per døgn. Dette kan endres i no.nav.doksikkerhetsnett.scheduler.DoksikkerhetsnettScheduled
 
-Man kan spesifisere hvilke temaer man ønsker å fange ved å oppdatere miljøvariabelen "temaer".
+Man kan spesifisere hvilke temaer man ønsker å fange ved å oppdatere miljøvariabelen "doksikkerhetsnett.temaer".
 
 # Henvendelser
 
 Spørsmål knyttet til koden eller prosjektet kan rettes mot:
 
-* Applikasjonsansvarlig TBA
+* Applikasjonsansvarlig Ida Stenerud
+* Hovedutviklere Marton Skjæveland & Joakim Borgersen
 
 ## For NAV-ansatte
 

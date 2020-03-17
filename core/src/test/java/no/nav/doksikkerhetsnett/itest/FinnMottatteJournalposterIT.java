@@ -12,9 +12,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
-import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.FinnMottatteJournalposterConsumer;
-import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.FinnMottatteJournalposterResponse;
-import no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter.UbehandletJournalpost;
+import no.nav.doksikkerhetsnett.consumers.FinnMottatteJournalposterConsumer;
+import no.nav.doksikkerhetsnett.entities.responses.FinnMottatteJournalposterResponse;
+import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFinnesIkkeFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException;
@@ -98,7 +98,7 @@ public class FinnMottatteJournalposterIT {
 
     @Test
     public void finnMottatteJournalposterMedTemaNull() {
-        stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER + ""))
+        stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER))
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
                         .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
                         .withBodyFile("finnmottattejournalposter/mottatteJournalposterMedTemaMulti-happy.json")));
@@ -124,16 +124,16 @@ public class FinnMottatteJournalposterIT {
         assertEquals(expectedOutcome, response.getJournalposter().size());
 
         for (int i = 0; i < response.getJournalposter().size(); i++) {
-            UbehandletJournalpost ubehandletJournalpost = response.getJournalposter().get(i);
-            assertEquals(JOURNALPOSTIDS.get(i), (Long) ubehandletJournalpost.getJournalpostId());
-            assertEquals("M", ubehandletJournalpost.getJournalStatus());
-            assertEquals("ALTINN", ubehandletJournalpost.getMottaksKanal());
-            assertEquals(PERSONIDS.get(i), ubehandletJournalpost.getBruker().getId());
-            assertEquals("PERSON", ubehandletJournalpost.getBruker().getType());
-            assertTrue(assertValidTema(ubehandletJournalpost, resultTemaer));
-            assertEquals("ab0001", ubehandletJournalpost.getBehandlingstema());
-            assertEquals("0000", ubehandletJournalpost.getJournalforendeEnhet());
-            assertEquals(datoOpprettet.get(i), ubehandletJournalpost.getDatoOpprettet());
+            Journalpost journalpost = response.getJournalposter().get(i);
+            assertEquals(JOURNALPOSTIDS.get(i), (Long) journalpost.getJournalpostId());
+            assertEquals("M", journalpost.getJournalStatus());
+            assertEquals("ALTINN", journalpost.getMottaksKanal());
+            assertEquals(PERSONIDS.get(i), journalpost.getBruker().getId());
+            assertEquals("PERSON", journalpost.getBruker().getType());
+            assertTrue(assertValidTema(journalpost, resultTemaer));
+            assertEquals("ab0001", journalpost.getBehandlingstema());
+            assertEquals("0000", journalpost.getJournalforendeEnhet());
+            assertEquals(datoOpprettet.get(i), journalpost.getDatoOpprettet());
         }
     }
 
@@ -166,9 +166,9 @@ public class FinnMottatteJournalposterIT {
     }
 
 
-    private boolean assertValidTema(UbehandletJournalpost ubehandletJournalpost, String... resultTemaer) {
+    private boolean assertValidTema(Journalpost journalpost, String... resultTemaer) {
         for (String validTemas : resultTemaer) {
-            if (validTemas.equals(ubehandletJournalpost.getTema())) {
+            if (validTemas.equals(journalpost.getTema())) {
                 return true;
             }
         }

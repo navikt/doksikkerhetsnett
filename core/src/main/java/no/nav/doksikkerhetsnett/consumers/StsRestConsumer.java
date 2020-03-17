@@ -1,14 +1,13 @@
-package no.nav.doksikkerhetsnett.consumer.sts;
+package no.nav.doksikkerhetsnett.consumers;
 
 import static no.nav.doksikkerhetsnett.config.cache.LokalCacheConfig.STS_CACHE;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.DELAY_SHORT;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.MULTIPLIER_SHORT;
 
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
-import no.nav.doksikkerhetsnett.config.properties.ServiceUserProperties;
+import no.nav.doksikkerhetsnett.entities.responses.StsResponseTo;
 import no.nav.doksikkerhetsnett.exceptions.technical.AbstractDoksikkerhetsnettTechnicalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.StsTechnicalException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.retry.annotation.Backoff;

@@ -11,8 +11,10 @@ spec:
       value: {{ DOKSIKKERHETSNETT_FINNMOTTATTEJOURNALPOSTERURL }}
     - name: DOKSIKKERHETSNETT_SECURITYSERVICETOKENURL
       value: {{ DOKSIKKERHETSNETT_SECURITYSERVICETOKENURL }}
-    - name: DOKSIKKERHETSNETT_FINNOPPGAVERURL
-      value: {{ DOKSIKKERHETSNETT_FINNOPPGAVERURL }}
+    - name: DOKSIKKERHETSNETT_OPPGAVEURL
+      value: {{ DOKSIKKERHETSNETT_OPPGAVEURL }}
+    - name: DOKSIKKERHETSNETT_OPPRETTJIRAISSUEURL
+      value: {{ DOKSIKKERHETSNETT_OPPRETTJIRAISSUEURL }}
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
@@ -45,3 +47,5 @@ spec:
     paths:
       - kvPath: {{ SRVDOKSIKKERHETSNETT }}
         mountPath: /var/run/secrets/nais.io/srvdoksikkerhetsnt
+      - kvPath: {{ DOKSIKKERHETSNETT_VAULT }}
+        mountPath: /var/run/secrets/nais.io/vault

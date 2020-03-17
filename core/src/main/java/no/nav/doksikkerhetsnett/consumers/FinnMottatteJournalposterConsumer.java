@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter;
+package no.nav.doksikkerhetsnett.consumers;
 
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_ID;
@@ -6,6 +6,7 @@ import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
+import no.nav.doksikkerhetsnett.entities.responses.FinnMottatteJournalposterResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFinnesIkkeFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnMottatteJournalposterTechnicalException;
@@ -60,13 +61,13 @@ public class FinnMottatteJournalposterConsumer {
         } catch (HttpClientErrorException e) {
             if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
                 throw new FinnMottatteJournalposterFinnesIkkeFunctionalException(String.format("finnMottatteJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
-                        .getStatusCode(), e.getMessage(), finnMottatteJournalposterUrl), e);
+                        .getStatusCode(), e.getResponseBodyAsString(), finnMottatteJournalposterUrl), e);
             } else if (HttpStatus.CONFLICT.equals(e.getStatusCode())) {
                 throw new FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException(String.format("finnMottatteJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
-                        .getStatusCode(), e.getMessage()), e);
+                        .getStatusCode(),e.getResponseBodyAsString()), e);
             } else {
                 throw new FinnMottatteJournalposterFunctionalException(String.format("finnMottatteJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
-                        .getStatusCode(), e.getMessage(), finnMottatteJournalposterUrl), e);
+                        .getStatusCode(), e.getResponseBodyAsString(), finnMottatteJournalposterUrl), e);
             }
         } catch (HttpServerErrorException e) {
             throw new FinnMottatteJournalposterTechnicalException(String.format("finnMottatteJournalposter feilet teknisk med statusKode=%s. Feilmelding=%s", e

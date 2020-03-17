@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.consumer.finnmottattejournalposter;
+package no.nav.doksikkerhetsnett.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
@@ -14,7 +14,7 @@ import java.util.Date;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UbehandletJournalpost {
+public class Journalpost {
     @NotNull(message = "JournalpostId mangler")
     @ApiModelProperty(
             value = "ID til journalpost i Joark",
@@ -41,7 +41,7 @@ public class UbehandletJournalpost {
     @ApiModelProperty(
             value = "Bruker til journalpost i Joark"
     )
-    private UbehandletBruker bruker;
+    private Bruker bruker;
 
     @ApiModelProperty(
             value = "Temakode til journalpost i Joark",
