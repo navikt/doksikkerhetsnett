@@ -98,7 +98,7 @@ public class FinnMottatteJournalposterIT {
 
     @Test
     public void finnMottatteJournalposterMedTemaNull() {
-        stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER + ""))
+        stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER))
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
                         .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
                         .withBodyFile("finnmottattejournalposter/mottatteJournalposterMedTemaMulti-happy.json")));

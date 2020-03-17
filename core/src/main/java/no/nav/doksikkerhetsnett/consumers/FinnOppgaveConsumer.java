@@ -120,7 +120,7 @@ public class FinnOppgaveConsumer {
                 .queryParam(PARAM_NAME_LIMIT, LIMIT)
                 .build().toUri();
         if (offset > 0) {
-            uri = Utils.appendQuery(uri, PARAM_NAME_OFFSET, offset * LIMIT + "");
+            uri = Utils.appendQuery(uri, PARAM_NAME_OFFSET, Integer.toString(offset * LIMIT));
         }
         return restTemplate.exchange(uri, HttpMethod.GET, requestEntity, FinnOppgaveResponse.class)
                 .getBody();

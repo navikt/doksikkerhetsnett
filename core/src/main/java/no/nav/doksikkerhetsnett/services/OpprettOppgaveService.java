@@ -66,15 +66,13 @@ public class OpprettOppgaveService {
     private Oppgave createOppgaveFromJournalpost(Journalpost jp) {
         String tildeltEnhetsnr = jp.getJournalforendeEnhet();
         String orgnr = extractOrgnr(jp);
-        String bnr = extractBnr(jp);
         String tema = extractTema(jp);
 
         return Oppgave.builder()
                 .tildeltEnhetsnr(tildeltEnhetsnr)
                 .opprettetAvEnhetsnr(Oppgave.ENHETSNUMMER_GENERISK)
-                .journalpostId(jp.getJournalpostId() + "")
+                .journalpostId(Long.toString(jp.getJournalpostId()))
                 .orgnr(orgnr)
-                .bnr(bnr)
                 .tema(tema)
                 .behandlingstema(jp.getBehandlingstema())
                 .oppgavetype(Oppgave.OPPGAVETYPE_JOURNALFOERT)
@@ -85,13 +83,6 @@ public class OpprettOppgaveService {
 
     private String extractOrgnr(Journalpost jp) {
         if (jp.getBruker() != null && Bruker.TYPE_ORGANISASJON.equals(jp.getBruker().getType())) {
-            return jp.getBruker().getId();
-        }
-        return null;
-    }
-
-    private String extractBnr(Journalpost jp) {
-        if (jp.getBruker() != null && Bruker.TYPE_PERSON.equals(jp.getBruker().getType())) {
             return jp.getBruker().getId();
         }
         return null;
