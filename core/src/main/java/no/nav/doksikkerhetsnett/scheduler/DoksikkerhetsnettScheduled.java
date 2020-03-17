@@ -82,7 +82,7 @@ public class DoksikkerhetsnettScheduled {
                             ". Journalpostene hadde ID'ene:" + ubehandledeJournalposterUtenOppgave :
                             "");
         } catch (Exception e) {
-            log.error("doksikkerhetsnett feilet under hentingen av alle oppgaver");
+            log.error("doksikkerhetsnett feilet under hentingen av alle oppgaver", e);
             return null;
         }
 
@@ -106,7 +106,7 @@ public class DoksikkerhetsnettScheduled {
                 .collect(Collectors.toList());
 
         return new ArrayList<>(ubehandledeJournalpostList.stream()
-                .filter(ubehandletJournalpost -> !journalposterMedOppgaver.contains("" + ubehandletJournalpost.getJournalpostId()))
+                .filter(ubehandletJournalpost -> !journalposterMedOppgaver.contains(Long.toString(ubehandletJournalpost.getJournalpostId())))
                 .collect(Collectors.toList()));
     }
 }

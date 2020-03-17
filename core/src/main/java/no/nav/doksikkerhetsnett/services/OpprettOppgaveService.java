@@ -44,6 +44,7 @@ public class OpprettOppgaveService {
     }
 
     private OpprettOppgaveResponse handterFeilsituasjon(HttpClientErrorException e, Oppgave oppgave) {
+        log.error("Klarte ikke å opprette oppgave, fikk feilmelding fra oppgave: {}", e.getResponseBodyAsString(), e);
         if (e.getResponseBodyAsString().contains("Enheten med nummeret '" + oppgave.getTildeltEnhetsnr() + "' eksisterer ikke")) {
             log.info("Enheten med nummeret '{}' eksisterer ikke, så prøver på nytt uten enhetsnr", oppgave.getTildeltEnhetsnr());
             Oppgave oppgaveUtenTildeltEnhetsnr = new Oppgave(oppgave);
@@ -56,7 +57,6 @@ public class OpprettOppgaveService {
             oppgaveMedTypeFordeling.setOppgavetype(Oppgave.OPPGAVETYPE_FORDELING);
             return opprettOppgave(oppgaveMedTypeFordeling);
         }
-
         JiraResponse response = jiraConsumer.opprettJiraIssue(oppgave, e);
         log.info("Doksikkerhetsnett opprettet en jira-issue med kode {}", response.getKey());
         throw new OpprettOppgaveFunctionalException(String.format("opprettOppgave feilet funksjonelt med statusKode=%s. Feilmelding=%s.", e
@@ -83,7 +83,7 @@ public class OpprettOppgaveService {
 
     private String extractOrgnr(Journalpost jp) {
         if (jp.getBruker() != null && Bruker.TYPE_ORGANISASJON.equals(jp.getBruker().getType())) {
-            return jp.getBruker().getId();
+            return jp.getBruker().getId().trim();
         }
         return null;
     }
