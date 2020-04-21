@@ -64,7 +64,7 @@ public class OpprettOppgaveService {
     }
 
     private Oppgave createOppgaveFromJournalpost(Journalpost jp) {
-        String tildeltEnhetsnr = jp.getJournalforendeEnhet();
+        String tildeltEnhetsnr = "9999".equals(jp.getJournalforendeEnhet()) ? "" : jp.getJournalforendeEnhet() ;
         String orgnr = extractOrgnr(jp);
         String tema = extractTema(jp);
 

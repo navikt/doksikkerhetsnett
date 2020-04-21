@@ -43,48 +43,62 @@ public class DoksikkerhetsnettScheduled {
 
     @Scheduled(initialDelay = 30000, fixedDelay = 24 * HOUR)
     public void triggerOppdatering() {
-        //Dette er bare en midlertidig løsning. Vi ønsker etter hvert å være i skrivemodus for alle temaer.
+        //Kjører read-only temaene
         runDoksikkerhetsnettInReadMode();
 
-        //Dette er default-kjøringen av doksikkerhetsnett
+        //Default-kjøringen av doksikkerhetsnett
         runDokSikkerhetsnettInReadWriteMode();
+        log.info("Doksikkerhetsnett har kjørt ferdig");
     }
 
     public void runDoksikkerhetsnettInReadMode(){
-        if(dokSikkerhetsnettProperties.getLesTemaer() != null) {
-            for(String tema : dokSikkerhetsnettProperties.getLesTemaer().split(","))
+        boolean hasTemaer = false;
+        if(dokSikkerhetsnettProperties.getLesTemaer() != null && dokSikkerhetsnettProperties.getLesTemaer().length() > 0) {
+            for(String tema : dokSikkerhetsnettProperties.getLesTemaer().split(",")) {
                 finnJournalposterUtenOppgaver(tema);
+                hasTemaer = true;
+            }
         }
+        if(!hasTemaer)
+            log.info("Det er ikke spesifisert noen temaer for read-only");
     }
 
     public void runDokSikkerhetsnettInReadWriteMode(){
-        lagOppgaverForGlemteJournalposter(dokSikkerhetsnettProperties.getSkrivTemaer());
+        boolean hasTemaer = false;
+        if(dokSikkerhetsnettProperties.getSkrivTemaer() != null && dokSikkerhetsnettProperties.getSkrivTemaer().length() > 0){
+            for(String tema : dokSikkerhetsnettProperties.getSkrivTemaer().split(",")) {
+                lagOppgaverForGlemteJournalposter(tema);
+                hasTemaer = true;
+            }
+        }
+        if(!hasTemaer)
+            log.warn("Det er ikke spesifisert noen temaer å opprette oppgaver for!");
+
     }
 
-    public void lagOppgaverForGlemteJournalposter(String temaer) {
-        List<Journalpost> ubehandletJournalpostsUtenOppgave = finnJournalposterUtenOppgaver(temaer);
+    public void lagOppgaverForGlemteJournalposter(String tema) {
+        List<Journalpost> ubehandletJournalpostsUtenOppgave = finnJournalposterUtenOppgaver(tema);
         try {
             List<OpprettOppgaveResponse> opprettedeOppgaver = opprettOppgaveService.opprettOppgaver(ubehandletJournalpostsUtenOppgave);
             if (opprettedeOppgaver.size() > 0) {
-                log.info("doksikkerhetsnett har opprettet oppgaver med ID'ene: {}", opprettedeOppgaver.stream().map(opg -> opg.getId()).collect(Collectors.toList()));
+                log.info("doksikkerhetsnett har opprettet {} oppgaver for tema {} med ID'ene: {}", opprettedeOppgaver.size(), tema, opprettedeOppgaver.stream().map(opg -> opg.getId()).collect(Collectors.toList()));
             }
         } catch (Exception e) {
-            log.error("doksikkerhetsnett feilet under oppretting av oppgaver", e);
+            log.error("doksikkerhetsnett feilet under oppretting av oppgaver for teamet {}", tema, e);
         }
-        System.out.println("Done!");
     }
 
-    public List<Journalpost> finnJournalposterUtenOppgaver(String temaer) {
+    public List<Journalpost> finnJournalposterUtenOppgaver(String tema) {
         List<Journalpost> ubehandledeJournalposter;
         List<Journalpost> ubehandledeJournalposterUtenOppgave;
 
-        log.info("doksikkerhetsnett henter alle ubehandlede journalposter eldre enn 1 uke {}", Utils.logWithTema(temaer));
+        log.info("doksikkerhetsnett henter alle ubehandlede journalposter eldre enn 1 uke {}", Utils.logWithTema(tema));
 
         try {
-            ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalPoster(temaer)
+            ubehandledeJournalposter = finnMottatteJournalposterService.finnMottatteJournalPoster(tema)
                     .getJournalposter();
         } catch (Exception e) {
-            log.error("doksikkerhetsnett feilet under hentingen av alle journalposter {}: " + e.getMessage(), Utils.logWithTema(temaer), e);
+            log.error("doksikkerhetsnett feilet under hentingen av alle journalposter {}: " + e.getMessage(), Utils.logWithTema(tema), e);
             return null;
         }
 
@@ -92,7 +106,7 @@ public class DoksikkerhetsnettScheduled {
             ubehandledeJournalposterUtenOppgave = finnEksisterendeOppgaverFraUbehandledeJournalpostList(ubehandledeJournalposter);
             log.info("doksikkerhetsnett fant {} journalposter uten oppgave {}{}",
                     ubehandledeJournalposterUtenOppgave.size(),
-                    Utils.logWithTema(temaer),
+                    Utils.logWithTema(tema),
                     ubehandledeJournalposterUtenOppgave.size() > 0 ?
                             ". Journalpostene hadde ID'ene:" + ubehandledeJournalposterUtenOppgave :
                             "");

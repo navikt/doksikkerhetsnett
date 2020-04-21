@@ -10,6 +10,10 @@ Tjenesten er nå satt til å kjøre én gang per døgn. Dette kan endres i no.na
 
 Man kan spesifisere hvilke temaer man ønsker å fange ved å oppdatere miljøvariabelen "doksikkerhetsnett.temaer".
 
+# NB!
+Om man gjør endringer på hvilke temaer som man enabler i lese- eller skrivemodus må denne oppdateres:
+https://confluence.adeo.no/display/BOA/doksikkerhetsnett
+
 # Henvendelser
 
 Spørsmål knyttet til koden eller prosjektet kan rettes mot:
