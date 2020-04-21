@@ -51,9 +51,10 @@ public class DoksikkerhetsnettScheduled {
     }
 
     public void runDoksikkerhetsnettInReadMode(){
-        if(dokSikkerhetsnettProperties.getLesTemaer() != null)
-            finnJournalposterUtenOppgaver(dokSikkerhetsnettProperties.getLesTemaer());
-
+        if(dokSikkerhetsnettProperties.getLesTemaer() != null) {
+            for(String tema : dokSikkerhetsnettProperties.getLesTemaer().split(","))
+                finnJournalposterUtenOppgaver(tema);
+        }
     }
 
     public void runDokSikkerhetsnettInReadWriteMode(){
