@@ -43,11 +43,25 @@ public class DoksikkerhetsnettScheduled {
 
     @Scheduled(initialDelay = 5000, fixedDelay = 24 * HOUR)
     public void triggerOppdatering() {
-        lagOppgaverForGlemteJournalposter();
+        //Dette er bare en midlertidig løsning. Vi ønsker etter hvert å være i skrivemodus for alle temaer.
+        runDoksikkerhetsnettInReadMode();
+
+        //Dette er default-kjøringen av doksikkerhetsnett
+        runDokSikkerhetsnettInReadWriteMode();
     }
 
-    public void lagOppgaverForGlemteJournalposter() {
-        List<Journalpost> ubehandletJournalpostsUtenOppgave = finnJournalposterUtenOppgaver();
+    public void runDoksikkerhetsnettInReadMode(){
+        if(dokSikkerhetsnettProperties.getLesTemaer() != null)
+            finnJournalposterUtenOppgaver(dokSikkerhetsnettProperties.getLesTemaer());
+
+    }
+
+    public void runDokSikkerhetsnettInReadWriteMode(){
+        lagOppgaverForGlemteJournalposter(dokSikkerhetsnettProperties.getSkrivTemaer());
+    }
+
+    public void lagOppgaverForGlemteJournalposter(String temaer) {
+        List<Journalpost> ubehandletJournalpostsUtenOppgave = finnJournalposterUtenOppgaver(temaer);
         try {
             List<OpprettOppgaveResponse> opprettedeOppgaver = opprettOppgaveService.opprettOppgaver(ubehandletJournalpostsUtenOppgave);
             if (opprettedeOppgaver.size() > 0) {
@@ -56,12 +70,12 @@ public class DoksikkerhetsnettScheduled {
         } catch (Exception e) {
             log.error("doksikkerhetsnett feilet under oppretting av oppgaver", e);
         }
+        System.out.println("Done!");
     }
 
-    public List<Journalpost> finnJournalposterUtenOppgaver() {
+    public List<Journalpost> finnJournalposterUtenOppgaver(String temaer) {
         List<Journalpost> ubehandledeJournalposter;
         List<Journalpost> ubehandledeJournalposterUtenOppgave;
-        String temaer = dokSikkerhetsnettProperties.getTemaer();
 
         log.info("doksikkerhetsnett henter alle ubehandlede journalposter eldre enn 1 uke {}", Utils.logWithTema(temaer));
 

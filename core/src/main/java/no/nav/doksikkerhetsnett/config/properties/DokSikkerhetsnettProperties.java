@@ -30,8 +30,11 @@ public class DokSikkerhetsnettProperties {
     @NotNull
     private ServiceUserProperties serviceuser;
 
+    //dette er en midlertidig varibel for teamer man kun ønsker å kjøre i les-modus
+    private String lesTemaer;
+
     // Denne kan være null da et søk på et tomt tema betyr et generelt søk på alle temaer
-    private String temaer;
+    private String skrivTemaer;
 }
 
 
