@@ -48,7 +48,6 @@ public class DoksikkerhetsnettScheduled {
 
         //Default-kjøringen av doksikkerhetsnett
         runDokSikkerhetsnettInReadWriteMode();
-        log.info("Doksikkerhetsnett har kjørt ferdig");
     }
 
     public void runDoksikkerhetsnettInReadMode(){
