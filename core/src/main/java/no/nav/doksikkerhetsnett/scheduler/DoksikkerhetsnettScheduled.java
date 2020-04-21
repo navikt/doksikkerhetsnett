@@ -28,6 +28,7 @@ public class DoksikkerhetsnettScheduled {
     private final MetricsScheduler metricsScheduler;
     private final int MINUTE = 60_000;
     private final int HOUR = 60 * MINUTE;
+    private final String TEMA_ALLE = "ALLE";
 
     public DoksikkerhetsnettScheduled(FinnMottatteJournalposterService finnMottatteJournalposterService,
                                       DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
@@ -44,35 +45,44 @@ public class DoksikkerhetsnettScheduled {
     @Scheduled(initialDelay = 30000, fixedDelay = 24 * HOUR)
     public void triggerOppdatering() {
         //Kjører read-only temaene
-        runDoksikkerhetsnettInReadMode();
+        runDoksikkerhetsnettInReadOnlyMode();
 
-        //Default-kjøringen av doksikkerhetsnett
+        //Oppretter oppgaver for write-temaene
         runDokSikkerhetsnettInReadWriteMode();
     }
 
-    public void runDoksikkerhetsnettInReadMode(){
+    public void runDoksikkerhetsnettInReadOnlyMode() {
         boolean hasTemaer = false;
-        if(dokSikkerhetsnettProperties.getLesTemaer() != null && dokSikkerhetsnettProperties.getLesTemaer().length() > 0) {
-            for(String tema : dokSikkerhetsnettProperties.getLesTemaer().split(",")) {
-                finnJournalposterUtenOppgaver(tema);
+        if (dokSikkerhetsnettProperties.getLesTemaer() != null && dokSikkerhetsnettProperties.getLesTemaer().length() > 0) {
+            if (TEMA_ALLE.equals(dokSikkerhetsnettProperties.getLesTemaer())) {
+                finnJournalposterUtenOppgaver(null);
                 hasTemaer = true;
+            } else {
+                for (String tema : dokSikkerhetsnettProperties.getLesTemaer().split(",")) {
+                    finnJournalposterUtenOppgaver(tema);
+                    hasTemaer = true;
+                }
             }
         }
-        if(!hasTemaer)
+        if (!hasTemaer)
             log.info("Det er ikke spesifisert noen temaer for read-only");
     }
 
-    public void runDokSikkerhetsnettInReadWriteMode(){
+    public void runDokSikkerhetsnettInReadWriteMode() {
         boolean hasTemaer = false;
-        if(dokSikkerhetsnettProperties.getSkrivTemaer() != null && dokSikkerhetsnettProperties.getSkrivTemaer().length() > 0){
-            for(String tema : dokSikkerhetsnettProperties.getSkrivTemaer().split(",")) {
-                lagOppgaverForGlemteJournalposter(tema);
+        if (dokSikkerhetsnettProperties.getSkrivTemaer() != null && dokSikkerhetsnettProperties.getSkrivTemaer().length() > 0) {
+            if (TEMA_ALLE.equals(dokSikkerhetsnettProperties.getLesTemaer())) {
+                lagOppgaverForGlemteJournalposter(null);
                 hasTemaer = true;
+            } else {
+                for (String tema : dokSikkerhetsnettProperties.getSkrivTemaer().split(",")) {
+                    lagOppgaverForGlemteJournalposter(tema);
+                    hasTemaer = true;
+                }
             }
         }
-        if(!hasTemaer)
-            log.warn("Det er ikke spesifisert noen temaer å opprette oppgaver for!");
-
+        if (!hasTemaer)
+            log.warn("Det er ikke spesifisert noen temaer å opprette oppgaver for");
     }
 
     public void lagOppgaverForGlemteJournalposter(String tema) {
@@ -80,10 +90,10 @@ public class DoksikkerhetsnettScheduled {
         try {
             List<OpprettOppgaveResponse> opprettedeOppgaver = opprettOppgaveService.opprettOppgaver(ubehandletJournalpostsUtenOppgave);
             if (opprettedeOppgaver.size() > 0) {
-                log.info("doksikkerhetsnett har opprettet {} oppgaver for tema {} med ID'ene: {}", opprettedeOppgaver.size(), tema, opprettedeOppgaver.stream().map(opg -> opg.getId()).collect(Collectors.toList()));
+                log.info("doksikkerhetsnett har opprettet {} oppgaver {} med ID'ene: {}", opprettedeOppgaver.size(), Utils.logWithTema(tema), opprettedeOppgaver.stream().map(opg -> opg.getId()).collect(Collectors.toList()));
             }
         } catch (Exception e) {
-            log.error("doksikkerhetsnett feilet under oppretting av oppgaver for teamet {}", tema, e);
+            log.error("doksikkerhetsnett feilet under oppretting av oppgaver {}", Utils.logWithTema(tema), e);
         }
     }
 
