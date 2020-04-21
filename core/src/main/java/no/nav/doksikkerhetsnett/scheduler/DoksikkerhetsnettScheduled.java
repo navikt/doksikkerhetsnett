@@ -41,7 +41,7 @@ public class DoksikkerhetsnettScheduled {
         this.metricsScheduler = metricsScheduler;
     }
 
-    @Scheduled(initialDelay = 5000, fixedDelay = 24 * HOUR)
+    @Scheduled(initialDelay = 30000, fixedDelay = 24 * HOUR)
     public void triggerOppdatering() {
         //Dette er bare en midlertidig løsning. Vi ønsker etter hvert å være i skrivemodus for alle temaer.
         runDoksikkerhetsnettInReadMode();
