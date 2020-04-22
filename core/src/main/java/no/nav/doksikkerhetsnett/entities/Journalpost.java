@@ -15,6 +15,8 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Journalpost {
+    public static final String ENHETSNUMMER_GENERISK = "9999";
+
     @NotNull(message = "JournalpostId mangler")
     @ApiModelProperty(
             value = "ID til journalpost i Joark",

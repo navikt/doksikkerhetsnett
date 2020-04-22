@@ -88,7 +88,7 @@ class DoksikkerhetsnettScheduledIT {
     public void Test() {
         DoksikkerhetsnettScheduled doksikkerhetsnettScheduled = new DoksikkerhetsnettScheduled(
                 finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService, opprettOppgaveService, metricsScheduler);
-        List journalposterUtenOppgaver = doksikkerhetsnettScheduled.finnJournalposterUtenOppgaver();
+        List journalposterUtenOppgaver = doksikkerhetsnettScheduled.finnJournalposterUtenOppgaver(dokSikkerhetsnettProperties.getSkrivTemaer());
         assertEquals(journalposterUtenOppgaver.size(), 4);
 
         Map<String, Integer> totalMetricsCache = metricsScheduler.getCaches().get(0);

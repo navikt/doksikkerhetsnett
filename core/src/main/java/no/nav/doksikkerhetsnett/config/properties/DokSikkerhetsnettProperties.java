@@ -30,8 +30,12 @@ public class DokSikkerhetsnettProperties {
     @NotNull
     private ServiceUserProperties serviceuser;
 
-    // Denne kan være null da et søk på et tomt tema betyr et generelt søk på alle temaer
-    private String temaer;
+    //kommaseparert liste, "ALLE" for å opprette oppgaver på alle temaer.
+    private String skrivTemaer;
+
+    //kommaseparert liste, "ALLE" for å lese alle temaer.
+    private String lesTemaer;
+
 }
 
 
