@@ -30,10 +30,10 @@ public class DokSikkerhetsnettProperties {
     @NotNull
     private ServiceUserProperties serviceuser;
 
-    @NotNull
+    //kommaseparert liste, "ALLE" for å opprette oppgaver på alle temaer.
     private String skrivTemaer;
 
-    //Man trenger kun å sette denne om man ønsker å kun lese noen temaer.
+    //kommaseparert liste, "ALLE" for å lese alle temaer.
     private String lesTemaer;
 
 }

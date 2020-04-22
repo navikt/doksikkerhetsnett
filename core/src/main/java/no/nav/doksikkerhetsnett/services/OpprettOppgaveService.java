@@ -64,7 +64,7 @@ public class OpprettOppgaveService {
     }
 
     private Oppgave createOppgaveFromJournalpost(Journalpost jp) {
-        String tildeltEnhetsnr = "9999".equals(jp.getJournalforendeEnhet()) ? "" : jp.getJournalforendeEnhet() ;
+        String tildeltEnhetsnr = extractEnhetsNr(jp);
         String orgnr = extractOrgnr(jp);
         String tema = extractTema(jp);
 
@@ -79,6 +79,10 @@ public class OpprettOppgaveService {
                 .prioritet(Oppgave.PRIORITET_NORMAL)
                 .aktivDato(new Date())
                 .build();
+    }
+
+    private String extractEnhetsNr(Journalpost jp){
+        return Journalpost.ENHETSNUMMER_GENERISK.equals(jp.getJournalforendeEnhet()) ? "" : jp.getJournalforendeEnhet();
     }
 
     private String extractOrgnr(Journalpost jp) {

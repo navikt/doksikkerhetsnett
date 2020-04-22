@@ -48,41 +48,35 @@ public class DoksikkerhetsnettScheduled {
         runDoksikkerhetsnettInReadOnlyMode();
 
         //Oppretter oppgaver for write-temaene
-        runDokSikkerhetsnettInReadWriteMode();
+       runDokSikkerhetsnettInReadWriteMode();
     }
 
     public void runDoksikkerhetsnettInReadOnlyMode() {
-        boolean hasTemaer = false;
         if (dokSikkerhetsnettProperties.getLesTemaer() != null && dokSikkerhetsnettProperties.getLesTemaer().length() > 0) {
             if (TEMA_ALLE.equals(dokSikkerhetsnettProperties.getLesTemaer())) {
                 finnJournalposterUtenOppgaver(null);
-                hasTemaer = true;
             } else {
                 for (String tema : dokSikkerhetsnettProperties.getLesTemaer().split(",")) {
                     finnJournalposterUtenOppgaver(tema);
-                    hasTemaer = true;
                 }
             }
         }
-        if (!hasTemaer)
+        else
             log.info("Det er ikke spesifisert noen temaer for read-only");
     }
 
     public void runDokSikkerhetsnettInReadWriteMode() {
-        boolean hasTemaer = false;
         if (dokSikkerhetsnettProperties.getSkrivTemaer() != null && dokSikkerhetsnettProperties.getSkrivTemaer().length() > 0) {
             if (TEMA_ALLE.equals(dokSikkerhetsnettProperties.getLesTemaer())) {
                 lagOppgaverForGlemteJournalposter(null);
-                hasTemaer = true;
             } else {
                 for (String tema : dokSikkerhetsnettProperties.getSkrivTemaer().split(",")) {
                     lagOppgaverForGlemteJournalposter(tema);
-                    hasTemaer = true;
                 }
             }
         }
-        if (!hasTemaer)
-            log.warn("Det er ikke spesifisert noen temaer å opprette oppgaver for");
+        else
+            log.info("Det er ikke spesifisert noen temaer å opprette oppgaver for");
     }
 
     public void lagOppgaverForGlemteJournalposter(String tema) {
