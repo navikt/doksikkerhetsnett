@@ -26,8 +26,6 @@ public class DoksikkerhetsnettScheduled {
     private final OpprettOppgaveService opprettOppgaveService;
     private final DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
     private final MetricsScheduler metricsScheduler;
-    private final int MINUTE = 60_000;
-    private final int HOUR = 60 * MINUTE;
     private final String TEMA_ALLE = "ALLE";
 
     public DoksikkerhetsnettScheduled(FinnMottatteJournalposterService finnMottatteJournalposterService,
@@ -42,7 +40,7 @@ public class DoksikkerhetsnettScheduled {
         this.metricsScheduler = metricsScheduler;
     }
 
-    @Scheduled(initialDelay = 30000, fixedDelay = 24 * HOUR)
+    @Scheduled(cron = "* 7 * * 1,3,5")
     public void triggerOppdatering() {
         //Kjører read-only temaene
         runDoksikkerhetsnettInReadOnlyMode();
