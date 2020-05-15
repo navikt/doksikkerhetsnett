@@ -72,4 +72,10 @@ class UtilsTest {
         assertEquals("", Utils.formatTemaList(null));
     }
 
+    @Test
+    public void shouldGetAllTemas() {
+        assertEquals(55, Utils.getAlleTema().length);
+        assertEquals(52, Utils.getAlleTema("ERS,RPO,SAK").length);
+    }
+
 }

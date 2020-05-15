@@ -15,6 +15,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,35 +47,32 @@ public class DoksikkerhetsnettScheduled {
         runDoksikkerhetsnettInReadOnlyMode();
 
         //Oppretter oppgaver for write-temaene
-       runDokSikkerhetsnettInReadWriteMode();
+        runDokSikkerhetsnettInReadWriteMode();
     }
 
     public void runDoksikkerhetsnettInReadOnlyMode() {
         if (dokSikkerhetsnettProperties.getLesTemaer() != null && dokSikkerhetsnettProperties.getLesTemaer().length() > 0) {
-            if (TEMA_ALLE.equals(dokSikkerhetsnettProperties.getLesTemaer())) {
-                finnJournalposterUtenOppgaver(null);
-            } else {
-                for (String tema : dokSikkerhetsnettProperties.getLesTemaer().split(",")) {
-                    finnJournalposterUtenOppgaver(tema);
-                }
-            }
-        }
-        else
+            String[] temaer = TEMA_ALLE.equals(dokSikkerhetsnettProperties.getLesTemaer()) ?
+                    Utils.getAlleTema(dokSikkerhetsnettProperties.getSkrivTemaer()) : // Hent alle tema. Ignorer de som skal skrives, da de behandles neste steg
+                    dokSikkerhetsnettProperties.getLesTemaer().split(",");
+
+            Arrays.stream(temaer).forEach(this::finnJournalposterUtenOppgaver);
+
+        } else {
             log.info("Det er ikke spesifisert noen temaer for read-only");
+        }
     }
 
     public void runDokSikkerhetsnettInReadWriteMode() {
         if (dokSikkerhetsnettProperties.getSkrivTemaer() != null && dokSikkerhetsnettProperties.getSkrivTemaer().length() > 0) {
-            if (TEMA_ALLE.equals(dokSikkerhetsnettProperties.getLesTemaer())) {
-                lagOppgaverForGlemteJournalposter(null);
-            } else {
-                for (String tema : dokSikkerhetsnettProperties.getSkrivTemaer().split(",")) {
-                    lagOppgaverForGlemteJournalposter(tema);
-                }
-            }
-        }
-        else
+            String[] temaer = TEMA_ALLE.equals(dokSikkerhetsnettProperties.getSkrivTemaer()) ?
+                    Utils.getAlleTema() : dokSikkerhetsnettProperties.getSkrivTemaer().split(",");
+
+            Arrays.stream(temaer).forEach(this::lagOppgaverForGlemteJournalposter);
+
+        } else {
             log.info("Det er ikke spesifisert noen temaer å opprette oppgaver for");
+        }
     }
 
     public void lagOppgaverForGlemteJournalposter(String tema) {
