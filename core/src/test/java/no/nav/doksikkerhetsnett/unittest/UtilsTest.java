@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -74,8 +76,9 @@ class UtilsTest {
 
     @Test
     public void shouldGetAllTemas() {
-        assertEquals(55, Utils.getAlleTema().length);
-        assertEquals(52, Utils.getAlleTema("ERS,RPO,SAK").length);
+        assertEquals(55, Utils.getAlleTema().size());
+        assertEquals(52, Utils.getAlleTemaExcept(new HashSet<>(Arrays.asList("ERS", "RPO", "SAK"))).size());
+        assertEquals(52, Utils.getAlleTemaExcept("ERS,RPO,SAK").size());
     }
 
 }

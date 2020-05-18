@@ -6,12 +6,14 @@ import no.nav.doksikkerhetsnett.consumers.FinnOppgaveConsumer;
 import no.nav.doksikkerhetsnett.consumers.JiraConsumer;
 import no.nav.doksikkerhetsnett.consumers.OpprettOppgaveConsumer;
 import no.nav.doksikkerhetsnett.consumers.StsRestConsumer;
+import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.itest.config.TestConfig;
 import no.nav.doksikkerhetsnett.metrics.MetricsScheduler;
 import no.nav.doksikkerhetsnett.scheduler.DoksikkerhetsnettScheduled;
 import no.nav.doksikkerhetsnett.services.FinnMottatteJournalposterService;
 import no.nav.doksikkerhetsnett.services.FinnOppgaveService;
 import no.nav.doksikkerhetsnett.services.OpprettOppgaveService;
+import no.nav.doksikkerhetsnett.utils.Utils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,6 +26,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +44,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @AutoConfigureWireMock(port = 0)
 @ActiveProfiles("itest")
 class DoksikkerhetsnettScheduledIT {
-    private static final String URL_FINNMOTTATTEJOURNALPOSTER = "/rest/intern/journalpostapi/v1/finnMottatteJournalposter/";
+    private static final String URL_FINNMOTTATTEJOURNALPOSTER = "/rest/intern/journalpostapi/v1/finnMottatteJournalposter/.{3}";
     private static final String URL_STSAUTH = "/rest/v1/sts/token\\?grant_type=client_credentials&scope=openid";
     private static final String URL_OPPGAVE_JOURNALPOST_SEARCH = "/api/v1/oppgaver\\?journalpostId=111111111&journalpostId=222222222&journalpostId=333333333&journalpostId=444444444&journalpostId=555555555&journalpostId=666666666&oppgavetype=JFR&oppgavetype=FDR&statuskategori=AAPEN&sorteringsrekkefolge=ASC&limit=50";
     private static final String METRIC_TAGS = "UFO;ALTINN;0000";
@@ -85,16 +89,30 @@ class DoksikkerhetsnettScheduledIT {
     }
 
     @Test
-    public void Test() {
+    public void shouldFinnMottatteJournalposter() {
         DoksikkerhetsnettScheduled doksikkerhetsnettScheduled = new DoksikkerhetsnettScheduled(
                 finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService, opprettOppgaveService, metricsScheduler);
-        List journalposterUtenOppgaver = doksikkerhetsnettScheduled.finnJournalposterUtenOppgaver(dokSikkerhetsnettProperties.getSkrivTemaer());
-        assertEquals(journalposterUtenOppgaver.size(), 4);
+        List<Journalpost> journalposterUtenOppgaver = new ArrayList();
+        Arrays.stream(dokSikkerhetsnettProperties.getSkrivTemaer().split(","))
+                .forEach(tema -> doksikkerhetsnettScheduled.finnJournalposterUtenOppgaver(tema)
+                        .forEach(journalpost -> journalposterUtenOppgaver.add(journalpost)));
+        assertEquals(4, journalposterUtenOppgaver.size());
 
         Map<String, Integer> totalMetricsCache = metricsScheduler.getCaches().get(0);
         Map<String, Integer> utenOppgaveMetricsCache = metricsScheduler.getCaches().get(1);
         assertCorrectMetrics(totalMetricsCache, 6, METRIC_TAGS);
         assertCorrectMetrics(utenOppgaveMetricsCache, 4, METRIC_TAGS);
+    }
+
+    @Test
+    public void shouldFinnMottatteJournalposterForAlleTema() {
+        DoksikkerhetsnettScheduled doksikkerhetsnettScheduled = new DoksikkerhetsnettScheduled(
+                finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService, opprettOppgaveService, metricsScheduler);
+        List<Journalpost> journalposterUtenOppgaver = new ArrayList();
+        Utils.getAlleTema()
+                .forEach(tema -> doksikkerhetsnettScheduled.finnJournalposterUtenOppgaver(tema)
+                        .forEach(journalpost -> journalposterUtenOppgaver.add(journalpost)));
+        assertEquals(220, journalposterUtenOppgaver.size());
     }
 
     private void assertCorrectMetrics(Map<String, Integer> metricsCache, int expectedValue, String expectedString) {
