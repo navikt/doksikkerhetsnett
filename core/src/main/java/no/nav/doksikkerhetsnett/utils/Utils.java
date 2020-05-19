@@ -7,11 +7,17 @@ import no.nav.doksikkerhetsnett.entities.Journalpost;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
 public class Utils {
+
+    // Alle temaer fra https://confluence.adeo.no/display/BOA/Enum%3A+Tema. Oppdatert 18.05.2020
+    private static Set<String> alleTema = new HashSet(Arrays.asList("AAP", "AAR", "AGR", "BAR", "BID", "BIL", "DAG", "ENF", "ERS", "FAR", "FEI", "FOR", "FOS", "FUL", "FRI", "GEN", "GRA", "GRU", "HEL", "HJE", "IAR", "IND", "KON", "KTR", "MED", "MOB", "OMS", "OPA", "OPP", "PEN", "PER", "REH", "REK", "RPO", "RVE", "SAA", "SAK", "SAP", "SER", "SIK", "STO", "SUP", "SYK", "SYM", "TIL", "TRK", "TRY", "TSO", "TSR", "UFM", "UFO", "UKJ", "VEN", "YRA", "YRK"));
 
     public static String formatTemaList(List<String> temaer) {
         if (temaer == null) {
@@ -65,6 +71,23 @@ public class Utils {
             return "med tema blandt " + temaer;
         }
         return "med tema " + temaer;
+    }
+
+    public static Set<String> getAlleTema() {
+        return alleTema;
+    }
+
+    public static Set<String> getAlleTemaExcept(String excluded) {
+        return getAlleTemaExcept(new HashSet<>(Arrays.asList(excluded.split(","))));
+    }
+
+    public static Set<String> getAlleTemaExcept(Set<String> excluded) {
+        if (excluded == null || excluded.isEmpty()) {
+            return getAlleTema();
+        }
+        Set<String> alleTemaCopy = new HashSet(alleTema);
+        alleTemaCopy.removeAll(excluded);
+        return alleTemaCopy;
     }
 }
 

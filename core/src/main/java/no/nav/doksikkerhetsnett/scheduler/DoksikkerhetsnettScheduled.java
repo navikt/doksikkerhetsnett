@@ -15,7 +15,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -26,8 +29,6 @@ public class DoksikkerhetsnettScheduled {
     private final OpprettOppgaveService opprettOppgaveService;
     private final DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
     private final MetricsScheduler metricsScheduler;
-    private final int MINUTE = 60_000;
-    private final int HOUR = 60 * MINUTE;
     private final String TEMA_ALLE = "ALLE";
 
     public DoksikkerhetsnettScheduled(FinnMottatteJournalposterService finnMottatteJournalposterService,
@@ -42,41 +43,39 @@ public class DoksikkerhetsnettScheduled {
         this.metricsScheduler = metricsScheduler;
     }
 
-    @Scheduled(initialDelay = 30000, fixedDelay = 24 * HOUR)
+    // Satt til å kjøre klokken 07:00 på man, ons og fre
+    @Scheduled(cron = "* 7 * * 1,3,5")
     public void triggerOppdatering() {
         //Kjører read-only temaene
         runDoksikkerhetsnettInReadOnlyMode();
 
         //Oppretter oppgaver for write-temaene
-       runDokSikkerhetsnettInReadWriteMode();
+        runDokSikkerhetsnettInReadWriteMode();
     }
 
     public void runDoksikkerhetsnettInReadOnlyMode() {
         if (dokSikkerhetsnettProperties.getLesTemaer() != null && dokSikkerhetsnettProperties.getLesTemaer().length() > 0) {
-            if (TEMA_ALLE.equals(dokSikkerhetsnettProperties.getLesTemaer())) {
-                finnJournalposterUtenOppgaver(null);
-            } else {
-                for (String tema : dokSikkerhetsnettProperties.getLesTemaer().split(",")) {
-                    finnJournalposterUtenOppgaver(tema);
-                }
-            }
-        }
-        else
+            Set<String> temaer = TEMA_ALLE.equals(dokSikkerhetsnettProperties.getLesTemaer()) ?
+                    Utils.getAlleTemaExcept(dokSikkerhetsnettProperties.getSkrivTemaer()) : // Hent alle tema. Ignorer de som skal skrives, da de behandles neste steg
+                    temaerStringToSet(dokSikkerhetsnettProperties.getLesTemaer());
+
+            temaer.forEach(this::finnJournalposterUtenOppgaver);
+
+        } else {
             log.info("Det er ikke spesifisert noen temaer for read-only");
+        }
     }
 
     public void runDokSikkerhetsnettInReadWriteMode() {
         if (dokSikkerhetsnettProperties.getSkrivTemaer() != null && dokSikkerhetsnettProperties.getSkrivTemaer().length() > 0) {
-            if (TEMA_ALLE.equals(dokSikkerhetsnettProperties.getLesTemaer())) {
-                lagOppgaverForGlemteJournalposter(null);
-            } else {
-                for (String tema : dokSikkerhetsnettProperties.getSkrivTemaer().split(",")) {
-                    lagOppgaverForGlemteJournalposter(tema);
-                }
-            }
-        }
-        else
+            Set<String> temaer = TEMA_ALLE.equals(dokSikkerhetsnettProperties.getSkrivTemaer()) ?
+                    Utils.getAlleTema() : temaerStringToSet(dokSikkerhetsnettProperties.getSkrivTemaer());
+
+            temaer.forEach(this::lagOppgaverForGlemteJournalposter);
+
+        } else {
             log.info("Det er ikke spesifisert noen temaer å opprette oppgaver for");
+        }
     }
 
     public void lagOppgaverForGlemteJournalposter(String tema) {
@@ -140,5 +139,9 @@ public class DoksikkerhetsnettScheduled {
         return new ArrayList<>(ubehandledeJournalpostList.stream()
                 .filter(ubehandletJournalpost -> !journalposterMedOppgaver.contains(Long.toString(ubehandletJournalpost.getJournalpostId())))
                 .collect(Collectors.toList()));
+    }
+
+    private Set<String> temaerStringToSet(String temaer) {
+        return new HashSet(Arrays.asList(temaer.split(",")));
     }
 }
