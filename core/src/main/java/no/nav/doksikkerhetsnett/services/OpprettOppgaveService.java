@@ -36,10 +36,15 @@ public class OpprettOppgaveService {
 
     public OpprettOppgaveResponse opprettOppgave(Oppgave oppgave) {
         try {
-            OpprettOppgaveResponse response = opprettOppgaveConsumer.opprettOppgave(oppgave);
-            return response;
+            return opprettOppgaveConsumer.opprettOppgave(oppgave);
         } catch (HttpClientErrorException e) {
-            return handterFeilsituasjon(e, oppgave);
+            try{
+                log.info("Klarte ikke opprette oppgave med oppgavetype=%s. Prøver å opprette oppgave med oppgavetype=%s", oppgave.getOppgavetype(), Oppgave.OPPGAVETYPE_FORDELING);
+                return opprettOppgaveConsumer.opprettOppgave(createFDRFromJFR(oppgave));
+            }
+            catch(HttpClientErrorException ee) {
+                return handterFeilsituasjon(ee, oppgave);
+            }
         }
     }
 
@@ -51,12 +56,6 @@ public class OpprettOppgaveService {
             oppgaveUtenTildeltEnhetsnr.setTildeltEnhetsnr(null);
             return opprettOppgave(oppgaveUtenTildeltEnhetsnr);
         }
-        if (e.getResponseBodyAsString().contains("Fant ingen gyldig arbeidsfordeling for oppgave")) {
-            log.info("Fant ikke ansvarlig enhet for oppgavetype {}, prøver på nytt med oppgavetype {}", oppgave.getOppgavetype(), Oppgave.OPPGAVETYPE_FORDELING);
-            Oppgave oppgaveMedTypeFordeling = new Oppgave(oppgave);
-            oppgaveMedTypeFordeling.setOppgavetype(Oppgave.OPPGAVETYPE_FORDELING);
-            return opprettOppgave(oppgaveMedTypeFordeling);
-        }
         JiraResponse response = jiraConsumer.opprettJiraIssue(oppgave, e);
         log.info("Doksikkerhetsnett opprettet en jira-issue med kode {}", response.getKey());
         throw new OpprettOppgaveFunctionalException(String.format("opprettOppgave feilet funksjonelt med statusKode=%s. Feilmelding=%s.", e
@@ -65,14 +64,12 @@ public class OpprettOppgaveService {
 
     private Oppgave createOppgaveFromJournalpost(Journalpost jp) {
         String tildeltEnhetsnr = extractEnhetsNr(jp);
-        String orgnr = extractOrgnr(jp);
         String tema = extractTema(jp);
 
         return Oppgave.builder()
                 .tildeltEnhetsnr(tildeltEnhetsnr)
                 .opprettetAvEnhetsnr(Oppgave.ENHETSNUMMER_GENERISK)
                 .journalpostId(Long.toString(jp.getJournalpostId()))
-                .orgnr(orgnr)
                 .tema(tema)
                 .behandlingstema(jp.getBehandlingstema())
                 .oppgavetype(Oppgave.OPPGAVETYPE_JOURNALFOERT)
@@ -81,15 +78,21 @@ public class OpprettOppgaveService {
                 .build();
     }
 
-    private String extractEnhetsNr(Journalpost jp){
-        return Journalpost.ENHETSNUMMER_GENERISK.equals(jp.getJournalforendeEnhet()) ? "" : jp.getJournalforendeEnhet();
+    private Oppgave createFDRFromJFR(Oppgave o) {
+        return Oppgave.builder()
+                .tildeltEnhetsnr("")
+                .opprettetAvEnhetsnr(Oppgave.ENHETSNUMMER_GENERISK)
+                .journalpostId(o.getJournalpostId())
+                .tema(o.getTema())
+                .behandlingstema("")
+                .oppgavetype(Oppgave.OPPGAVETYPE_FORDELING)
+                .prioritet(Oppgave.PRIORITET_NORMAL)
+                .aktivDato(new Date())
+                .build();
     }
 
-    private String extractOrgnr(Journalpost jp) {
-        if (jp.getBruker() != null && Bruker.TYPE_ORGANISASJON.equals(jp.getBruker().getType())) {
-            return jp.getBruker().getId().trim();
-        }
-        return null;
+    private String extractEnhetsNr(Journalpost jp){
+        return Journalpost.ENHETSNUMMER_GENERISK.equals(jp.getJournalforendeEnhet()) ? "" : jp.getJournalforendeEnhet();
     }
 
     private String extractTema(Journalpost jp) {
