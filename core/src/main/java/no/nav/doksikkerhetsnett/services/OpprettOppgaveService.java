@@ -38,24 +38,19 @@ public class OpprettOppgaveService {
         try {
             return opprettOppgaveConsumer.opprettOppgave(oppgave);
         } catch (HttpClientErrorException e) {
-            try{
-                if (e.getResponseBodyAsString().contains("Enheten med nummeret '" + oppgave.getTildeltEnhetsnr() + "' eksisterer ikke")) {
-                    log.error("Klarte ikke å opprette oppgave, fikk feilmelding fra oppgave: {}", e.getResponseBodyAsString(), e);
-                    log.info("Enheten med nummeret '{}' eksisterer ikke, så prøver på nytt uten enhetsnr", oppgave.getTildeltEnhetsnr());
-                    Oppgave oppgaveUtenTildeltEnhetsnr = new Oppgave(oppgave);
-                    oppgaveUtenTildeltEnhetsnr.setTildeltEnhetsnr(null);
-                    return opprettOppgave(oppgaveUtenTildeltEnhetsnr);
-                }else {
-                    log.info("Klarte ikke opprette oppgave med oppgavetype=%s. Prøver å opprette oppgave med oppgavetype=%s", oppgave.getOppgavetype(), Oppgave.OPPGAVETYPE_FORDELING);
-                    return opprettOppgaveConsumer.opprettOppgave(createFDRFromJFR(oppgave));
-                }
-            }
-            catch(HttpClientErrorException ee) {
-                JiraResponse response = jiraConsumer.opprettJiraIssue(oppgave, ee);
-                log.info("Doksikkerhetsnett opprettet en jira-issue med kode {}", response.getKey());
-                throw new OpprettOppgaveFunctionalException(String.format("opprettOppgave feilet funksjonelt med statusKode=%s. Feilmelding=%s.", e
-                        .getStatusCode(), e.getResponseBodyAsString()), e);
-            }
+            return opprettOppgaveMedLiteMetadata(oppgave);
+        }
+    }
+
+    public OpprettOppgaveResponse opprettOppgaveMedLiteMetadata(Oppgave oppgave) {
+        try {
+            log.info("Klarte ikke opprette oppgave med oppgavetype JFR. Prøver å opprette oppgave med oppgavetype FDR", oppgave.getOppgavetype(), Oppgave.OPPGAVETYPE_FORDELING);
+            return opprettOppgaveConsumer.opprettOppgave(createFDRFromJFR(oppgave));
+        } catch (HttpClientErrorException e) {
+            JiraResponse response = jiraConsumer.opprettJiraIssue(oppgave, e);
+            log.info("Doksikkerhetsnett opprettet en jira-issue med kode {}", response.getKey());
+            throw new OpprettOppgaveFunctionalException(String.format("opprettOppgave feilet funksjonelt med statusKode=%s. Feilmelding=%s.", e
+                    .getStatusCode(), e.getResponseBodyAsString()), e);
         }
     }
 
@@ -75,12 +70,12 @@ public class OpprettOppgaveService {
                 .build();
     }
 
-    private Oppgave createFDRFromJFR(Oppgave o) {
+    private Oppgave createFDRFromJFR(Oppgave gammel_oppgave) {
         return Oppgave.builder()
                 .tildeltEnhetsnr(null)
                 .opprettetAvEnhetsnr(Oppgave.ENHETSNUMMER_GENERISK)
-                .journalpostId(o.getJournalpostId())
-                .tema(o.getTema())
+                .journalpostId(gammel_oppgave.getJournalpostId())
+                .tema(gammel_oppgave.getTema())
                 .behandlingstema(null)
                 .oppgavetype(Oppgave.OPPGAVETYPE_FORDELING)
                 .prioritet(Oppgave.PRIORITET_NORMAL)
@@ -88,7 +83,7 @@ public class OpprettOppgaveService {
                 .build();
     }
 
-    private String extractEnhetsNr(Journalpost jp){
+    private String extractEnhetsNr(Journalpost jp) {
         return Journalpost.ENHETSNUMMER_GENERISK.equals(jp.getJournalforendeEnhet()) ? "" : jp.getJournalforendeEnhet();
     }
 
