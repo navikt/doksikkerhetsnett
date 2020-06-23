@@ -3,7 +3,6 @@ package no.nav.doksikkerhetsnett.services;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.consumers.JiraConsumer;
 import no.nav.doksikkerhetsnett.consumers.OpprettOppgaveConsumer;
-import no.nav.doksikkerhetsnett.entities.Bruker;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
 import no.nav.doksikkerhetsnett.entities.responses.JiraResponse;
@@ -44,7 +43,7 @@ public class OpprettOppgaveService {
 
     public OpprettOppgaveResponse opprettOppgaveMedLiteMetadata(Oppgave oppgave) {
         try {
-            log.info("Klarte ikke opprette oppgave med oppgavetype JFR. Prøver å opprette oppgave med oppgavetype FDR", oppgave.getOppgavetype(), Oppgave.OPPGAVETYPE_FORDELING);
+            log.info("Klarte ikke opprette oppgave med oppgavetype {}. Prøver å opprette oppgave med oppgavetype {}", oppgave.getOppgavetype(), Oppgave.OPPGAVETYPE_FORDELING);
             return opprettOppgaveConsumer.opprettOppgave(createFDRFromJFR(oppgave));
         } catch (HttpClientErrorException e) {
             JiraResponse response = jiraConsumer.opprettJiraIssue(oppgave, e);
