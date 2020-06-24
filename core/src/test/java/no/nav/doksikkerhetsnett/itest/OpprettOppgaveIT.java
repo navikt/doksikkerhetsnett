@@ -107,14 +107,14 @@ public class OpprettOppgaveIT {
     @Test
     public void testOpprettOppgaveMedUgyldigEnhet() {
         stubFor(post(urlMatching(URL_OPPGAVE))
-                .withRequestBody(equalToJson("{\"tildeltEnhetsnr\": \"FEIL\"}", true, true))
+                .withRequestBody(equalToJson("{\"tildeltEnhetsnr\": \"FEIL\", \"oppgavetype\": \"JFR\"}", true, true))
                 .willReturn(aResponse().withStatus(HttpStatus.BAD_REQUEST.value())
                         .withBodyFile("opprettOppgave/opprettOppgave-feilEnhet.json")));
         stubFor(post(urlMatching(URL_OPPGAVE))
-                .withRequestBody(equalToJson("{\"tildeltEnhetsnr\": null}", true, true))
+                .withRequestBody(equalToJson("{\"tildeltEnhetsnr\": null, \"oppgavetype\": \"FDR\"}", true, true))
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
                         .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                        .withBodyFile("opprettOppgave/opprettOppgave-happy555.json")));
+                        .withBodyFile("opprettOppgave/opprettOppgave-happyFDR.json")));
         List<Journalpost> jp = asList(Journalpost.builder()
                 .journalpostId(555)
                 .journalforendeEnhet("FEIL")
@@ -122,6 +122,7 @@ public class OpprettOppgaveIT {
 
         OpprettOppgaveResponse response = opprettOppgaveService.opprettOppgaver(jp).get(0);
         assertEquals("555", response.getJournalpostId());
+        assertEquals("FDR", response.getOppgavetype());
         assertEquals(null, response.getTildeltEnhetsnr());
     }
 
