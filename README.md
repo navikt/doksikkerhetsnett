@@ -6,7 +6,7 @@ Sikkerhetsnett for Joark
 Sikkerhetsnettet er en skedulert jobb som henter alle ubehandlede journalposter 
 som er eldre enn en uke og oppretter oppgaver for disse om de ikke allerede har.
 
-Tjenesten er nå satt til å kjøre klokken 7:00 mandag, onsdag og fredag. Dette kan endres i no.nav.doksikkerhetsnett.scheduler.DoksikkerhetsnettScheduled
+Tjenesten er nå satt til å kjøre klokken 7:00 mandag, onsdag og fredag. Dette kan endres i no.nav.doksikkerhetsnett.DoksikkerhetsnettScheduled
 
 Man kan spesifisere hvilke temaer man ønsker å fange ved å oppdatere miljøvariabelen "doksikkerhetsnett.lesTemaer" og "doksikkerhetsnett.skrivTemaer".
 Temaene er separert med komma. Om en vil ha alle tema skriv "ALLE"

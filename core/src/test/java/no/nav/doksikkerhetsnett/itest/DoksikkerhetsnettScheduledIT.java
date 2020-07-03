@@ -9,7 +9,7 @@ import no.nav.doksikkerhetsnett.consumers.StsRestConsumer;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.itest.config.TestConfig;
 import no.nav.doksikkerhetsnett.metrics.MetricsScheduler;
-import no.nav.doksikkerhetsnett.scheduler.DoksikkerhetsnettScheduled;
+import no.nav.doksikkerhetsnett.DoksikkerhetsnettScheduled;
 import no.nav.doksikkerhetsnett.services.FinnMottatteJournalposterService;
 import no.nav.doksikkerhetsnett.services.FinnOppgaveService;
 import no.nav.doksikkerhetsnett.services.OpprettOppgaveService;

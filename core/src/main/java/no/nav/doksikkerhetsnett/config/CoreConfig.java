@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett;
+package no.nav.doksikkerhetsnett.config;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
