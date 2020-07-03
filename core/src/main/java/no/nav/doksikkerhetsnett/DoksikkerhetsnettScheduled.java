@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.scheduler;
+package no.nav.doksikkerhetsnett;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
@@ -142,6 +142,8 @@ public class DoksikkerhetsnettScheduled {
     }
 
     private Set<String> temaerStringToSet(String temaer) {
-        return new HashSet(Arrays.asList(temaer.split(",")));
+        return new HashSet(Arrays.asList(temaer.split(",")).stream()
+                .map(tema -> tema.trim())
+                .collect(Collectors.toList()));
     }
 }
