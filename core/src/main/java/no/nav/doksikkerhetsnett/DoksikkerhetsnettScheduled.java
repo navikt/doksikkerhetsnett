@@ -45,7 +45,7 @@ public class DoksikkerhetsnettScheduled {
 
     // Satt til å kjøre klokken 07:00 på man, ons og fre
     //@Scheduled(cron = "0 0 7 * * MON,WED,FRI")
-    @Scheduled(initialDelay = 60_000)
+    @Scheduled(fixedDelay = 90_000)
     public void triggerOppdatering() {
         //Kjører read-only temaene
         runDoksikkerhetsnettInReadOnlyMode();
