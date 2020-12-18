@@ -44,8 +44,7 @@ public class DoksikkerhetsnettScheduled {
     }
 
     // Satt til å kjøre klokken 07:00 på man, ons og fre
-    //@Scheduled(cron = "0 0 7 * * MON,WED,FRI")
-    //Endret til ny verdi for test i dev-grafana
+    @Scheduled(cron = "0 0 7 * * MON,WED,FRI")
     @Scheduled(fixedDelay = Integer.MAX_VALUE, initialDelay = 25000)
     public void triggerOppdatering() {
 
