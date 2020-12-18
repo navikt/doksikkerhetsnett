@@ -44,10 +44,16 @@ public class DoksikkerhetsnettScheduled {
     }
 
     // Satt til å kjøre klokken 07:00 på man, ons og fre
-    @Scheduled(cron = "0 0 7 * * MON,WED,FRI")
+    //@Scheduled(cron = "0 0 7 * * MON,WED,FRI")
+    //Endret til ny verdi for test i dev-grafana
+    @Scheduled(fixedDelay = Integer.MAX_VALUE, initialDelay = 25000)
     public void triggerOppdatering() {
+
         //Kjører read-only temaene
         runDoksikkerhetsnettInReadOnlyMode();
+
+        //Fjerner gammel data fra cachen
+        metricsScheduler.clearOldMetrics();
 
         //Oppretter oppgaver for write-temaene
         runDokSikkerhetsnettInReadWriteMode();
