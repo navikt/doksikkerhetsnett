@@ -49,11 +49,11 @@ public class DoksikkerhetsnettScheduled {
     @Scheduled(fixedDelay = Integer.MAX_VALUE, initialDelay = 25000)
     public void triggerOppdatering() {
 
-        //Kjører read-only temaene
-        runDoksikkerhetsnettInReadOnlyMode();
-
         //Fjerner gammel data fra cachen
         metricsScheduler.clearOldMetrics();
+
+        //Kjører read-only temaene
+        runDoksikkerhetsnettInReadOnlyMode();
 
         //Oppretter oppgaver for write-temaene
         runDokSikkerhetsnettInReadWriteMode();
