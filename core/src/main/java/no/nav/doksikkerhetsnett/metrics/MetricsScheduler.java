@@ -71,8 +71,7 @@ public class MetricsScheduler {
         }
         return metrics;
     }
-
-    private void updateCaches(Map<String, Integer> newMetricsTotal, Map<String, Integer> newMetricsUtenOppgave) {
+    public void clearOldMetrics(){
         // Vil ikke lage metrikker på gammel data, så må fjerne de eksisterende cachene og meterne
         for (Gauge gauge : gauges) {
             meterRegistry.remove(gauge);
@@ -81,6 +80,9 @@ public class MetricsScheduler {
         totalGaugeCache.clear();
         utenOppgaveGaugeCache.clear();
 
+    }
+
+    private void updateCaches(Map<String, Integer> newMetricsTotal, Map<String, Integer> newMetricsUtenOppgave) {
         // Populerer cachene med de nye verdiene
         for (String newKey : newMetricsTotal.keySet()) {
             totalGaugeCache.put(newKey, newMetricsTotal.get(newKey));
