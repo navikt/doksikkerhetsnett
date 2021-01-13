@@ -11,6 +11,8 @@ public class MetricLabels {
 
     public static final String TOTAL_NAME = DOK_METRIC + ".antall.mottatte.journalposter";
     public static final String UTEN_OPPGAVE_NAME = DOK_METRIC + ".antall.uten.oppgave";
+    public static final String UTEN_OPPGAVE_NAME_EN_DAG = DOK_METRIC + ".antall.uten.oppgave.enDag";
+    public static final String UTEN_OPPGAVE_NAME_TO_DAGER = DOK_METRIC + ".antall.uten.oppgave.toDager";
 
 
     private MetricLabels() {

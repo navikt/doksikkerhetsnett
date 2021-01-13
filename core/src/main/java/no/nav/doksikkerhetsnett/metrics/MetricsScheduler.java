@@ -2,6 +2,7 @@ package no.nav.doksikkerhetsnett.metrics;
 
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import org.springframework.stereotype.Component;
 
@@ -17,13 +18,20 @@ import static no.nav.doksikkerhetsnett.metrics.MetricLabels.MOTTAKSKANAL;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.TEMA;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.TOTAL_NAME;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.UTEN_OPPGAVE_NAME;
+import static no.nav.doksikkerhetsnett.metrics.MetricLabels.UTEN_OPPGAVE_NAME_EN_DAG;
+import static no.nav.doksikkerhetsnett.metrics.MetricLabels.UTEN_OPPGAVE_NAME_TO_DAGER;
 
+@Slf4j
 @Component
 public class MetricsScheduler {
 
     private final MeterRegistry meterRegistry;
 
-    private final List<Gauge> gauges = new ArrayList<>();
+    private final List<Gauge> writeModeGauges = new ArrayList<>();
+    private final List<Gauge> enDagsGauges = new ArrayList<>();
+    private final Map<String, Integer> enDagsCache = new HashMap<>();
+    private final List<Gauge> toDagersGauges = new ArrayList<>();
+    private final Map<String, Integer> toDagersCache = new HashMap<>();
     private final Map<String, Integer> totalGaugeCache = new HashMap<>();
     private final Map<String, Integer> utenOppgaveGaugeCache = new HashMap<>();
 
@@ -31,14 +39,18 @@ public class MetricsScheduler {
         this.meterRegistry = meterRegistry;
     }
 
-    public void incrementMetrics(List<Journalpost> ubehandledeJournalposter, List<Journalpost> ubehandledeJournalposterUtenOppgave, Class parentClass) {
+    public void incrementMetrics(List<Journalpost> ubehandledeJournalposter, List<Journalpost> ubehandledeJournalposterUtenOppgave) {
+        if(ubehandledeJournalposter == null || ubehandledeJournalposterUtenOppgave == null){
+            log.warn("incrementMetrics fikk en nullet liste");
+            return;
+        }
         Map<String, Integer> newMetricsTotal = extractMetrics(ubehandledeJournalposter);
         Map<String, Integer> newMetricsUtenOppgave = extractMetrics(ubehandledeJournalposterUtenOppgave);
         updateCaches(newMetricsTotal, newMetricsUtenOppgave);
 
         for (String key : totalGaugeCache.keySet()) {
             String[] tags = key.split(";"); // [tema,mottakskanal,journalforendeEnhet]
-            gauges.add(Gauge.builder(TOTAL_NAME, totalGaugeCache, gc -> gc.get(key))
+            writeModeGauges.add(Gauge.builder(TOTAL_NAME, totalGaugeCache, gc -> gc.get(key))
                     .description("Gauge for antall ubehandlede journalposter funnet")
                     .tags(CLASS, new Exception().getStackTrace()[1].getClassName())
                     .tag(TEMA, tags[0])
@@ -48,13 +60,61 @@ public class MetricsScheduler {
         }
         for (String key : utenOppgaveGaugeCache.keySet()) {
             String[] tags = key.split(";"); // [tema,mottakskanal,journalforendeEnhet]
-            gauges.add(Gauge.builder(UTEN_OPPGAVE_NAME, utenOppgaveGaugeCache, gc -> gc.get(key))
+            writeModeGauges.add(Gauge.builder(UTEN_OPPGAVE_NAME, utenOppgaveGaugeCache, gc -> gc.get(key))
                     .description("Gauge for antall ubehandlede journalposter funnet som ikke har en åpen oppgave")
                     .tags(CLASS, new Exception().getStackTrace()[1].getClassName())
                     .tag(TEMA, tags[0])
                     .tags(MOTTAKSKANAL, tags[1])
                     .tags(JOURNALFORENDE_ENHET, tags[2])
                     .register(meterRegistry));
+        }
+    }
+
+    public void incrementTwoDaysOldMetrics(List<Journalpost> ubehandledeJournalposter){
+        if(ubehandledeJournalposter == null){
+            log.warn("IncrementTwoDaysOldMetrics fikk en nullet liste");
+            return;
+        }
+        doStuff(ubehandledeJournalposter, toDagersGauges, UTEN_OPPGAVE_NAME_TO_DAGER, toDagersCache);
+    }
+
+    public void incrementOneDayOldMetrics(List<Journalpost> ubehandledeJournalposter){
+        if(ubehandledeJournalposter == null){
+            log.warn("IncrementOneDayOldMetrics fikk en nullet liste");
+            return;
+        }
+        doStuff(ubehandledeJournalposter, enDagsGauges, UTEN_OPPGAVE_NAME_EN_DAG, enDagsCache);
+    }
+
+    public void clearTwoDaysOldCache(){
+        clearOldGauges(toDagersGauges);
+        toDagersCache.clear();
+    }
+
+    public void clearOneDayOldCache(){
+        clearOldGauges(enDagsGauges);
+        enDagsCache.clear();
+    }
+
+    private void doStuff(List<Journalpost> ubehandledeJournalposter, List<Gauge> gaugeCache, String gaugeName, Map<String, Integer> metricsCache){
+        updateMetricCache(ubehandledeJournalposter, metricsCache);
+
+        for (String key : metricsCache.keySet()) {
+            String[] tags = key.split(";"); // [tema,mottakskanal,journalforendeEnhet]
+            gaugeCache.add(Gauge.builder(gaugeName, metricsCache, gc -> gc.get(key))
+                    .description("Gauge for antall ubehandlede journalposter funnet")
+                    .tags(CLASS, new Exception().getStackTrace()[1].getClassName())
+                    .tag(TEMA, tags[0])
+                    .register(meterRegistry));
+        }
+    }
+
+    private void updateMetricCache(List<Journalpost> journalposts, Map<String, Integer> metricsCache) {
+        for (Journalpost jp : journalposts) {
+            String tema = jp.getTema() != null ? jp.getTema() : "mangler tema";
+
+            int count = metricsCache.containsKey(tema) ? metricsCache.get(tema) : 0;
+            metricsCache.put(tema, count + 1);
         }
     }
 
@@ -69,18 +129,27 @@ public class MetricsScheduler {
             int count = metrics.containsKey(key) ? metrics.get(key) : 0;
             metrics.put(key, count + 1);
         }
+
         return metrics;
     }
 
-    private void updateCaches(Map<String, Integer> newMetricsTotal, Map<String, Integer> newMetricsUtenOppgave) {
-        // Vil ikke lage metrikker på gammel data, så må fjerne de eksisterende cachene og meterne
-        for (Gauge gauge : gauges) {
+    public void clearOldGauges(List<Gauge> gauges){
+        for(Gauge gauge : gauges){
             meterRegistry.remove(gauge);
         }
-        gauges.clear();
+    }
+
+    public void clearOldMetrics(){
+        // vi ønsker ikke å lage metrikker på gammel data så vi må fjerne de eksisterende cachene og meterne
+        for (Gauge gauge : writeModeGauges) {
+            meterRegistry.remove(gauge);
+        }
+        writeModeGauges.clear();
         totalGaugeCache.clear();
         utenOppgaveGaugeCache.clear();
+    }
 
+    private void updateCaches(Map<String, Integer> newMetricsTotal, Map<String, Integer> newMetricsUtenOppgave) {
         // Populerer cachene med de nye verdiene
         for (String newKey : newMetricsTotal.keySet()) {
             totalGaugeCache.put(newKey, newMetricsTotal.get(newKey));
