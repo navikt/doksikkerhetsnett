@@ -51,6 +51,10 @@ public class DoksikkerhetsnettScheduled {
     // Satt til å kjøre klokken 07:00 på man, ons og fre
     @Scheduled(cron = "0 0 7 * * MON,WED,FRI")
     public void triggerOppdatering() {
+
+        //Fjerner gammel data fra cachen
+        metricsScheduler.clearOldMetrics();
+
         //Kjører read-only temaene
         runDoksikkerhetsnettInReadOnlyMode();
 
