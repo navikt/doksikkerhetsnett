@@ -94,7 +94,7 @@ class DoksikkerhetsnettScheduledIT {
                 finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService, opprettOppgaveService, metricsScheduler);
         List<Journalpost> journalposterUtenOppgaver = new ArrayList();
         Arrays.stream(dokSikkerhetsnettProperties.getSkrivTemaer().split(","))
-                .forEach(tema -> doksikkerhetsnettScheduled.finnJournalposterUtenOppgaver(tema)
+                .forEach(tema -> doksikkerhetsnettScheduled.finnJournalposterUtenOppgave(tema)
                         .forEach(journalpost -> journalposterUtenOppgaver.add(journalpost)));
         assertEquals(4, journalposterUtenOppgaver.size());
 
@@ -110,7 +110,7 @@ class DoksikkerhetsnettScheduledIT {
                 finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService, opprettOppgaveService, metricsScheduler);
         List<Journalpost> journalposterUtenOppgaver = new ArrayList();
         Utils.getAlleTema()
-                .forEach(tema -> doksikkerhetsnettScheduled.finnJournalposterUtenOppgaver(tema)
+                .forEach(tema -> doksikkerhetsnettScheduled.finnJournalposterUtenOppgave(tema)
                         .forEach(journalpost -> journalposterUtenOppgaver.add(journalpost)));
         assertEquals(220, journalposterUtenOppgaver.size());
     }

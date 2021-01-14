@@ -40,10 +40,6 @@ public class MetricsScheduler {
     }
 
     public void incrementMetrics(List<Journalpost> ubehandledeJournalposter, List<Journalpost> ubehandledeJournalposterUtenOppgave) {
-        if(ubehandledeJournalposter == null || ubehandledeJournalposterUtenOppgave == null){
-            log.warn("incrementMetrics fikk en nullet liste");
-            return;
-        }
         Map<String, Integer> newMetricsTotal = extractMetrics(ubehandledeJournalposter);
         Map<String, Integer> newMetricsUtenOppgave = extractMetrics(ubehandledeJournalposterUtenOppgave);
         updateCaches(newMetricsTotal, newMetricsUtenOppgave);
@@ -71,19 +67,11 @@ public class MetricsScheduler {
     }
 
     public void incrementTwoDaysOldMetrics(List<Journalpost> ubehandledeJournalposter){
-        if(ubehandledeJournalposter == null){
-            log.warn("IncrementTwoDaysOldMetrics fikk en nullet liste");
-            return;
-        }
-        doStuff(ubehandledeJournalposter, toDagersGauges, UTEN_OPPGAVE_NAME_TO_DAGER, toDagersCache);
+        UpdateGaugeCache(ubehandledeJournalposter, toDagersGauges, UTEN_OPPGAVE_NAME_TO_DAGER, toDagersCache);
     }
 
     public void incrementOneDayOldMetrics(List<Journalpost> ubehandledeJournalposter){
-        if(ubehandledeJournalposter == null){
-            log.warn("IncrementOneDayOldMetrics fikk en nullet liste");
-            return;
-        }
-        doStuff(ubehandledeJournalposter, enDagsGauges, UTEN_OPPGAVE_NAME_EN_DAG, enDagsCache);
+        UpdateGaugeCache(ubehandledeJournalposter, enDagsGauges, UTEN_OPPGAVE_NAME_EN_DAG, enDagsCache);
     }
 
     public void clearTwoDaysOldCache(){
@@ -96,7 +84,7 @@ public class MetricsScheduler {
         enDagsCache.clear();
     }
 
-    private void doStuff(List<Journalpost> ubehandledeJournalposter, List<Gauge> gaugeCache, String gaugeName, Map<String, Integer> metricsCache){
+    private void UpdateGaugeCache(List<Journalpost> ubehandledeJournalposter, List<Gauge> gaugeCache, String gaugeName, Map<String, Integer> metricsCache){
         updateMetricCache(ubehandledeJournalposter, metricsCache);
 
         for (String key : metricsCache.keySet()) {

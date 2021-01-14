@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -68,7 +69,7 @@ public class DoksikkerhetsnettScheduled {
                     Utils.getAlleTemaExcept(dokSikkerhetsnettProperties.getSkrivTemaer()) : // Hent alle tema. Ignorer de som skal skrives, da de behandles neste steg
                     temaerStringToSet(dokSikkerhetsnettProperties.getLesTemaer());
 
-            temaer.forEach(this::finnJournalposterUtenOppgaver);
+            temaer.forEach(this::finnJournalposterUtenOppgave);
 
         } else {
             log.info("Det er ikke spesifisert noen temaer for read-only");
@@ -87,28 +88,22 @@ public class DoksikkerhetsnettScheduled {
         }
     }
 
-	@Scheduled(fixedDelay = 900000000)
-	public void runDailyScan() {
+    /*
+    *  Satt til å kjøre klokken 6, mon-fri
+    *  Lager grafana metrics på journalposter som er ubehandlede, uten oppgave og har ligget i minst x dager
+    */
+	@Scheduled(cron = "0 0 6 * * MON-FRI")
+	public void updateDailyGrafanaMetrics() {
 		metricsScheduler.clearOneDayOldCache();
 		metricsScheduler.clearTwoDaysOldCache();
 
 		for (String tema : Utils.getAlleTema()) {
-			List<Journalpost> ubehandledeJournalposter;
-			List<Journalpost> ubehandledeJournalposterUtenOppgave;
-			log.info("Doksikkerhetsnett henter alle ubehandlede journalposter eldre enn " + EN_DAG +" {}", Utils.logWithTema(tema));
-
-			ubehandledeJournalposter = findUbehandledeJournalposter(tema, EN_DAG);
-			ubehandledeJournalposterUtenOppgave = findUbehandledeJournalposterUtenOppgave(tema, ubehandledeJournalposter, EN_DAG);
+			List<Journalpost> ubehandledeJournalposterUtenOppgave = finnUbehandledeJournalposterUtenOppgaveForDagligeMetrics(tema, EN_DAG);
 			metricsScheduler.incrementOneDayOldMetrics(ubehandledeJournalposterUtenOppgave);
 		}
 
 		for (String tema : Utils.getAlleTema()) {
-			List<Journalpost> ubehandledeJournalposter;
-			List<Journalpost> ubehandledeJournalposterUtenOppgave;
-			log.info("Doksikkerhetsnett henter alle ubehandlede journalposter eldre enn " + TO_DAGER +" {}", Utils.logWithTema(tema));
-
-			ubehandledeJournalposter = findUbehandledeJournalposter(tema, TO_DAGER);
-			ubehandledeJournalposterUtenOppgave = findUbehandledeJournalposterUtenOppgave(tema, ubehandledeJournalposter, TO_DAGER);
+			List<Journalpost> ubehandledeJournalposterUtenOppgave = finnUbehandledeJournalposterUtenOppgaveForDagligeMetrics(tema, TO_DAGER);
 			metricsScheduler.incrementTwoDaysOldMetrics(ubehandledeJournalposterUtenOppgave);
 		}
 
@@ -116,8 +111,16 @@ public class DoksikkerhetsnettScheduled {
 
 	}
 
+	private List<Journalpost> finnUbehandledeJournalposterUtenOppgaveForDagligeMetrics(String tema, int eldreEnn){
+		List<Journalpost> ubehandledeJournalposter;
+		log.info("Doksikkerhetsnett henter alle ubehandlede journalposter eldre enn " + eldreEnn +" {} dag(er) gamle", Utils.logWithTema(tema));
+
+		ubehandledeJournalposter = findUbehandledeJournalposter(tema, eldreEnn);
+		return findUbehandledeJournalposterUtenOppgave(tema, ubehandledeJournalposter, eldreEnn);
+	}
+
 	public void lagOppgaverForGlemteJournalposter(String tema) {
-		List<Journalpost> ubehandletJournalpostsUtenOppgave = finnJournalposterUtenOppgaver(tema);
+		List<Journalpost> ubehandletJournalpostsUtenOppgave = finnJournalposterUtenOppgave(tema);
 		try {
 			List<OpprettOppgaveResponse> opprettedeOppgaver = opprettOppgaveService.opprettOppgaver(ubehandletJournalpostsUtenOppgave);
 			if (opprettedeOppgaver.size() > 0) {
@@ -128,7 +131,7 @@ public class DoksikkerhetsnettScheduled {
 		}
 	}
 
-	public List<Journalpost> finnJournalposterUtenOppgaver(String tema) {
+	public List<Journalpost> finnJournalposterUtenOppgave(String tema) {
 		List<Journalpost> ubehandledeJournalposter;
 		List<Journalpost> ubehandledeJournalposterUtenOppgave;
 		log.info("Doksikkerhetsnett henter alle ubehandlede journalposter eldre enn 5 dager fra tema: {}", Utils.logWithTema(tema));
@@ -141,9 +144,6 @@ public class DoksikkerhetsnettScheduled {
 	}
 
 	private List<Journalpost> findUbehandledeJournalposterUtenOppgave(String tema, List<Journalpost> ubehandledeJournalposter, int dagerGamle) {
-		if(ubehandledeJournalposter == null){
-			return null;
-		}
 		List<Journalpost> ubehandledeJournalposterUtenOppgave;
 		ubehandledeJournalposterUtenOppgave = finnEksisterendeOppgaverFraUbehandledeJournalpostList(ubehandledeJournalposter);
 		log.info("Doksikkerhetsnett fant {} journalposter uten oppgave {}{} som var eldre enn " + dagerGamle,
@@ -161,7 +161,7 @@ public class DoksikkerhetsnettScheduled {
 					.getJournalposter();
 		} catch (Exception e) {
 			log.error("Doksikkerhetsnett feilet under hentingen av alle journalposter {}: " + e.getMessage(), Utils.logWithTema(tema), e);
-			return null;
+			return Collections.emptyList();
 		}
 	}
 
