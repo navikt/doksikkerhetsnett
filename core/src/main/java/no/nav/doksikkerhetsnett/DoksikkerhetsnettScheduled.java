@@ -113,7 +113,9 @@ public class DoksikkerhetsnettScheduled {
 
 	private List<Journalpost> finnUbehandledeJournalposterUtenOppgaveForDagligeMetrics(String tema, int eldreEnn){
 		List<Journalpost> ubehandledeJournalposter;
-		log.info("Doksikkerhetsnett henter alle ubehandlede journalposter eldre enn " + eldreEnn +" {} dag(er) gamle", Utils.logWithTema(tema));
+		log.info("Henter alle ubehandlede journalposter {} som er eldre enn {}.",
+				Utils.logWithTema(tema),
+				Utils.logWithDager(eldreEnn));
 
 		ubehandledeJournalposter = findUbehandledeJournalposter(tema, eldreEnn);
 		return findUbehandledeJournalposterUtenOppgave(tema, ubehandledeJournalposter, eldreEnn);
@@ -134,7 +136,7 @@ public class DoksikkerhetsnettScheduled {
 	public List<Journalpost> finnJournalposterUtenOppgave(String tema) {
 		List<Journalpost> ubehandledeJournalposter;
 		List<Journalpost> ubehandledeJournalposterUtenOppgave;
-		log.info("Doksikkerhetsnett henter alle ubehandlede journalposter eldre enn 5 dager fra tema: {}", Utils.logWithTema(tema));
+		log.info("Doksikkerhetsnett henter alle ubehandlede journalposter eldre enn 5 dager fra tema: {}", tema);
 
 		ubehandledeJournalposter = findUbehandledeJournalposter(tema, FEM_DAGER);
 		ubehandledeJournalposterUtenOppgave = findUbehandledeJournalposterUtenOppgave(tema, ubehandledeJournalposter, FEM_DAGER);
@@ -146,9 +148,10 @@ public class DoksikkerhetsnettScheduled {
 	private List<Journalpost> findUbehandledeJournalposterUtenOppgave(String tema, List<Journalpost> ubehandledeJournalposter, int dagerGamle) {
 		List<Journalpost> ubehandledeJournalposterUtenOppgave;
 		ubehandledeJournalposterUtenOppgave = finnEksisterendeOppgaverFraUbehandledeJournalpostList(ubehandledeJournalposter);
-		log.info("Doksikkerhetsnett fant {} journalposter uten oppgave {}{} som var eldre enn " + dagerGamle,
+		log.info("Fant {} journalposter {} som er eldre enn {} og mangler oppgave ",
 				ubehandledeJournalposterUtenOppgave.size(),
-				Utils.logWithTema(tema),
+				Utils.logWithTema(tema), //Legger på teksten: med tema {tema}
+				dagerGamle,
 				ubehandledeJournalposterUtenOppgave.size() > 0 ?
 						". Journalpostene hadde ID'ene:" + ubehandledeJournalposterUtenOppgave :
 						"");
