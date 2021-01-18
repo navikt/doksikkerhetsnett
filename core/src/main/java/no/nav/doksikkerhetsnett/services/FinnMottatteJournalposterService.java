@@ -21,18 +21,8 @@ public class FinnMottatteJournalposterService {
 		this.finnMottatteJournalposterConsumer = finnMottatteJournalposterConsumer;
 	}
 
-	public FinnMottatteJournalposterResponse finnMottatteJournalPoster(String temaer) {
-		return finnMottatteJournalposterConsumer.finnMottatteJournalposter(temaer);
+	public FinnMottatteJournalposterResponse finnMottatteJournalPoster(String tema, int eldreEnn) {
+		return finnMottatteJournalposterConsumer.finnMottatteJournalposter(tema, eldreEnn);
 	}
-
-	public FinnMottatteJournalposterResponse finnMottatteJournalPoster(List<String> temaer) {
-		return finnMottatteJournalposterConsumer.finnMottatteJournalposter(Utils.formatTemaList(temaer));
-	}
-
-
-	public FinnMottatteJournalposterResponse finnMottatteJournalPoster() {
-		return finnMottatteJournalposterConsumer.finnMottatteJournalposter("");
-	}
-
 
 }

@@ -85,29 +85,13 @@ public class FinnMottatteJournalposterIT {
     }
 
     @Test
-    public void finnMottatteJournalposterHappyPathTemaNone() {
-        assertFinnMottatteJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(TEMA_NONE, 2,
-                "mottatteJournalposterMedTemaNone-happy.json", "UFO", "PEN");
-    }
-
-    @Test
     public void finnMottatteJournalposterInvalidTema() {
         assertFinnMottatteJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(TEMA_INVALID, 0,
                 "mottatteJournalposterMedInvalidTema.json", "");
     }
 
-    @Test
-    public void finnMottatteJournalposterMedTemaNull() {
-        stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER))
-                .willReturn(aResponse().withStatus(HttpStatus.OK.value())
-                        .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                        .withBodyFile("finnmottattejournalposter/mottatteJournalposterMedTemaMulti-happy.json")));
-        assertFinnMottatteJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(null, 2,
-                "mottatteJournalposterMedTemaMulti-happy.json", "UFO", "BAR");
-    }
-
     private void assertFinnMottatteJournalPosterConsumerGetsExpectedNumberofJournalpostsAndCorrectValues(String temaer, int expectedOutcome, String filename, String... resultTemaer) {
-        stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER + temaer))
+        stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER + temaer+"/5"))
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
                         .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
                         .withBodyFile("finnmottattejournalposter/" + filename)));
@@ -119,7 +103,7 @@ public class FinnMottatteJournalposterIT {
         } catch (Exception e) {
         }
 
-        FinnMottatteJournalposterResponse response = finnMottatteJournalposterConsumer.finnMottatteJournalposter(temaer);
+        FinnMottatteJournalposterResponse response = finnMottatteJournalposterConsumer.finnMottatteJournalposter(temaer, 5);
 
         assertEquals(expectedOutcome, response.getJournalposter().size());
 
@@ -138,31 +122,45 @@ public class FinnMottatteJournalposterIT {
     }
 
     @Test
+    public void finnMottatteJournalposterMedTemaNull() {
+        stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER+"/5"))
+                .willReturn(aResponse().withStatus(HttpStatus.BAD_REQUEST.value())));
+        assertThrows(FinnMottatteJournalposterFinnesIkkeFunctionalException.class, () -> finnMottatteJournalposterConsumer.finnMottatteJournalposter(null, 5));
+    }
+
+    @Test
+    public void finnMottatteJournalposterHappyPathTemaNone() {
+        stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER+"/5"))
+                .willReturn(aResponse().withStatus(HttpStatus.BAD_REQUEST.value())));
+        assertThrows(FinnMottatteJournalposterFinnesIkkeFunctionalException.class, () -> finnMottatteJournalposterConsumer.finnMottatteJournalposter(TEMA_NONE, 5));
+    }
+
+    @Test
     public void shouldThrowFinnMottatteJournalposterFinnesIkkeFunctionalException() {
-        stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER + JUST_FOR_PATH))
+        stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER + JUST_FOR_PATH+"/5"))
                 .willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND.value())));
-        assertThrows(FinnMottatteJournalposterFinnesIkkeFunctionalException.class, () -> finnMottatteJournalposterConsumer.finnMottatteJournalposter(JUST_FOR_PATH));
+        assertThrows(FinnMottatteJournalposterFinnesIkkeFunctionalException.class, () -> finnMottatteJournalposterConsumer.finnMottatteJournalposter(JUST_FOR_PATH, 5));
     }
 
     @Test
     public void shouldThrowFinnOppgaveTillaterIkkeTilknytningFunctionalException() {
-        stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER + JUST_FOR_PATH))
+        stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER + JUST_FOR_PATH+"/5"))
                 .willReturn(aResponse().withStatus(HttpStatus.CONFLICT.value())));
-        assertThrows(FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException.class, () -> finnMottatteJournalposterConsumer.finnMottatteJournalposter(JUST_FOR_PATH));
+        assertThrows(FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException.class, () -> finnMottatteJournalposterConsumer.finnMottatteJournalposter(JUST_FOR_PATH, 5));
     }
 
     @Test
     public void shouldThrowFinnMottatteJournalposterFunctionalException() {
-        stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER + JUST_FOR_PATH))
+        stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER + JUST_FOR_PATH+"/5"))
                 .willReturn(aResponse().withStatus(HttpStatus.BAD_REQUEST.value())));
-        assertThrows(FinnMottatteJournalposterFunctionalException.class, () -> finnMottatteJournalposterConsumer.finnMottatteJournalposter(JUST_FOR_PATH));
+        assertThrows(FinnMottatteJournalposterFunctionalException.class, () -> finnMottatteJournalposterConsumer.finnMottatteJournalposter(JUST_FOR_PATH, 5));
     }
 
     @Test
     public void shouldThrowFinnMottatteJournalposterTechnicalException() {
-        stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER + JUST_FOR_PATH))
+        stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER + JUST_FOR_PATH+"/5"))
                 .willReturn(aResponse().withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())));
-        assertThrows(FinnMottatteJournalposterTechnicalException.class, () -> finnMottatteJournalposterConsumer.finnMottatteJournalposter(JUST_FOR_PATH));
+        assertThrows(FinnMottatteJournalposterTechnicalException.class, () -> finnMottatteJournalposterConsumer.finnMottatteJournalposter(JUST_FOR_PATH, 5));
     }
 
 

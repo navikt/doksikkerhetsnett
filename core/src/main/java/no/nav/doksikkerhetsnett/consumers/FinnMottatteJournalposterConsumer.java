@@ -45,7 +45,11 @@ public class FinnMottatteJournalposterConsumer {
     }
 
     @Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnMottatteJournalposter"}, percentiles = {0.5, 0.95}, histogram = true)
-    public FinnMottatteJournalposterResponse finnMottatteJournalposter(String temaer) {
+    public FinnMottatteJournalposterResponse finnMottatteJournalposter(String tema, int antallDager) {
+        return doCall(tema, antallDager);
+    }
+
+    private FinnMottatteJournalposterResponse doCall(String tema, int antallDager){
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -53,9 +57,10 @@ public class FinnMottatteJournalposterConsumer {
             HttpEntity<?> requestEntity = new HttpEntity<>(headers);
 
             URI uri = UriComponentsBuilder.fromHttpUrl(finnMottatteJournalposterUrl)
-                    .path(ValidateTemaer(temaer))
+                    .path(validateInput(tema))
+                    .path("/"+antallDager)
                     .build().toUri();
-            return restTemplate.exchange(uri, HttpMethod.GET, requestEntity, FinnMottatteJournalposterResponse.class)
+             return restTemplate.exchange(uri, HttpMethod.GET, requestEntity, FinnMottatteJournalposterResponse.class)
                     .getBody();
 
         } catch (HttpClientErrorException e) {
@@ -75,10 +80,10 @@ public class FinnMottatteJournalposterConsumer {
         }
     }
 
-    private String ValidateTemaer(String temaer) {
-        if (temaer == null) {
+    private String validateInput(String input) {
+        if (input == null) {
             return "";
-        } else return temaer;
+        } else return input;
     }
 
 

@@ -62,6 +62,10 @@ public class Utils {
 
     }
 
+    public static String logWithDager(int dagerGamle){
+        return dagerGamle == 1 ? "1 dag" : dagerGamle + " dager";
+    }
+
     // Hjelpefunksjon for finere logging ut ifra hvor mange temaer som er i kallet
     public static String logWithTema(String temaer) {
         if (temaer == null || temaer.isEmpty()) {
