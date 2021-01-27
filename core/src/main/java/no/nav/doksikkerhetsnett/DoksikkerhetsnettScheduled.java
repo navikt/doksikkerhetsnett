@@ -148,12 +148,12 @@ public class DoksikkerhetsnettScheduled {
 	private List<Journalpost> findUbehandledeJournalposterUtenOppgave(String tema, List<Journalpost> ubehandledeJournalposter, int dagerGamle) {
 		List<Journalpost> ubehandledeJournalposterUtenOppgave;
 		ubehandledeJournalposterUtenOppgave = finnEksisterendeOppgaverFraUbehandledeJournalpostList(ubehandledeJournalposter);
-		log.info("Fant {} journalposter {} som er eldre enn {} og mangler oppgave ",
+		log.info("Fant {} journalposter {} som er eldre enn {} dag(er) og mangler oppgave. {}",
 				ubehandledeJournalposterUtenOppgave.size(),
 				Utils.logWithTema(tema), //Legger på teksten: med tema {tema}
 				dagerGamle,
 				ubehandledeJournalposterUtenOppgave.size() > 0 ?
-						". Journalpostene hadde ID'ene:" + ubehandledeJournalposterUtenOppgave :
+						"Journalpostene hadde ID'ene:" + ubehandledeJournalposterUtenOppgave +".":
 						"");
 		return ubehandledeJournalposterUtenOppgave;
 	}
