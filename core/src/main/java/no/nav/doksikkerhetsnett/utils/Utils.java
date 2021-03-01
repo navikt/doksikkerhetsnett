@@ -1,8 +1,9 @@
 package no.nav.doksikkerhetsnett.utils;
 
-import com.google.common.collect.Lists;
+
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
+import wiremock.com.google.common.collect.Lists;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -37,9 +38,9 @@ public class Utils {
     }
 
     public static String listOfLongsToQueryParams(List<Long> values, String paramName) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (Long value : values) {
-            result += paramName + "=" + value + "&";
+            result.append(paramName).append("=").append(value).append("&");
         }
         return result.substring(0, result.length() - 1);
     }
