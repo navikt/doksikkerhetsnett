@@ -30,7 +30,7 @@
 		<spring-cloud-contract-wiremock.version>3.0.1</spring-cloud-contract-wiremock.version>
 		<javax.validation.version>2.0.1.Final</javax.validation.version>
 		<logstash-logback-encoder.version>6.6</logstash-logback-encoder.version>
-		<wiremock-jre8.version>2.27.1</wiremock-jre8.version>
+		<wiremock-jre8.version>2.27.2</wiremock-jre8.version>
 		<maven-plugin.version>3.0.0-M5</maven-plugin.version>
 	</properties>
 
