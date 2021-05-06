@@ -100,7 +100,7 @@ public class OpprettOppgaveService {
     private String findAktorId(Journalpost jp) {
         String fnr = jp.getBruker() != null ? jp.getBruker().getId() : null;
 
-        if (jp.getBruker() != null && TYPE_PERSON.equals(jp.getBruker().getType()) && isNotBlank(fnr)) {
+        if (isNotBlank(fnr) && TYPE_PERSON.equals(jp.getBruker().getType())) {
             try {
                 return identConsumer.hentAktoerId(fnr);
             } catch (PersonIkkeFunnetException | PdlFunctionalException | HttpServerErrorException e) {
