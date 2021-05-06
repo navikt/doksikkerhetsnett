@@ -3,6 +3,9 @@ package no.nav.doksikkerhetsnett.services;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.consumers.JiraConsumer;
 import no.nav.doksikkerhetsnett.consumers.OpprettOppgaveConsumer;
+import no.nav.doksikkerhetsnett.consumers.pdl.IdentConsumer;
+import no.nav.doksikkerhetsnett.consumers.pdl.PdlFunctionalException;
+import no.nav.doksikkerhetsnett.consumers.pdl.PersonIkkeFunnetException;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
 import no.nav.doksikkerhetsnett.entities.responses.JiraResponse;
@@ -10,10 +13,16 @@ import no.nav.doksikkerhetsnett.entities.responses.OpprettOppgaveResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.OpprettOppgaveFunctionalException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
+import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static no.nav.doksikkerhetsnett.entities.Bruker.TYPE_PERSON;
+import static no.nav.doksikkerhetsnett.entities.Oppgave.BESKRIVELSE_GJENOPPRETTET;
+import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 @Slf4j
 @Service
@@ -21,10 +30,12 @@ public class OpprettOppgaveService {
 
     private final OpprettOppgaveConsumer opprettOppgaveConsumer;
     private final JiraConsumer jiraConsumer;
+    private IdentConsumer identConsumer;
 
-    public OpprettOppgaveService(OpprettOppgaveConsumer opprettOppgaveConsumer, JiraConsumer jiraConsumer) {
+    public OpprettOppgaveService(OpprettOppgaveConsumer opprettOppgaveConsumer, JiraConsumer jiraConsumer, IdentConsumer identConsumer) {
         this.opprettOppgaveConsumer = opprettOppgaveConsumer;
         this.jiraConsumer = jiraConsumer;
+        this.identConsumer = identConsumer;
     }
 
     public List<OpprettOppgaveResponse> opprettOppgaver(List<Journalpost> journalposts) {
@@ -66,6 +77,8 @@ public class OpprettOppgaveService {
                 .oppgavetype(Oppgave.OPPGAVETYPE_JOURNALFOERT)
                 .prioritet(Oppgave.PRIORITET_NORMAL)
                 .aktivDato(new Date())
+                .aktoerId(this.findAktorId(jp))
+                .beskrivelse(BESKRIVELSE_GJENOPPRETTET)
                 .build();
     }
 
@@ -79,7 +92,22 @@ public class OpprettOppgaveService {
                 .oppgavetype(Oppgave.OPPGAVETYPE_FORDELING)
                 .prioritet(Oppgave.PRIORITET_NORMAL)
                 .aktivDato(new Date())
+                .aktoerId(gammel_oppgave.getAktoerId())
+                .beskrivelse(gammel_oppgave.getBeskrivelse())
                 .build();
+    }
+
+    private String findAktorId(Journalpost jp) {
+        String fnr = jp.getBruker() != null ? jp.getBruker().getId() : null;
+
+        if (jp.getBruker() != null && TYPE_PERSON.equals(jp.getBruker().getType()) && isNotBlank(fnr)) {
+            try {
+                return identConsumer.hentAktoerId(fnr);
+            } catch (PersonIkkeFunnetException | PdlFunctionalException | HttpServerErrorException e) {
+                log.info("Kan ikke utføre tilgangskontroll for bruker tilknyttet til journalpost med journalpostId=" + jp.getJournalpostId(), e);
+            }
+        }
+        return null;
     }
 
     private String extractEnhetsNr(Journalpost jp) {

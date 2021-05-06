@@ -7,6 +7,8 @@ metadata:
     team: teamdokumenthandtering
 spec:
   env:
+    - name: PDL_URL
+      value: {{ PDL_URL }}
     - name: DOKSIKKERHETSNETT_FINNMOTTATTEJOURNALPOSTERURL
       value: {{ DOKSIKKERHETSNETT_FINNMOTTATTEJOURNALPOSTERURL }}
     - name: DOKSIKKERHETSNETT_SECURITYSERVICETOKENURL

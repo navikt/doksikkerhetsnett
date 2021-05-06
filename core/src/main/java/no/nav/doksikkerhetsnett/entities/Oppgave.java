@@ -22,6 +22,7 @@ public class Oppgave {
     public static final String PRIORITET_NORMAL = "NORM";
     public static final String TEMA_UKJENT = "UKJ";
     public static final String TEMA_GENERELL = "GEN";
+    public static final String BESKRIVELSE_GJENOPPRETTET = "Automatisk gjenopprettet oppgave";
 
     private String tildeltEnhetsnr;
 
@@ -41,6 +42,10 @@ public class Oppgave {
     private String oppgavetype;
 
     private String prioritet;
+
+    private String aktoerId;
+
+    private String beskrivelse;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date aktivDato;

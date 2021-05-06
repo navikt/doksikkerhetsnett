@@ -1,5 +1,6 @@
 {
   "NAMESPACE": "q1",
+  "PDL_URL": "https://pdl-api.dev.adeo.no/graphql",
   "SRVDOKSIKKERHETSNETT": "/serviceuser/data/dev/srvdoksikkerhetsnt",
   "DOKSIKKERHETSNETT_VAULT": "/kv/preprod/fss/doksikkerhetsnett/q1",
   "DOKSIKKERHETSNETT_SECURITYSERVICETOKENURL": "https://security-token-service.nais.preprod.local/rest/v1/sts/token",

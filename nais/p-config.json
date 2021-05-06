@@ -1,5 +1,6 @@
 {
   "NAMESPACE": "default",
+  "PDL_URL": "https://pdl-api.nais.adeo.no/graphql",
   "SRVDOKSIKKERHETSNETT": "/serviceuser/data/prod/srvdoksikkerhetsnt",
   "DOKSIKKERHETSNETT_VAULT": "/kv/prod/fss/doksikkerhetsnett/default",
   "DOKSIKKERHETSNETT_SECURITYSERVICETOKENURL": "https://security-token-service.nais.adeo.no/rest/v1/sts/token",
