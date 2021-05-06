@@ -104,7 +104,7 @@ public class OpprettOppgaveService {
             try {
                 return identConsumer.hentAktoerId(fnr);
             } catch (PersonIkkeFunnetException | PdlFunctionalException | HttpServerErrorException e) {
-                log.info("Kan ikke utføre tilgangskontroll for bruker tilknyttet til journalpost med journalpostId=" + jp.getJournalpostId(), e);
+                log.warn("Kan ikke utføre tilgangskontroll for bruker tilknyttet til journalpost med journalpostId=" + jp.getJournalpostId(), e);
             }
         }
         return null;
