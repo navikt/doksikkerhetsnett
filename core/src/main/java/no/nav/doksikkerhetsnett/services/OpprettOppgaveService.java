@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -101,7 +100,9 @@ public class OpprettOppgaveService {
         String fnr = jp.getBruker() != null ? jp.getBruker().getId() : null;
 
         if (isNotBlank(fnr) && TYPE_PERSON.equals(jp.getBruker().getType())) {
+            log.info("Prøver å finne en aktorId tilknyttet til journalPost med journalpostId {}", jp.getJournalpostId());
             try {
+                log.info("Fant en aktorId tilknyttet til journalPost med journalpostId {}", jp.getJournalpostId());
                 return identConsumer.hentAktoerId(fnr);
             } catch (PersonIkkeFunnetException | PdlFunctionalException | HttpServerErrorException e) {
                 log.warn("Kan ikke utføre tilgangskontroll for bruker tilknyttet til journalpost med journalpostId=" + jp.getJournalpostId(), e);
