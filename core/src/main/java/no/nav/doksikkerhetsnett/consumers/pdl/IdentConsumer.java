@@ -2,11 +2,6 @@ package no.nav.doksikkerhetsnett.consumers.pdl;
 
 import java.util.List;
 
-/**
- * Interface for tjenester relatert til henting av identer.
- *
- * @author Roar Bjurstrom, Visma Consulting.
- */
 public interface IdentConsumer {
 	/**
 	 * Henter NAV intern aktørId for folkeregisterIdent.

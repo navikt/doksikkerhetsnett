@@ -26,11 +26,6 @@ import static no.nav.doksikkerhetsnett.constants.RetryConstants.DELAY_SHORT;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.MULTIPLIER_SHORT;
 import static org.apache.logging.log4j.util.Strings.isBlank;
 
-/**
- * PDL implementasjon av {@link IdentConsumer}
- *
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Component
 public class PdlIdentConsumer implements IdentConsumer {
 	private static final String HEADER_PDL_NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";

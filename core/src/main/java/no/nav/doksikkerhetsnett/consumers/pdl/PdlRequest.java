@@ -7,9 +7,6 @@ import lombok.Getter;
 
 import java.util.Map;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Builder
 @Getter
 public class PdlRequest {
