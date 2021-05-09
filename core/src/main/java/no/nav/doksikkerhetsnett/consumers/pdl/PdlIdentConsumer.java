@@ -87,42 +87,6 @@ public class PdlIdentConsumer implements IdentConsumer {
 			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
 	)
 	@Override
-	public String hentFolkeregisterIdent(String aktoerId) throws PersonIkkeFunnetException {
-		if(isBlank(aktoerId)) {
-			throw new PersonIkkeFunnetException("Aktørid er null eller blank.");
-		}
-		try {
-			final RequestEntity<PdlRequest> requestEntity = baseRequest()
-					.body(mapHentFolkeregisterIdentForAktoerId(aktoerId));
-			final PdlResponse pdlResponse = requireNonNull(restTemplate.exchange(requestEntity, PdlResponse.class).getBody());
-
-			if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
-				return pdlResponse.getData().getHentIdenter().getIdenter().get(0).getIdent();
-			} else {
-				if (PERSON_IKKE_FUNNET_CODE.equals(pdlResponse.getErrors().get(0).getExtensions().getCode())) {
-					throw new PersonIkkeFunnetException("Fant ikke folkeregisterident for person i pdl.");
-				}
-				throw new PdlFunctionalException("Kunne ikke hente folkeregisterident for aktørid i pdl. " + pdlResponse.getErrors());
-			}
-		} catch (HttpClientErrorException e) {
-			throw new PdlFunctionalException("Kall mot pdl feilet funksjonelt.", e);
-		}
-	}
-
-	private PdlRequest mapHentFolkeregisterIdentForAktoerId(final String ident) {
-		final HashMap<String, Object> variables = new HashMap<>();
-		variables.put("ident", ident);
-		return PdlRequest.builder()
-				.query("query hentIdenter($ident: ID!) {hentIdenter(ident: $ident, grupper: FOLKEREGISTERIDENT, historikk: false) {identer { ident gruppe historisk } } }")
-				.variables(variables)
-				.build();
-	}
-
-	@Retryable(
-			include = HttpServerErrorException.class,
-			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
-	)
-	@Override
 	public List<String> hentHistoriskeFolkeregisterIdenter(String folkeregisterIdent) throws PersonIkkeFunnetException {
 		if(isBlank(folkeregisterIdent)) {
 			throw new PersonIkkeFunnetException("Folkeregisterident er null eller blank.");

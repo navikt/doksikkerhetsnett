@@ -41,6 +41,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static java.util.Arrays.asList;
 import static no.nav.doksikkerhetsnett.entities.Bruker.TYPE_PERSON;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -72,10 +73,10 @@ public class OpprettOppgaveIT {
 
     @BeforeEach
     void setup() {
-        setupSts();
+        this.setupSts();
+        this.happyAktoerIdStub();
         opprettOppgaveConsumer = new OpprettOppgaveConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties, stsRestConsumer);
         opprettOppgaveService = new OpprettOppgaveService(opprettOppgaveConsumer, jiraConsumer, identConsumer);
-        this.happyAktoerIdStub();
     }
 
     @AfterEach
@@ -87,11 +88,7 @@ public class OpprettOppgaveIT {
 
     @Test
     public void testOpprettOppgaveMapping() {
-        stubFor(post(urlMatching(URL_OPPGAVE))
-                .withRequestBody(equalToJson("{\"journalpostId\": \"333\"}", true, true))
-                .willReturn(aResponse().withStatus(HttpStatus.OK.value())
-                        .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                        .withBodyFile("opprettOppgave/opprettOppgave-happy333.json")));
+        this.stubOppgaveWithHappy333Response();
         stubFor(post(urlMatching(URL_OPPGAVE))
                 .withRequestBody(equalToJson("{\"journalpostId\": \"444\"}", true, true))
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
@@ -176,39 +173,28 @@ public class OpprettOppgaveIT {
         WireMock.verify(exactly(1), postRequestedFor(urlMatching(URL_JIRA)));
     }
 
-    private void setupSts() {
-        stubFor(get(urlMatching(URL_STSAUTH))
-                .willReturn(aResponse().withStatus(HttpStatus.OK.value())
-                        .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                        .withBodyFile("oppgave/stsResponse-happy.json")));
-    }
-
-
     @Test
-    public void testShouldGetAktorIdWhenBrukerWithIdAndTypeOfPerson() {
+    public void shouldGetAktorIdWhenBrukerWithIdAndTypeOfPerson() {
         stubFor(post(urlMatching(URL_OPPGAVE))
-                .withRequestBody(equalToJson("{\"journalpostId\": \"333\", \"aktoerId\" : \"1234567890123\", \"beskrivelse\" : \"Automatisk gjenopprettet oppgave\"}", true, true))
+                .withRequestBody(equalToJson("{\"journalpostId\": \"222\", \"aktoerId\": \"1234567890123\"}", true, true))
                 .willReturn(aResponse().withStatus(HttpStatus.OK.value())
                         .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                        .withBodyFile("opprettOppgave/opprettOppgave-happy333.json")));
+                        .withBodyFile("opprettOppgave/opprettOppgave-happyWithAktorId222.json")));
 
         Journalpost jp =
                 Journalpost.builder()
-                        .journalpostId(333)
+                        .journalpostId(222)
                         .bruker(Bruker.builder().id("1").type(TYPE_PERSON).build())
                         .build();
 
         List<OpprettOppgaveResponse> opprettOppgaverResponses = opprettOppgaveService.opprettOppgaver(asList(jp));
-        assertEquals("333", opprettOppgaverResponses.get(0).getJournalpostId());
+        assertEquals("222", opprettOppgaverResponses.get(0).getJournalpostId());
+        assertEquals("1234567890123", opprettOppgaverResponses.get(0).getAktoerId());
     }
 
     @Test
-    public void testShouldNotSettAktorIdWhenBrukerHaveWrongType() {
-        stubFor(post(urlMatching(URL_OPPGAVE))
-                .withRequestBody(equalToJson("{\"journalpostId\": \"333\", \"aktoerId\" : null, \"beskrivelse\" : \"Automatisk gjenopprettet oppgave\"}", true, true))
-                .willReturn(aResponse().withStatus(HttpStatus.OK.value())
-                        .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                        .withBodyFile("opprettOppgave/opprettOppgave-happy333.json")));
+    public void shouldNotSettAktorIdWhenBrukerHaveWrongType() {
+        this.stubOppgaveWithHappy333Response();
 
         Journalpost jp =
                 Journalpost.builder()
@@ -217,20 +203,14 @@ public class OpprettOppgaveIT {
                         .build();
 
         List<OpprettOppgaveResponse> opprettOppgaverResponses = opprettOppgaveService.opprettOppgaver(asList(jp));
+        assertNull(opprettOppgaverResponses.get(0).getAktoerId());
         assertEquals("333", opprettOppgaverResponses.get(0).getJournalpostId());
     }
 
-
-
     @Test
-    public void testShouldNotSettAktorIdWhenAPICallToIdentConsumerFails() {
+    public void shouldNotSettAktorIdWhenAPICallToIdentConsumerFails() {
         this.identNotFoundStub();
-
-        stubFor(post(urlMatching(URL_OPPGAVE))
-                .withRequestBody(equalToJson("{\"journalpostId\": \"333\", \"aktoerId\" : null, \"beskrivelse\" : \"Automatisk gjenopprettet oppgave\"}", true, true))
-                .willReturn(aResponse().withStatus(HttpStatus.OK.value())
-                        .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                        .withBodyFile("opprettOppgave/opprettOppgave-happy333.json")));
+        this.stubOppgaveWithHappy333Response();
 
         Journalpost jp =
                 Journalpost.builder()
@@ -239,11 +219,24 @@ public class OpprettOppgaveIT {
                         .build();
 
         List<OpprettOppgaveResponse> opprettOppgaverResponses = opprettOppgaveService.opprettOppgaver(asList(jp));
+        assertNull(opprettOppgaverResponses.get(0).getAktoerId());
         assertEquals("333", opprettOppgaverResponses.get(0).getJournalpostId());
     }
 
+    private void stubOppgaveWithHappy333Response() {
+        stubFor(post(urlMatching(URL_OPPGAVE))
+                .withRequestBody(equalToJson("{\"journalpostId\": \"333\", \"aktoerId\": null}", true, true))
+                .willReturn(aResponse().withStatus(HttpStatus.OK.value())
+                        .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                        .withBodyFile("opprettOppgave/opprettOppgave-happy333.json")));
+    }
 
-
+    private void setupSts() {
+        stubFor(get(urlMatching(URL_STSAUTH))
+                .willReturn(aResponse().withStatus(HttpStatus.OK.value())
+                        .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                        .withBodyFile("oppgave/stsResponse-happy.json")));
+    }
 
     void identNotFoundStub() {
         stubFor(post(urlEqualTo("/pdl"))

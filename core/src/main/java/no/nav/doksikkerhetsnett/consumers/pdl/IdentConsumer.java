@@ -13,15 +13,6 @@ public interface IdentConsumer {
 	String hentAktoerId(final String folkeregisterIdent) throws PersonIkkeFunnetException;
 
 	/**
-	 * Henter Folkeregisterets fødselsnummer for NAV intern aktørId
-	 *
-	 * @param aktoerId NAV intern aktørId
-	 * @return Folkeregister ident
-	 * @throws PersonIkkeFunnetException Finner ikke person
-	 */
-	String hentFolkeregisterIdent(final String aktoerId) throws PersonIkkeFunnetException;
-
-	/**
 	 * Henter historiske folkeregister identer for folkeregisterIdent.
 	 * Et typisk tilfelle er at en person har fått ett D-nummer og deretter et fødselsnummer i folkeregisteret.
 	 *
