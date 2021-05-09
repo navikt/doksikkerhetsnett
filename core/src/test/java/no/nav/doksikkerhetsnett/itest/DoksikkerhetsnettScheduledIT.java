@@ -66,12 +66,15 @@ class DoksikkerhetsnettScheduledIT {
     @Autowired
     private JiraConsumer jiraConsumer;
 
+    @Autowired
+    private IdentConsumer identConsumer;
+
     @BeforeEach
     void setUpConsumer() {
         setUpStubs();
         finnOppgaveService = new FinnOppgaveService(new FinnOppgaveConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties, stsRestConsumer));
         finnMottatteJournalposterService = new FinnMottatteJournalposterService(new FinnMottatteJournalposterConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties));
-        opprettOppgaveService = new OpprettOppgaveService(new OpprettOppgaveConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties, stsRestConsumer), jiraConsumer, null);
+        opprettOppgaveService = new OpprettOppgaveService(new OpprettOppgaveConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties, stsRestConsumer), jiraConsumer, identConsumer);
     }
 
     void setUpStubs() {
