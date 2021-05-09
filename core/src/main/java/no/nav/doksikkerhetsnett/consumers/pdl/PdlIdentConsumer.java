@@ -82,42 +82,6 @@ public class PdlIdentConsumer implements IdentConsumer {
 				.build();
 	}
 
-	@Retryable(
-			include = HttpServerErrorException.class,
-			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
-	)
-	@Override
-	public List<String> hentHistoriskeFolkeregisterIdenter(String folkeregisterIdent) throws PersonIkkeFunnetException {
-		if(isBlank(folkeregisterIdent)) {
-			throw new PersonIkkeFunnetException("Folkeregisterident er null eller blank.");
-		}
-		try {
-			final RequestEntity<PdlRequest> requestEntity = baseRequest()
-					.body(mapHentHistoriskeFolkeregisterIdentForAktoerId(folkeregisterIdent));
-			final PdlResponse pdlResponse = requireNonNull(restTemplate.exchange(requestEntity, PdlResponse.class).getBody());
-
-			if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
-				return pdlResponse.getData().getHentIdenter().getIdenter().stream().map(PdlResponse.PdlIdent::getIdent).collect(Collectors.toList());
-			} else {
-				if (PERSON_IKKE_FUNNET_CODE.equals(pdlResponse.getErrors().get(0).getExtensions().getCode())) {
-					throw new PersonIkkeFunnetException("Fant ikke historiske identer for person i pdl.");
-				}
-				throw new PdlFunctionalException("Kunne ikke hente historiske identer for ident." + pdlResponse.getErrors());
-			}
-		} catch (HttpClientErrorException e) {
-			throw new PdlFunctionalException("Kall mot pdl feilet funksjonelt.", e);
-		}
-	}
-
-	private PdlRequest mapHentHistoriskeFolkeregisterIdentForAktoerId(final String ident) {
-		final HashMap<String, Object> variables = new HashMap<>();
-		variables.put("ident", ident);
-		return PdlRequest.builder()
-				.query("query hentIdenter($ident: ID!) {hentIdenter(ident: $ident, grupper: FOLKEREGISTERIDENT, historikk: true) {identer { ident gruppe historisk } } }")
-				.variables(variables)
-				.build();
-	}
-
 	private RequestEntity.BodyBuilder baseRequest() {
 		final String serviceuserToken = stsRestConsumer.getOidcToken();
 		return RequestEntity.post(pdlUri)

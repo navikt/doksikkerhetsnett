@@ -1,7 +1,5 @@
 package no.nav.doksikkerhetsnett.consumers.pdl;
 
-import java.util.List;
-
 public interface IdentConsumer {
 	/**
 	 * Henter NAV intern aktørId for folkeregisterIdent.
@@ -11,14 +9,4 @@ public interface IdentConsumer {
 	 * @throws PersonIkkeFunnetException Finner ikke person
 	 */
 	String hentAktoerId(final String folkeregisterIdent) throws PersonIkkeFunnetException;
-
-	/**
-	 * Henter historiske folkeregister identer for folkeregisterIdent.
-	 * Et typisk tilfelle er at en person har fått ett D-nummer og deretter et fødselsnummer i folkeregisteret.
-	 *
-	 * @param folkeregisterIdent Folkeregisterident tilhørende person
-	 * @return Liste av historiske folkeregisteridenter tilhørende person
-	 * @throws PersonIkkeFunnetException Finner ikke person
-	 */
-	List<String> hentHistoriskeFolkeregisterIdenter(final String folkeregisterIdent) throws PersonIkkeFunnetException;
 }
