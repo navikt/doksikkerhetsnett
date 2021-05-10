@@ -89,10 +89,10 @@ public class DoksikkerhetsnettScheduled {
     }
 
     /*
-    *  Satt til å kjøre klokken 6, mon-fri
+    *  Satt til å kjøre klokken 6:30, mon-fri
     *  Lager grafana metrics på journalposter som er ubehandlede, uten oppgave og har ligget i minst x dager
     */
-	@Scheduled(cron = "0 0 6 * * MON-FRI")
+	@Scheduled(cron = "0 30 6 * * MON-FRI")
 	public void updateDailyGrafanaMetrics() {
 		metricsScheduler.clearOneDayOldCache();
 		metricsScheduler.clearTwoDaysOldCache();
