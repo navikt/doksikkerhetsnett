@@ -104,7 +104,7 @@ public class OpprettOppgaveService {
                 log.info("Fant en aktorId tilknyttet til journalPost med journalpostId {}", jp.getJournalpostId());
                 return identConsumer.hentAktoerId(fnr);
             } catch (PersonIkkeFunnetException | PdlFunctionalException | HttpServerErrorException e) {
-                log.warn("Kan ikke utføre PDL tilgangskontroll for bruker tilknyttet til journalpost med journalpostId: " + jp.getJournalpostId(), e);
+                log.warn("Det skjedde en feil i kallet til PDL, eller bruker ikke funnet i PDL med journalpostId: {}. Feilmelding: ",jp.getJournalpostId(), e);
             }
         }
         return null;
