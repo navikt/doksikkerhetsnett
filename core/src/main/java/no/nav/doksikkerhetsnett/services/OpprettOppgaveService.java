@@ -100,7 +100,6 @@ public class OpprettOppgaveService {
         String fnr = jp.getBruker() != null ? jp.getBruker().getId() : null;
 
         if (isNotBlank(fnr) && TYPE_PERSON.equals(jp.getBruker().getType())) {
-            log.info("Prøver å finne en aktorId tilknyttet til journalPost med journalpostId {}", jp.getJournalpostId()); //TODO remove after testing
             try {
                 log.info("Fant en aktorId tilknyttet til journalPost med journalpostId {}", jp.getJournalpostId());
                 return identConsumer.hentAktoerId(fnr);
