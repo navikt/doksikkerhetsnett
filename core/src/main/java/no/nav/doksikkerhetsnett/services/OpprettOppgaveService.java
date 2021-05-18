@@ -45,15 +45,22 @@ public class OpprettOppgaveService {
 
     public OpprettOppgaveResponse opprettOppgave(Oppgave oppgave) {
         try {
+            log.info("Prøver å opprette en oppgave med journalPostId {}", oppgave.getJournalpostId());
             return opprettOppgaveConsumer.opprettOppgave(oppgave);
         } catch (HttpClientErrorException e) {
+            log.info("Feilet å opprette en oppgave med journalPostId {}", oppgave.getJournalpostId(), e);
             return opprettOppgaveMedLiteMetadata(oppgave);
         }
     }
 
     public OpprettOppgaveResponse opprettOppgaveMedLiteMetadata(Oppgave oppgave) {
         try {
-            log.info("Klarte ikke opprette oppgave med oppgavetype {}. Prøver å opprette oppgave med oppgavetype {}", oppgave.getOppgavetype(), Oppgave.OPPGAVETYPE_FORDELING);
+            log.info(
+                "Klarte ikke opprette oppgave med oppgavetype {}. Prøver å opprette oppgave med oppgavetype {} med journalPostId {}",
+                oppgave.getOppgavetype(),
+                Oppgave.OPPGAVETYPE_FORDELING,
+                oppgave.getJournalpostId()
+            );
             return opprettOppgaveConsumer.opprettOppgave(createFDRFromJFR(oppgave));
         } catch (HttpClientErrorException e) {
             JiraResponse response = jiraConsumer.opprettJiraIssue(oppgave, e);
