@@ -52,6 +52,7 @@ public class DoksikkerhetsnettScheduled {
     // Satt til å kjøre klokken 07:00 på man, ons og fre
     @Scheduled(cron = "0 0 7 * * MON,WED,FRI")
     public void triggerOppdatering() {
+		log.info("Mandag/onsdag/fredag kjøring av doksikkerhetsnett skrive-modus er startet");
 
         //Fjerner gammel data fra cachen
         metricsScheduler.clearOldMetrics();
@@ -61,6 +62,7 @@ public class DoksikkerhetsnettScheduled {
 
         //Oppretter oppgaver for write-temaene
         runDokSikkerhetsnettInReadWriteMode();
+		log.info("Mandag/onsdag/fredag kjøring av doksikkerhetsnett skrive-modus er ferdig");
     }
 
     public void runDoksikkerhetsnettInReadOnlyMode() {
@@ -94,6 +96,8 @@ public class DoksikkerhetsnettScheduled {
     */
 	@Scheduled(cron = "0 30 6 * * MON-FRI")
 	public void updateDailyGrafanaMetrics() {
+		log.info("Daglig kjøring av doksikkerhetsnett les-modus er startet");
+
 		metricsScheduler.clearOneDayOldCache();
 		metricsScheduler.clearTwoDaysOldCache();
 
