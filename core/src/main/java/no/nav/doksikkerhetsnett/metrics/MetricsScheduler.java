@@ -67,11 +67,11 @@ public class MetricsScheduler {
     }
 
     public void incrementTwoDaysOldMetrics(List<Journalpost> ubehandledeJournalposter){
-        UpdateGaugeCache(ubehandledeJournalposter, toDagersGauges, UTEN_OPPGAVE_NAME_TO_DAGER, toDagersCache);
+        updateGaugeCache(ubehandledeJournalposter, toDagersGauges, UTEN_OPPGAVE_NAME_TO_DAGER, toDagersCache);
     }
 
     public void incrementOneDayOldMetrics(List<Journalpost> ubehandledeJournalposter){
-        UpdateGaugeCache(ubehandledeJournalposter, enDagsGauges, UTEN_OPPGAVE_NAME_EN_DAG, enDagsCache);
+        updateGaugeCache(ubehandledeJournalposter, enDagsGauges, UTEN_OPPGAVE_NAME_EN_DAG, enDagsCache);
     }
 
     public void clearTwoDaysOldCache(){
@@ -84,7 +84,7 @@ public class MetricsScheduler {
         enDagsCache.clear();
     }
 
-    private void UpdateGaugeCache(List<Journalpost> ubehandledeJournalposter, List<Gauge> gaugeCache, String gaugeName, Map<String, Integer> metricsCache){
+    private void updateGaugeCache(List<Journalpost> ubehandledeJournalposter, List<Gauge> gaugeCache, String gaugeName, Map<String, Integer> metricsCache){
         updateMetricCache(ubehandledeJournalposter, metricsCache);
 
         for (String key : metricsCache.keySet()) {
@@ -101,7 +101,7 @@ public class MetricsScheduler {
         for (Journalpost jp : journalposts) {
             String tema = jp.getTema() != null ? jp.getTema() : "mangler tema";
 
-            int count = metricsCache.containsKey(tema) ? metricsCache.get(tema) : 0;
+            int count = metricsCache.getOrDefault(tema, 0);
             metricsCache.put(tema, count + 1);
         }
     }
@@ -114,7 +114,7 @@ public class MetricsScheduler {
             String journalforendeEnhet = jp.getJournalforendeEnhet() != null ? jp.getJournalforendeEnhet() : "mangler journalførende enhet";
 
             String key = tema + ";" + mottakskanal + ";" + journalforendeEnhet;
-            int count = metrics.containsKey(key) ? metrics.get(key) : 0;
+            int count = metrics.getOrDefault(key, 0);
             metrics.put(key, count + 1);
         }
 

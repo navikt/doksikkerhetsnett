@@ -21,7 +21,7 @@ public class NaisContract {
     private static final String APPLICATION_READY = "Application is ready for traffic!";
 
 
-    private AtomicInteger appStatus = new AtomicInteger(1);
+    private final AtomicInteger appStatus = new AtomicInteger(1);
 
     @Inject
     public NaisContract(MeterRegistry registry) {

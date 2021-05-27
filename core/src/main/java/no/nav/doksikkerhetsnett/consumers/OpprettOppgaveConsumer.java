@@ -32,7 +32,6 @@ public class OpprettOppgaveConsumer {
 
     private final RestTemplate restTemplate;
     private final StsRestConsumer stsRestConsumer;
-
     private final String oppgaveUrl;
 
     public OpprettOppgaveConsumer(RestTemplateBuilder restTemplateBuilder,
@@ -54,7 +53,6 @@ public class OpprettOppgaveConsumer {
             HttpEntity<Oppgave> requestEntity = new HttpEntity<>(oppgave, headers);
             return restTemplate.exchange(oppgaveUrl, HttpMethod.POST, requestEntity, OpprettOppgaveResponse.class)
                     .getBody();
-
         } catch (HttpClientErrorException e) {
             if (HttpStatus.BAD_REQUEST.equals(e.getStatusCode())) {
                 throw e;

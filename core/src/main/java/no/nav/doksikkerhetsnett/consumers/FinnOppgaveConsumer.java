@@ -43,12 +43,12 @@ public class FinnOppgaveConsumer {
     private final StsRestConsumer stsRestConsumer;
 
     public static final String CORRELATION_HEADER = "X-Correlation-Id";
-    private final String PARAM_NAME_JOURNALPOSTID = "journalpostId";
-    private final String PARAM_NAME_OPPGAVETYPE = "oppgavetype";
-    private final String PARAM_NAME_STATUSKATEGORI = "statuskategori";
-    private final String PARAM_NAME_SORTERINGSREKKEFOLGE = "sorteringsrekkefolge";
-    private final String PARAM_NAME_LIMIT = "limit";
-    private final String PARAM_NAME_OFFSET = "offset";
+    private static final String PARAM_NAME_JOURNALPOSTID = "journalpostId";
+    private static final String PARAM_NAME_OPPGAVETYPE = "oppgavetype";
+    private static final String PARAM_NAME_STATUSKATEGORI = "statuskategori";
+    private static final String PARAM_NAME_SORTERINGSREKKEFOLGE = "sorteringsrekkefolge";
+    private static final String PARAM_NAME_LIMIT = "limit";
+    private static final String PARAM_NAME_OFFSET = "offset";
     private static final int LIMIT = 50;
 
     public FinnOppgaveConsumer(RestTemplateBuilder restTemplateBuilder,
@@ -85,7 +85,7 @@ public class FinnOppgaveConsumer {
                 }
             }
             List<Oppgave> allOppgaveResponses = oppgaveResponses.stream()
-                    .flatMap(FinnOppgaveResponse -> FinnOppgaveResponse.getOppgaver().stream())
+                    .flatMap(finnOppgaveResponse -> finnOppgaveResponse.getOppgaver().stream())
                     .collect(Collectors.toList());
 
             return FinnOppgaveResponse.builder()

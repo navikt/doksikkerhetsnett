@@ -10,13 +10,13 @@ import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
 import no.nav.doksikkerhetsnett.entities.responses.JiraResponse;
 import no.nav.doksikkerhetsnett.entities.responses.OpprettOppgaveResponse;
-import no.nav.doksikkerhetsnett.exceptions.functional.OpprettOppgaveFunctionalException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static no.nav.doksikkerhetsnett.entities.Bruker.TYPE_PERSON;
@@ -27,104 +27,109 @@ import static org.apache.logging.log4j.util.Strings.isNotBlank;
 @Service
 public class OpprettOppgaveService {
 
-    private final OpprettOppgaveConsumer opprettOppgaveConsumer;
-    private final JiraConsumer jiraConsumer;
-    private IdentConsumer identConsumer;
+	private final OpprettOppgaveConsumer opprettOppgaveConsumer;
+	private final JiraConsumer jiraConsumer;
+	private final IdentConsumer identConsumer;
 
-    public OpprettOppgaveService(OpprettOppgaveConsumer opprettOppgaveConsumer, JiraConsumer jiraConsumer, IdentConsumer identConsumer) {
-        this.opprettOppgaveConsumer = opprettOppgaveConsumer;
-        this.jiraConsumer = jiraConsumer;
-        this.identConsumer = identConsumer;
-    }
+	public OpprettOppgaveService(OpprettOppgaveConsumer opprettOppgaveConsumer, JiraConsumer jiraConsumer, IdentConsumer identConsumer) {
+		this.opprettOppgaveConsumer = opprettOppgaveConsumer;
+		this.jiraConsumer = jiraConsumer;
+		this.identConsumer = identConsumer;
+	}
 
-    public List<OpprettOppgaveResponse> opprettOppgaver(List<Journalpost> journalposts) {
-        return journalposts.stream()
-                .map(jp -> opprettOppgave(createOppgaveFromJournalpost(jp)))
-                .collect(Collectors.toList());
-    }
+	public List<OpprettOppgaveResponse> opprettOppgaver(List<Journalpost> journalposts) {
+		return journalposts.stream()
+				.map(jp -> opprettOppgave(createOppgaveFromJournalpost(jp)))
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList());
+	}
 
-    public OpprettOppgaveResponse opprettOppgave(Oppgave oppgave) {
-        try {
-            log.info("Prøver å opprette en oppgave med journalPostId {}", oppgave.getJournalpostId());
-            return opprettOppgaveConsumer.opprettOppgave(oppgave);
-        } catch (HttpClientErrorException e) {
-            log.info("Feilet å opprette en oppgave med journalPostId {}", oppgave.getJournalpostId(), e);
-            return opprettOppgaveMedLiteMetadata(oppgave);
-        }
-    }
+	public OpprettOppgaveResponse opprettOppgave(Oppgave oppgave) {
+		try {
+			log.info("Prøver å opprette en oppgave med journalPostId {}", oppgave.getJournalpostId());
+			return opprettOppgaveConsumer.opprettOppgave(oppgave);
+		} catch (HttpClientErrorException e) {
+			log.info("Feilet å opprette en oppgave med journalPostId {}", oppgave.getJournalpostId(), e);
+			return opprettOppgaveMedLiteMetadata(oppgave);
+		}
+	}
 
-    public OpprettOppgaveResponse opprettOppgaveMedLiteMetadata(Oppgave oppgave) {
-        try {
-            log.info(
-                "Klarte ikke opprette oppgave med oppgavetype {}. Prøver å opprette oppgave med oppgavetype {} med journalPostId {}",
-                oppgave.getOppgavetype(),
-                Oppgave.OPPGAVETYPE_FORDELING,
-                oppgave.getJournalpostId()
-            );
-            return opprettOppgaveConsumer.opprettOppgave(createFDRFromJFR(oppgave));
-        } catch (HttpClientErrorException e) {
-            JiraResponse response = jiraConsumer.opprettJiraIssue(oppgave, e);
-            log.info("Doksikkerhetsnett opprettet en jira-issue med kode {}", response.getKey());
-            throw new OpprettOppgaveFunctionalException(String.format("opprettOppgave feilet funksjonelt med statusKode=%s. Feilmelding=%s.", e
-                    .getStatusCode(), e.getResponseBodyAsString()), e);
-        }
-    }
+	public OpprettOppgaveResponse opprettOppgaveMedLiteMetadata(Oppgave oppgave) {
+		try {
+			String oppgavetype = Oppgave.OPPGAVETYPE_FORDELING;
+			if (Oppgave.TEMA_PENSJON.equals(oppgave.getTema())) {
+				oppgavetype = Oppgave.OPPGAVETYPE_JOURNALFOERT;
+			}
 
-    private Oppgave createOppgaveFromJournalpost(Journalpost jp) {
-        String tildeltEnhetsnr = extractEnhetsNr(jp);
-        String tema = extractTema(jp);
+			log.info(
+					"Klarte ikke opprette oppgave med oppgavetype {}. Prøver å opprette oppgave med oppgavetype {} med journalPostId {}",
+					oppgave.getOppgavetype(),
+					oppgavetype,
+					oppgave.getJournalpostId()
+			);
+			return opprettOppgaveConsumer.opprettOppgave(createNewOppgave(oppgave, oppgavetype));
+		} catch (HttpClientErrorException e) {
+			JiraResponse response = jiraConsumer.opprettJiraIssue(oppgave, e);
+			log.info("Doksikkerhetsnett opprettet en jira-issue med kode {}", response.getKey());
+			return null;
+		}
+	}
 
-        return Oppgave.builder()
-                .tildeltEnhetsnr(tildeltEnhetsnr)
-                .opprettetAvEnhetsnr(Oppgave.ENHETSNUMMER_GENERISK)
-                .journalpostId(Long.toString(jp.getJournalpostId()))
-                .tema(tema)
-                .behandlingstema(jp.getBehandlingstema())
-                .oppgavetype(Oppgave.OPPGAVETYPE_JOURNALFOERT)
-                .prioritet(Oppgave.PRIORITET_NORMAL)
-                .aktivDato(new Date())
-                .aktoerId(this.findAktorId(jp))
-                .beskrivelse(BESKRIVELSE_GJENOPPRETTET)
-                .build();
-    }
+	private Oppgave createOppgaveFromJournalpost(Journalpost jp) {
+		String tildeltEnhetsnr = extractEnhetsNr(jp);
+		String tema = extractTema(jp);
 
-    private Oppgave createFDRFromJFR(Oppgave gammel_oppgave) {
-        return Oppgave.builder()
-                .tildeltEnhetsnr(null)
-                .opprettetAvEnhetsnr(Oppgave.ENHETSNUMMER_GENERISK)
-                .journalpostId(gammel_oppgave.getJournalpostId())
-                .tema(gammel_oppgave.getTema())
-                .behandlingstema(null)
-                .oppgavetype(Oppgave.OPPGAVETYPE_FORDELING)
-                .prioritet(Oppgave.PRIORITET_NORMAL)
-                .aktivDato(new Date())
-                .aktoerId(gammel_oppgave.getAktoerId())
-                .beskrivelse(gammel_oppgave.getBeskrivelse())
-                .build();
-    }
+		return Oppgave.builder()
+				.tildeltEnhetsnr(tildeltEnhetsnr)
+				.opprettetAvEnhetsnr(Oppgave.ENHETSNUMMER_GENERISK)
+				.journalpostId(Long.toString(jp.getJournalpostId()))
+				.tema(tema)
+				.behandlingstema(jp.getBehandlingstema())
+				.oppgavetype(Oppgave.OPPGAVETYPE_JOURNALFOERT)
+				.prioritet(Oppgave.PRIORITET_NORMAL)
+				.aktivDato(new Date())
+				.aktoerId(this.findAktorId(jp))
+				.beskrivelse(BESKRIVELSE_GJENOPPRETTET)
+				.build();
+	}
 
-    private String findAktorId(Journalpost jp) {
-        String fnr = jp.getBruker() != null ? jp.getBruker().getId() : null;
+	private Oppgave createNewOppgave(Oppgave gammelOppgave, String oppgavetype) {
+		return Oppgave.builder()
+				.tildeltEnhetsnr(null)
+				.opprettetAvEnhetsnr(Oppgave.ENHETSNUMMER_GENERISK)
+				.journalpostId(gammelOppgave.getJournalpostId())
+				.tema(gammelOppgave.getTema())
+				.behandlingstema(null)
+				.oppgavetype(oppgavetype)
+				.prioritet(Oppgave.PRIORITET_NORMAL)
+				.aktivDato(new Date())
+				.aktoerId(gammelOppgave.getAktoerId())
+				.beskrivelse(gammelOppgave.getBeskrivelse())
+				.build();
+	}
 
-        if (isNotBlank(fnr) && TYPE_PERSON.equals(jp.getBruker().getType())) {
-            try {
-                log.info("Fant en aktorId tilknyttet til journalPost med journalpostId {}", jp.getJournalpostId());
-                return identConsumer.hentAktoerId(fnr);
-            } catch (PersonIkkeFunnetException | PdlFunctionalException | HttpServerErrorException e) {
-                log.warn("Det skjedde en feil i kallet til PDL, eller bruker ikke funnet i PDL med journalpostId: {}. Feilmelding: ",jp.getJournalpostId(), e);
-            }
-        }
-        return null;
-    }
+	private String findAktorId(Journalpost jp) {
+		String fnr = jp.getBruker() != null ? jp.getBruker().getId() : null;
 
-    private String extractEnhetsNr(Journalpost jp) {
-        return Journalpost.ENHETSNUMMER_GENERISK.equals(jp.getJournalforendeEnhet()) ? "" : jp.getJournalforendeEnhet();
-    }
+		if (isNotBlank(fnr) && TYPE_PERSON.equals(jp.getBruker().getType())) {
+			try {
+				log.info("Fant en aktorId tilknyttet til journalPost med journalpostId {}", jp.getJournalpostId());
+				return identConsumer.hentAktoerId(fnr);
+			} catch (PersonIkkeFunnetException | PdlFunctionalException | HttpServerErrorException e) {
+				log.warn("Det skjedde en feil i kallet til PDL, eller bruker ikke funnet i PDL med journalpostId: {}. Feilmelding: ", jp.getJournalpostId(), e);
+			}
+		}
+		return null;
+	}
 
-    private String extractTema(Journalpost jp) {
-        if (jp.getTema() == null || Oppgave.TEMA_UKJENT.equals(jp.getTema())) {
-            return Oppgave.TEMA_GENERELL;
-        }
-        return jp.getTema();
-    }
+	private String extractEnhetsNr(Journalpost jp) {
+		return Journalpost.ENHETSNUMMER_GENERISK.equals(jp.getJournalforendeEnhet()) ? "" : jp.getJournalforendeEnhet();
+	}
+
+	private String extractTema(Journalpost jp) {
+		if (jp.getTema() == null || Oppgave.TEMA_UKJENT.equals(jp.getTema())) {
+			return Oppgave.TEMA_GENERELL;
+		}
+		return jp.getTema();
+	}
 }

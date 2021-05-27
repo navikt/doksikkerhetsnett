@@ -22,6 +22,7 @@ public class Oppgave {
     public static final String PRIORITET_NORMAL = "NORM";
     public static final String TEMA_UKJENT = "UKJ";
     public static final String TEMA_GENERELL = "GEN";
+    public static final String TEMA_PENSJON = "PEN";
     public static final String BESKRIVELSE_GJENOPPRETTET = "Automatisk gjenopprettet oppgave";
 
     private String tildeltEnhetsnr;

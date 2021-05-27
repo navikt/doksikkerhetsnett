@@ -17,8 +17,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.time.Duration;
 import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static no.nav.doksikkerhetsnett.constants.DomainConstants.BEARER_PREFIX;
