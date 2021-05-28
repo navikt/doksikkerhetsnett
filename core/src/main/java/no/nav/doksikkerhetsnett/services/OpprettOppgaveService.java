@@ -21,6 +21,9 @@ import java.util.stream.Collectors;
 
 import static no.nav.doksikkerhetsnett.entities.Bruker.TYPE_PERSON;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.BESKRIVELSE_GJENOPPRETTET;
+import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_FORDELING;
+import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_JOURNALFOERT;
+import static no.nav.doksikkerhetsnett.entities.Oppgave.TEMA_PENSJON;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 @Slf4j
@@ -46,28 +49,26 @@ public class OpprettOppgaveService {
 
 	public OpprettOppgaveResponse opprettOppgave(Oppgave oppgave) {
 		try {
-			log.info("Prøver å opprette en oppgave med journalPostId {}", oppgave.getJournalpostId());
+			log.info("Prøver å opprette en oppgave med journalpostId {}", oppgave.getJournalpostId());
 			return opprettOppgaveConsumer.opprettOppgave(oppgave);
 		} catch (HttpClientErrorException e) {
-			log.info("Feilet å opprette en oppgave med journalPostId {}", oppgave.getJournalpostId(), e);
+			log.info("Feilet å opprette en oppgave med journalpostId {}", oppgave.getJournalpostId(), e);
 			return opprettOppgaveMedLiteMetadata(oppgave);
+		} catch (Exception e) {
+			log.error("Feil oppstod i opprettOppgave for journalpostId {}", oppgave.getJournalpostId(), e);
+			return null;
 		}
 	}
 
 	public OpprettOppgaveResponse opprettOppgaveMedLiteMetadata(Oppgave oppgave) {
 		try {
-			String oppgavetype = Oppgave.OPPGAVETYPE_FORDELING;
-			if (Oppgave.TEMA_PENSJON.equals(oppgave.getTema())) {
-				oppgavetype = Oppgave.OPPGAVETYPE_JOURNALFOERT;
-			}
-
 			log.info(
-					"Klarte ikke opprette oppgave med oppgavetype {}. Prøver å opprette oppgave med oppgavetype {} med journalPostId {}",
+					"Klarte ikke opprette oppgave med oppgavetype {}. Prøver å opprette oppgave med oppgavetype {} med journalpostId {}",
 					oppgave.getOppgavetype(),
-					oppgavetype,
+					(TEMA_PENSJON.equals(oppgave.getTema()) ? OPPGAVETYPE_JOURNALFOERT : OPPGAVETYPE_FORDELING),
 					oppgave.getJournalpostId()
 			);
-			return opprettOppgaveConsumer.opprettOppgave(createNewOppgave(oppgave, oppgavetype));
+			return opprettOppgaveConsumer.opprettOppgave(createNewOppgave(oppgave, TEMA_PENSJON.equals(oppgave.getTema()) ? OPPGAVETYPE_JOURNALFOERT : OPPGAVETYPE_FORDELING));
 		} catch (HttpClientErrorException e) {
 			JiraResponse response = jiraConsumer.opprettJiraIssue(oppgave, e);
 			log.info("Doksikkerhetsnett opprettet en jira-issue med kode {}", response.getKey());
@@ -85,7 +86,7 @@ public class OpprettOppgaveService {
 				.journalpostId(Long.toString(jp.getJournalpostId()))
 				.tema(tema)
 				.behandlingstema(jp.getBehandlingstema())
-				.oppgavetype(Oppgave.OPPGAVETYPE_JOURNALFOERT)
+				.oppgavetype(OPPGAVETYPE_JOURNALFOERT)
 				.prioritet(Oppgave.PRIORITET_NORMAL)
 				.aktivDato(new Date())
 				.aktoerId(this.findAktorId(jp))

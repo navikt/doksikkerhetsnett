@@ -38,102 +38,104 @@ import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 @Component
 public class FinnOppgaveConsumer {
 
-    private final String oppgaveUrl;
-    private final RestTemplate restTemplate;
-    private final StsRestConsumer stsRestConsumer;
+	private final String oppgaveUrl;
+	private final RestTemplate restTemplate;
+	private final StsRestConsumer stsRestConsumer;
 
-    public static final String CORRELATION_HEADER = "X-Correlation-Id";
-    private static final String PARAM_NAME_JOURNALPOSTID = "journalpostId";
-    private static final String PARAM_NAME_OPPGAVETYPE = "oppgavetype";
-    private static final String PARAM_NAME_STATUSKATEGORI = "statuskategori";
-    private static final String PARAM_NAME_SORTERINGSREKKEFOLGE = "sorteringsrekkefolge";
-    private static final String PARAM_NAME_LIMIT = "limit";
-    private static final String PARAM_NAME_OFFSET = "offset";
-    private static final int LIMIT = 50;
+	public static final String CORRELATION_HEADER = "X-Correlation-Id";
+	private static final String PARAM_NAME_JOURNALPOSTID = "journalpostId";
+	private static final String PARAM_NAME_OPPGAVETYPE = "oppgavetype";
+	private static final String PARAM_NAME_STATUSKATEGORI = "statuskategori";
+	private static final String PARAM_NAME_SORTERINGSREKKEFOLGE = "sorteringsrekkefolge";
+	private static final String PARAM_NAME_LIMIT = "limit";
+	private static final String PARAM_NAME_OFFSET = "offset";
+	private static final int LIMIT = 50;
 
-    public FinnOppgaveConsumer(RestTemplateBuilder restTemplateBuilder,
-                               DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
-                               StsRestConsumer stsRestConsumer) {
-        this.oppgaveUrl = dokSikkerhetsnettProperties.getOppgaveurl();
-        this.stsRestConsumer = stsRestConsumer;
-        this.restTemplate = restTemplateBuilder
-                .setReadTimeout(Duration.ofSeconds(250))
-                .setConnectTimeout(Duration.ofSeconds(5))
-                .basicAuthentication(dokSikkerhetsnettProperties.getServiceuser().getUsername(),
-                        dokSikkerhetsnettProperties.getServiceuser().getPassword())
-                .build();
-    }
+	public FinnOppgaveConsumer(RestTemplateBuilder restTemplateBuilder,
+							   DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
+							   StsRestConsumer stsRestConsumer) {
+		this.oppgaveUrl = dokSikkerhetsnettProperties.getOppgaveurl();
+		this.stsRestConsumer = stsRestConsumer;
+		this.restTemplate = restTemplateBuilder
+				.setReadTimeout(Duration.ofSeconds(250))
+				.setConnectTimeout(Duration.ofSeconds(5))
+				.basicAuthentication(dokSikkerhetsnettProperties.getServiceuser().getUsername(),
+						dokSikkerhetsnettProperties.getServiceuser().getPassword())
+				.build();
+	}
 
-    @Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnOppgaveForJournalposter"}, percentiles = {0.5, 0.95}, histogram = true)
-    public FinnOppgaveResponse finnOppgaveForJournalposter(List<Journalpost> ubehandledeJournalposter) {
-        try {
-            HttpHeaders headers = createHeaders();
-            HttpEntity<?> requestEntity = new HttpEntity<>(headers);
-            List<List<Long>> partitionedIds = Utils.journalpostListToPartitionedJournalpostIdList(ubehandledeJournalposter, LIMIT);
-            ArrayList<FinnOppgaveResponse> oppgaveResponses = new ArrayList<>();
+	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnOppgaveForJournalposter"}, percentiles = {0.5, 0.95}, histogram = true)
+	public FinnOppgaveResponse finnOppgaveForJournalposter(List<Journalpost> ubehandledeJournalposter) {
+		try {
+			HttpHeaders headers = createHeaders();
+			HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+			List<List<Long>> partitionedIds = Utils.journalpostListToPartitionedJournalpostIdList(ubehandledeJournalposter, LIMIT);
+			ArrayList<FinnOppgaveResponse> oppgaveResponses = new ArrayList<>();
 
-            for (List<Long> ids : partitionedIds) {
-                FinnOppgaveResponse oppgaveResponse = executeGetRequest(ids, requestEntity, 0);
-                oppgaveResponses.add(oppgaveResponse);
-                int differenceBetweenTotalReponsesAndResponseList = oppgaveResponse.getAntallTreffTotalt() - oppgaveResponse.getOppgaver()
-                        .size();
-                if (differenceBetweenTotalReponsesAndResponseList != 0) {
-                    int extraPages = differenceBetweenTotalReponsesAndResponseList / LIMIT;
-                    for (int i = 1; i <= extraPages + 1; i++) {
-                        oppgaveResponses.add(executeGetRequest(ids, requestEntity, i));
-                    }
-                }
-            }
-            List<Oppgave> allOppgaveResponses = oppgaveResponses.stream()
-                    .flatMap(finnOppgaveResponse -> finnOppgaveResponse.getOppgaver().stream())
-                    .collect(Collectors.toList());
+			for (List<Long> ids : partitionedIds) {
+				FinnOppgaveResponse oppgaveResponse = executeGetRequest(ids, requestEntity, 0);
+				oppgaveResponses.add(oppgaveResponse);
+				if (oppgaveResponse != null) {
+					int differenceBetweenTotalReponsesAndResponseList = oppgaveResponse.getAntallTreffTotalt() - oppgaveResponse.getOppgaver()
+							.size();
+					if (differenceBetweenTotalReponsesAndResponseList != 0) {
+						int extraPages = differenceBetweenTotalReponsesAndResponseList / LIMIT;
+						for (int i = 1; i <= extraPages + 1; i++) {
+							oppgaveResponses.add(executeGetRequest(ids, requestEntity, i));
+						}
+					}
+				}
+			}
+			List<Oppgave> allOppgaveResponses = oppgaveResponses.stream()
+					.flatMap(finnOppgaveResponse -> finnOppgaveResponse != null ? finnOppgaveResponse.getOppgaver().stream() : null)
+					.collect(Collectors.toList());
 
-            return FinnOppgaveResponse.builder()
-                    .oppgaver(allOppgaveResponses)
-                    .build();
+			return FinnOppgaveResponse.builder()
+					.oppgaver(allOppgaveResponses)
+					.build();
 
-        } catch (HttpClientErrorException e) {
-            if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
-                throw new FinnOppgaveFinnesIkkeFunctionalException(String.format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
-                        .getStatusCode(), e.getResponseBodyAsString(), oppgaveUrl), e);
-            } else if (HttpStatus.CONFLICT.equals(e.getStatusCode())) {
-                throw new FinnOppgaveTillaterIkkeTilknyttingFunctionalException(String.format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
-                        .getStatusCode(), e.getResponseBodyAsString()), e);
-            } else {
-                throw new FinnOppgaveFunctionalException(String.format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
-                        .getStatusCode(), e.getResponseBodyAsString(), oppgaveUrl), e);
-            }
-        } catch (HttpServerErrorException e) {
-            throw new FinnOppgaveTechnicalException(String.format("finnOppgaveForJournalposter feilet teknisk med statusKode=%s. Feilmelding=%s", e
-                    .getStatusCode(), e.getMessage()), e);
-        }
-    }
+		} catch (HttpClientErrorException e) {
+			if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
+				throw new FinnOppgaveFinnesIkkeFunctionalException(String.format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
+						.getStatusCode(), e.getResponseBodyAsString(), oppgaveUrl), e);
+			} else if (HttpStatus.CONFLICT.equals(e.getStatusCode())) {
+				throw new FinnOppgaveTillaterIkkeTilknyttingFunctionalException(String.format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
+						.getStatusCode(), e.getResponseBodyAsString()), e);
+			} else {
+				throw new FinnOppgaveFunctionalException(String.format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
+						.getStatusCode(), e.getResponseBodyAsString(), oppgaveUrl), e);
+			}
+		} catch (HttpServerErrorException e) {
+			throw new FinnOppgaveTechnicalException(String.format("finnOppgaveForJournalposter feilet teknisk med statusKode=%s. Feilmelding=%s", e
+					.getStatusCode(), e.getMessage()), e);
+		}
+	}
 
-    private FinnOppgaveResponse executeGetRequest(List<Long> ids, HttpEntity<?> requestEntity, int offset) {
-        String journalpostParams = Utils.listOfLongsToQueryParams(ids, PARAM_NAME_JOURNALPOSTID);
-        URI uri = UriComponentsBuilder.fromHttpUrl(oppgaveUrl)
-                .query(journalpostParams)
-                .queryParam(PARAM_NAME_OPPGAVETYPE, Oppgave.OPPGAVETYPE_JOURNALFOERT)
-                .queryParam(PARAM_NAME_OPPGAVETYPE, Oppgave.OPPGAVETYPE_FORDELING)
-                .queryParam(PARAM_NAME_STATUSKATEGORI, "AAPEN")
-                .queryParam(PARAM_NAME_SORTERINGSREKKEFOLGE, "ASC")
-                .queryParam(PARAM_NAME_LIMIT, LIMIT)
-                .build().toUri();
-        if (offset > 0) {
-            uri = Utils.appendQuery(uri, PARAM_NAME_OFFSET, Integer.toString(offset * LIMIT));
-        }
-        return restTemplate.exchange(uri, HttpMethod.GET, requestEntity, FinnOppgaveResponse.class)
-                .getBody();
-    }
+	private FinnOppgaveResponse executeGetRequest(List<Long> ids, HttpEntity<?> requestEntity, int offset) {
+		String journalpostParams = Utils.listOfLongsToQueryParams(ids, PARAM_NAME_JOURNALPOSTID);
+		URI uri = UriComponentsBuilder.fromHttpUrl(oppgaveUrl)
+				.query(journalpostParams)
+				.queryParam(PARAM_NAME_OPPGAVETYPE, Oppgave.OPPGAVETYPE_JOURNALFOERT)
+				.queryParam(PARAM_NAME_OPPGAVETYPE, Oppgave.OPPGAVETYPE_FORDELING)
+				.queryParam(PARAM_NAME_STATUSKATEGORI, "AAPEN")
+				.queryParam(PARAM_NAME_SORTERINGSREKKEFOLGE, "ASC")
+				.queryParam(PARAM_NAME_LIMIT, LIMIT)
+				.build().toUri();
+		if (offset > 0) {
+			uri = Utils.appendQuery(uri, PARAM_NAME_OFFSET, Integer.toString(offset * LIMIT));
+		}
+		return restTemplate.exchange(uri, HttpMethod.GET, requestEntity, FinnOppgaveResponse.class)
+				.getBody();
+	}
 
 
-    private HttpHeaders createHeaders() {
-        MDCGenerate.generateNewCallIdIfThereAreNone();
-        HttpHeaders headers = new HttpHeaders();
+	private HttpHeaders createHeaders() {
+		MDCGenerate.generateNewCallIdIfThereAreNone();
+		HttpHeaders headers = new HttpHeaders();
 
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + stsRestConsumer.getOidcToken());
-        headers.add(CORRELATION_HEADER, MDC.get(MDCConstants.MDC_CALL_ID));
-        return headers;
-    }
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.set(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + stsRestConsumer.getOidcToken());
+		headers.add(CORRELATION_HEADER, MDC.get(MDCConstants.MDC_CALL_ID));
+		return headers;
+	}
 }

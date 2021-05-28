@@ -1,6 +1,7 @@
 package no.nav.doksikkerhetsnett.itest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.stubbing.Scenario;
 import no.nav.doksikkerhetsnett.CoreConfig;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.consumers.JiraConsumer;
@@ -84,6 +85,7 @@ class OpprettOppgaveIT {
 		WireMock.reset();
 		WireMock.resetAllRequests();
 		WireMock.removeAllMappings();
+		WireMock.resetAllScenarios();
 	}
 
 	@Test
@@ -158,13 +160,19 @@ class OpprettOppgaveIT {
 	void shoulOpprettOppgaveWithUgyldigAnsvarligEnhetAndTemaPEN() {
 		stubFor(post(urlMatching(URL_OPPGAVE))
 				.withRequestBody(equalToJson("{\"tema\": \"PEN\", \"oppgavetype\": \"JFR\"}", true, true))
+				.inScenario("oppgave")
+				.whenScenarioStateIs(Scenario.STARTED)
 				.willReturn(aResponse().withStatus(HttpStatus.BAD_REQUEST.value())
-						.withBodyFile("opprettOppgave/opprettOppgave-ugyldigAnsvarligEnhet.json")));
+						.withBodyFile("opprettOppgave/opprettOppgave-ugyldigAnsvarligEnhet.json"))
+				.willSetStateTo("second"));
 		stubFor(post(urlMatching(URL_OPPGAVE))
 				.withRequestBody(equalToJson("{\"tema\": \"PEN\", \"oppgavetype\": \"JFR\"}", true, true))
+				.inScenario("oppgave")
+				.whenScenarioStateIs("second")
 				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withBodyFile("opprettOppgave/opprettOppgaveResponse-NyAnsvarligEnhet-PEN.json")));
+						.withBodyFile("opprettOppgave/opprettOppgaveResponse-NyAnsvarligEnhet-PEN.json"))
+		.willSetStateTo("done"));
 		List<Journalpost> jp = Collections.singletonList(Journalpost.builder()
 				.journalpostId(555)
 				.tema("PEN")

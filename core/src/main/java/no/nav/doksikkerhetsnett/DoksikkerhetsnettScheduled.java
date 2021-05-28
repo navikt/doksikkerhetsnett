@@ -112,7 +112,6 @@ public class DoksikkerhetsnettScheduled {
 		}
 
 		log.info("Daglig kjøring av doksikkerhetsnett les-modus er ferdig");
-
 	}
 
 	private List<Journalpost> finnUbehandledeJournalposterUtenOppgaveForDagligeMetrics(String tema, int eldreEnn){
@@ -121,7 +120,7 @@ public class DoksikkerhetsnettScheduled {
 				Utils.logWithTema(tema),
 				Utils.logWithDager(eldreEnn));
 
-		ubehandledeJournalposter = findUbehandledeJournalposter(tema, eldreEnn);
+		ubehandledeJournalposter = finnUbehandledeJournalposter(tema, eldreEnn);
 		return findUbehandledeJournalposterUtenOppgave(tema, ubehandledeJournalposter, eldreEnn);
 	}
 
@@ -143,7 +142,7 @@ public class DoksikkerhetsnettScheduled {
 		List<Journalpost> ubehandledeJournalposterUtenOppgave;
 		log.info("Doksikkerhetsnett henter alle ubehandlede journalposter eldre enn 5 dager fra tema: {}", tema);
 
-		ubehandledeJournalposter = findUbehandledeJournalposter(tema, FEM_DAGER);
+		ubehandledeJournalposter = finnUbehandledeJournalposter(tema, FEM_DAGER);
 		ubehandledeJournalposterUtenOppgave = findUbehandledeJournalposterUtenOppgave(tema, ubehandledeJournalposter, FEM_DAGER);
 
 		metricsScheduler.incrementMetrics(ubehandledeJournalposter, ubehandledeJournalposterUtenOppgave);
@@ -162,10 +161,9 @@ public class DoksikkerhetsnettScheduled {
 		return ubehandledeJournalposterUtenOppgave;
 	}
 
-	private List<Journalpost> findUbehandledeJournalposter(String tema, int eldreEnn) {
+	private List<Journalpost> finnUbehandledeJournalposter(String tema, int eldreEnn) {
 		try {
-			return finnMottatteJournalposterService.finnMottatteJournalPoster(tema, eldreEnn)
-					.getJournalposter();
+			return finnMottatteJournalposterService.finnMottatteJournalPoster(tema, eldreEnn).getJournalposter();
 		} catch (Exception e) {
 			log.error("Doksikkerhetsnett feilet under hentingen av alle journalposter {}: " + e.getMessage(), Utils.logWithTema(tema), e);
 			return Collections.emptyList();

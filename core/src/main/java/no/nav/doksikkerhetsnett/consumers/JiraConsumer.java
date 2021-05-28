@@ -48,7 +48,7 @@ public class JiraConsumer {
 				.setReadTimeout(Duration.ofSeconds(250))
 				.setConnectTimeout(Duration.ofSeconds(5))
 				// TODO: Bruker tmpbruker for å lage jira-issues. "Jira teamet" jobber med saken slik at servicebrukere skal få rettigheter
-				// Endre tilbake igjen så fort doksikekrhetsnetts servicebruker får tilgang selv
+				// Endre tilbake igjen så fort doksikkerhetsnetts servicebruker får tilgang selv
 				//.basicAuthentication(dokSikkerhetsnettProperties.getServiceuser().getUsername(),
 				//       dokSikkerhetsnettProperties.getServiceuser().getPassword())
 				.basicAuthentication(dokSikkerhetsnettProperties.getServiceuser().getTmpusername(),
