@@ -25,7 +25,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -44,6 +43,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @ExtendWith(SpringExtension.class)
@@ -96,23 +97,23 @@ class DoksikkerhetsnettScheduledIT {
 
 	void setUpStubs() {
 		stubFor(get(urlMatching(URL_STSAUTH))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("oppgave/stsResponse-happy.json")));
 		stubFor(get(urlMatching(URL_OPPGAVE_JOURNALPOST_SEARCH))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("finnoppgave/finnOppgaverAAPNE-happy.json")));
 		stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("finnmottattejournalposter/mottatteJournalposterForSchedulerTest-happy.json")));
 		stubFor(post(urlEqualTo(URL_PDL))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 						.withBodyFile("pdl/pdl-aktoerid-happy.json")));
 		stubFor(get(urlMatching(URL_STSAUTH))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("oppgave/stsResponse-happy.json")));
 	}
@@ -145,10 +146,10 @@ class DoksikkerhetsnettScheduledIT {
 	@Test
 	void shouldCreateJiraIssueWhenOpprettOppgaveFails() {
 		stubFor(post(urlMatching(URL_OPPGAVE))
-				.willReturn(aResponse().withStatus(HttpStatus.BAD_REQUEST.value())
+				.willReturn(aResponse().withStatus(BAD_REQUEST.value())
 						.withBodyFile("opprettOppgave/opprettOppgave-ukjentFeil.json")));
 		stubFor(post(urlMatching(URL_JIRA))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("opprettOppgave/jiraResponse-ok.json")));
 

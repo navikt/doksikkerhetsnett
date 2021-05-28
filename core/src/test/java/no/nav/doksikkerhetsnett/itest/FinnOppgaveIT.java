@@ -19,8 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -32,6 +30,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @ExtendWith(SpringExtension.class)
@@ -70,8 +74,8 @@ class FinnOppgaveIT {
 	@Test
 	void shouldFinnOppgaveMapping() {
 		stubFor(get(urlMatching(URL_OPPGAVER + OPPGAVER_HAPPY_PATH))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("finnoppgave/finnOppgaverAAPNE-happy.json")));
 
 		FinnOppgaveResponse finnOppgaveResponse = finnOppgaveConsumer.finnOppgaveForJournalposter(getJournalpostList(HAPPY_INT));
@@ -94,35 +98,35 @@ class FinnOppgaveIT {
 	@Test
 	void shouldThrowFinnOppgaveFinnesIkkeFunctionalException() {
 		stubFor(get(urlMatching(URL_OPPGAVER + OPPGAVER_BAD_REQUEST))
-				.willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND.value())));
+				.willReturn(aResponse().withStatus(NOT_FOUND.value())));
 		assertThrows(FinnOppgaveFinnesIkkeFunctionalException.class, () -> finnOppgaveConsumer.finnOppgaveForJournalposter(getJournalpostList(BAD_INT)));
 	}
 
 	@Test
 	void shouldThrowFinnOppgaveTillaterIkkeTilknytningFunctionalException() {
 		stubFor(get(urlMatching(URL_OPPGAVER + OPPGAVER_BAD_REQUEST))
-				.willReturn(aResponse().withStatus(HttpStatus.CONFLICT.value())));
+				.willReturn(aResponse().withStatus(CONFLICT.value())));
 		assertThrows(FinnOppgaveTillaterIkkeTilknyttingFunctionalException.class, () -> finnOppgaveConsumer.finnOppgaveForJournalposter(getJournalpostList(BAD_INT)));
 	}
 
 	@Test
 	void shouldThrowFinnOppgaveFunctionalException() {
 		stubFor(get(urlMatching(URL_OPPGAVER + OPPGAVER_BAD_REQUEST))
-				.willReturn(aResponse().withStatus(HttpStatus.BAD_REQUEST.value())));
+				.willReturn(aResponse().withStatus(BAD_REQUEST.value())));
 		assertThrows(FinnOppgaveFunctionalException.class, () -> finnOppgaveConsumer.finnOppgaveForJournalposter(getJournalpostList(BAD_INT)));
 	}
 
 	@Test
 	void shouldThrowFinnOppgaveTechnicalException() {
 		stubFor(get(urlMatching(URL_OPPGAVER + OPPGAVER_BAD_REQUEST))
-				.willReturn(aResponse().withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())));
+				.willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR.value())));
 		assertThrows(FinnOppgaveTechnicalException.class, () -> finnOppgaveConsumer.finnOppgaveForJournalposter(getJournalpostList(BAD_INT)));
 	}
 
 	private void setupSts() {
 		stubFor(get(urlMatching(URL_STSAUTH))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
-						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("oppgave/stsResponse-happy.json")));
 	}
 

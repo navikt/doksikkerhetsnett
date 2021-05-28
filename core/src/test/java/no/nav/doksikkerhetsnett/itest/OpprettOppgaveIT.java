@@ -23,7 +23,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -44,6 +43,8 @@ import static java.util.Arrays.asList;
 import static no.nav.doksikkerhetsnett.entities.Bruker.TYPE_PERSON;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @ExtendWith(SpringExtension.class)
@@ -93,12 +94,12 @@ class OpprettOppgaveIT {
 		stubOppgaveWithHappy333Response();
 		stubFor(post(urlMatching(URL_OPPGAVE))
 				.withRequestBody(equalToJson("{\"journalpostId\": \"444\"}", true, true))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("opprettOppgave/opprettOppgave-happy444.json")));
 		stubFor(post(urlMatching(URL_OPPGAVE))
 				.withRequestBody(equalToJson("{\"journalpostId\": \"555\"}", true, true))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("opprettOppgave/opprettOppgave-happy555.json")));
 		List<Journalpost> jps = asList(Journalpost.builder().journalpostId(333).build(),
@@ -116,11 +117,11 @@ class OpprettOppgaveIT {
 	void shouldOpprettOppgaveMedUgyldigEnhet() {
 		stubFor(post(urlMatching(URL_OPPGAVE))
 				.withRequestBody(equalToJson("{\"tildeltEnhetsnr\": \"FEIL\", \"oppgavetype\": \"JFR\"}", true, true))
-				.willReturn(aResponse().withStatus(HttpStatus.BAD_REQUEST.value())
+				.willReturn(aResponse().withStatus(BAD_REQUEST.value())
 						.withBodyFile("opprettOppgave/opprettOppgave-feilEnhet.json")));
 		stubFor(post(urlMatching(URL_OPPGAVE))
 				.withRequestBody(equalToJson("{\"tildeltEnhetsnr\": null, \"oppgavetype\": \"FDR\"}", true, true))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("opprettOppgave/opprettOppgave-happyFDR.json")));
 		List<Journalpost> jp = Collections.singletonList(Journalpost.builder()
@@ -138,11 +139,11 @@ class OpprettOppgaveIT {
 	void shoulOpprettOppgaveWithUgyldigAnsvarligEnhet() {
 		stubFor(post(urlMatching(URL_OPPGAVE))
 				.withRequestBody(equalToJson("{\"tema\": \"AAR\", \"oppgavetype\": \"JFR\"}", true, true))
-				.willReturn(aResponse().withStatus(HttpStatus.BAD_REQUEST.value())
+				.willReturn(aResponse().withStatus(BAD_REQUEST.value())
 						.withBodyFile("opprettOppgave/opprettOppgave-ugyldigAnsvarligEnhet.json")));
 		stubFor(post(urlMatching(URL_OPPGAVE))
 				.withRequestBody(equalToJson("{\"tema\": \"AAR\", \"oppgavetype\": \"FDR\"}", true, true))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("opprettOppgave/opprettOppgaveResponse-NyAnsvarligEnhet.json")));
 		List<Journalpost> jp = Collections.singletonList(Journalpost.builder()
@@ -162,17 +163,17 @@ class OpprettOppgaveIT {
 				.withRequestBody(equalToJson("{\"tema\": \"PEN\", \"oppgavetype\": \"JFR\"}", true, true))
 				.inScenario("oppgave")
 				.whenScenarioStateIs(Scenario.STARTED)
-				.willReturn(aResponse().withStatus(HttpStatus.BAD_REQUEST.value())
+				.willReturn(aResponse().withStatus(BAD_REQUEST.value())
 						.withBodyFile("opprettOppgave/opprettOppgave-ugyldigAnsvarligEnhet.json"))
 				.willSetStateTo("second"));
 		stubFor(post(urlMatching(URL_OPPGAVE))
 				.withRequestBody(equalToJson("{\"tema\": \"PEN\", \"oppgavetype\": \"JFR\"}", true, true))
 				.inScenario("oppgave")
 				.whenScenarioStateIs("second")
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("opprettOppgave/opprettOppgaveResponse-NyAnsvarligEnhet-PEN.json"))
-		.willSetStateTo("done"));
+				.willSetStateTo("done"));
 		List<Journalpost> jp = Collections.singletonList(Journalpost.builder()
 				.journalpostId(555)
 				.tema("PEN")
@@ -187,10 +188,10 @@ class OpprettOppgaveIT {
 	@Test
 	void shouldmakeJiraIssueIfOppgaveFails() {
 		stubFor(post(urlMatching(URL_OPPGAVE))
-				.willReturn(aResponse().withStatus(HttpStatus.BAD_REQUEST.value())
+				.willReturn(aResponse().withStatus(BAD_REQUEST.value())
 						.withBodyFile("opprettOppgave/opprettOppgave-ukjentFeil.json")));
 		stubFor(post(urlMatching(URL_JIRA))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("opprettOppgave/jiraResponse-ok.json")));
 
@@ -208,7 +209,7 @@ class OpprettOppgaveIT {
 	void shouldGetAktorIdWhenBrukerWithIdAndTypeOfPerson() {
 		stubFor(post(urlMatching(URL_OPPGAVE))
 				.withRequestBody(equalToJson("{\"journalpostId\": \"222\", \"aktoerId\": \"1234567890123\"}", true, true))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("opprettOppgave/opprettOppgave-happyWithAktorId222.json")));
 
@@ -241,7 +242,7 @@ class OpprettOppgaveIT {
 	@Test
 	void shouldNotSettAktorIdWhenAPICallToIdentConsumerFails() {
 		stubFor(post(urlEqualTo(URL_PDL))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 						.withBodyFile("pdl/pdl-ident-notfound.json")));
 		stubOppgaveWithHappy333Response();
@@ -259,21 +260,21 @@ class OpprettOppgaveIT {
 	private void stubOppgaveWithHappy333Response() {
 		stubFor(post(urlMatching(URL_OPPGAVE))
 				.withRequestBody(equalToJson("{\"journalpostId\": \"333\", \"aktoerId\": null}", true, true))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("opprettOppgave/opprettOppgave-happy333.json")));
 	}
 
 	private void setupSts() {
 		stubFor(get(urlMatching(URL_STSAUTH))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("oppgave/stsResponse-happy.json")));
 	}
 
 	void happyAktoerIdStub() {
 		stubFor(post(urlEqualTo(URL_PDL))
-				.willReturn(aResponse().withStatus(HttpStatus.OK.value())
+				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 						.withBodyFile("pdl/pdl-aktoerid-happy.json")));
 	}

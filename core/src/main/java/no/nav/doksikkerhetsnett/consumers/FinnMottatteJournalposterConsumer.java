@@ -11,9 +11,6 @@ import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -27,6 +24,10 @@ import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_ID;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Component
 public class FinnMottatteJournalposterConsumer {
@@ -54,14 +55,14 @@ public class FinnMottatteJournalposterConsumer {
 					.path("/" + antallDager)
 					.build().toUri();
 
-			return restTemplate.exchange(uri, HttpMethod.GET, requestEntity, FinnMottatteJournalposterResponse.class)
+			return restTemplate.exchange(uri, GET, requestEntity, FinnMottatteJournalposterResponse.class)
 					.getBody();
 
 		} catch (HttpClientErrorException e) {
-			if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
+			if (NOT_FOUND.equals(e.getStatusCode())) {
 				throw new FinnMottatteJournalposterFinnesIkkeFunctionalException(String.format("finnMottatteJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
 						.getStatusCode(), e.getResponseBodyAsString(), finnMottatteJournalposterUrl), e);
-			} else if (HttpStatus.CONFLICT.equals(e.getStatusCode())) {
+			} else if (CONFLICT.equals(e.getStatusCode())) {
 				throw new FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException(String.format("finnMottatteJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
 						.getStatusCode(), e.getResponseBodyAsString()), e);
 			} else {
@@ -82,7 +83,7 @@ public class FinnMottatteJournalposterConsumer {
 
 	private HttpHeaders createHeader() {
 		HttpHeaders header = new HttpHeaders();
-		header.setContentType(MediaType.APPLICATION_JSON);
+		header.setContentType(APPLICATION_JSON);
 
 		if (MDC.get(MDC_NAV_CALL_ID) != null) {
 			header.add(MDC_NAV_CALL_ID, MDC.get(MDC_NAV_CALL_ID));

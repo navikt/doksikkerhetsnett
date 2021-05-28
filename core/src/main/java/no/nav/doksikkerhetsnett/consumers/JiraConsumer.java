@@ -2,7 +2,6 @@ package no.nav.doksikkerhetsnett.consumers;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
-import no.nav.doksikkerhetsnett.constants.MDCConstants;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
 import no.nav.doksikkerhetsnett.entities.jira.Fields;
 import no.nav.doksikkerhetsnett.entities.jira.Issue;
@@ -15,8 +14,6 @@ import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -27,8 +24,11 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static no.nav.doksikkerhetsnett.constants.DomainConstants.APP_NAME;
+import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_ID;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Slf4j
 @Component
@@ -63,7 +63,7 @@ public class JiraConsumer {
 			Issue issue = createIssue(oppgave, exception);
 			HttpEntity<Issue> requestEntity = new HttpEntity<>(issue, headers);
 			log.info("doksikkerhetsnett prøver å lage en jira-issue i prosjekt {} med tittel \"{}\"", PROJECT_KEY, issue.getFields().getSummary());
-			return restTemplate.exchange(opprettJiraIssueUrl, HttpMethod.POST, requestEntity, JiraResponse.class)
+			return restTemplate.exchange(opprettJiraIssueUrl, POST, requestEntity, JiraResponse.class)
 					.getBody();
 		} catch (HttpClientErrorException e) {
 			throw new FinnOppgaveFinnesIkkeFunctionalException(String.format("OpprettJiraIssue feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
@@ -110,9 +110,9 @@ public class JiraConsumer {
 	private HttpHeaders createHeaders() {
 		HttpHeaders headers = new HttpHeaders();
 
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(CORRELATION_HEADER, MDC.get(MDCConstants.MDC_CALL_ID));
-		headers.add(UUID_HEADER, MDC.get(MDCConstants.MDC_CALL_ID));
+		headers.setContentType(APPLICATION_JSON);
+		headers.add(CORRELATION_HEADER, MDC.get(MDC_CALL_ID));
+		headers.add(UUID_HEADER, MDC.get(MDC_CALL_ID));
 		headers.add(MDC_NAV_CONSUMER_ID, APP_NAME);
 		headers.add(MDC_NAV_CALL_ID, MDC.get(MDC_NAV_CALL_ID));
 		return headers;

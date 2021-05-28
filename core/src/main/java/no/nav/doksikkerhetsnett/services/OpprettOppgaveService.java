@@ -21,9 +21,13 @@ import java.util.stream.Collectors;
 
 import static no.nav.doksikkerhetsnett.entities.Bruker.TYPE_PERSON;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.BESKRIVELSE_GJENOPPRETTET;
+import static no.nav.doksikkerhetsnett.entities.Oppgave.ENHETSNUMMER_GENERISK;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_FORDELING;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_JOURNALFOERT;
+import static no.nav.doksikkerhetsnett.entities.Oppgave.PRIORITET_NORMAL;
+import static no.nav.doksikkerhetsnett.entities.Oppgave.TEMA_GENERELL;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.TEMA_PENSJON;
+import static no.nav.doksikkerhetsnett.entities.Oppgave.TEMA_UKJENT;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 @Slf4j
@@ -49,13 +53,13 @@ public class OpprettOppgaveService {
 
 	public OpprettOppgaveResponse opprettOppgave(Oppgave oppgave) {
 		try {
-			log.info("Prøver å opprette en oppgave med journalpostId {}", oppgave.getJournalpostId());
+			log.info("Prøver å opprette en oppgave med journalpostId={}", oppgave.getJournalpostId());
 			return opprettOppgaveConsumer.opprettOppgave(oppgave);
 		} catch (HttpClientErrorException e) {
-			log.info("Feilet å opprette en oppgave med journalpostId {}", oppgave.getJournalpostId(), e);
+			log.info("Feilet å opprette en oppgave med journalpostId={}", oppgave.getJournalpostId(), e);
 			return opprettOppgaveMedLiteMetadata(oppgave);
 		} catch (Exception e) {
-			log.error("Feil oppstod i opprettOppgave for journalpostId {}", oppgave.getJournalpostId(), e);
+			log.error("Feil oppstod i opprettOppgave for journalpostId={}", oppgave.getJournalpostId(), e);
 			return null;
 		}
 	}
@@ -63,7 +67,7 @@ public class OpprettOppgaveService {
 	public OpprettOppgaveResponse opprettOppgaveMedLiteMetadata(Oppgave oppgave) {
 		try {
 			log.info(
-					"Klarte ikke opprette oppgave med oppgavetype {}. Prøver å opprette oppgave med oppgavetype {} med journalpostId {}",
+					"Klarte ikke opprette oppgave med oppgavetype {}. Prøver å opprette oppgave med oppgavetype={} med journalpostId={}",
 					oppgave.getOppgavetype(),
 					(TEMA_PENSJON.equals(oppgave.getTema()) ? OPPGAVETYPE_JOURNALFOERT : OPPGAVETYPE_FORDELING),
 					oppgave.getJournalpostId()
@@ -82,12 +86,12 @@ public class OpprettOppgaveService {
 
 		return Oppgave.builder()
 				.tildeltEnhetsnr(tildeltEnhetsnr)
-				.opprettetAvEnhetsnr(Oppgave.ENHETSNUMMER_GENERISK)
+				.opprettetAvEnhetsnr(ENHETSNUMMER_GENERISK)
 				.journalpostId(Long.toString(jp.getJournalpostId()))
 				.tema(tema)
 				.behandlingstema(jp.getBehandlingstema())
 				.oppgavetype(OPPGAVETYPE_JOURNALFOERT)
-				.prioritet(Oppgave.PRIORITET_NORMAL)
+				.prioritet(PRIORITET_NORMAL)
 				.aktivDato(new Date())
 				.aktoerId(this.findAktorId(jp))
 				.beskrivelse(BESKRIVELSE_GJENOPPRETTET)
@@ -97,12 +101,12 @@ public class OpprettOppgaveService {
 	private Oppgave createNewOppgave(Oppgave gammelOppgave, String oppgavetype) {
 		return Oppgave.builder()
 				.tildeltEnhetsnr(null)
-				.opprettetAvEnhetsnr(Oppgave.ENHETSNUMMER_GENERISK)
+				.opprettetAvEnhetsnr(ENHETSNUMMER_GENERISK)
 				.journalpostId(gammelOppgave.getJournalpostId())
 				.tema(gammelOppgave.getTema())
 				.behandlingstema(null)
 				.oppgavetype(oppgavetype)
-				.prioritet(Oppgave.PRIORITET_NORMAL)
+				.prioritet(PRIORITET_NORMAL)
 				.aktivDato(new Date())
 				.aktoerId(gammelOppgave.getAktoerId())
 				.beskrivelse(gammelOppgave.getBeskrivelse())
@@ -114,7 +118,7 @@ public class OpprettOppgaveService {
 
 		if (isNotBlank(fnr) && TYPE_PERSON.equals(jp.getBruker().getType())) {
 			try {
-				log.info("Fant en aktorId tilknyttet til journalPost med journalpostId {}", jp.getJournalpostId());
+				log.info("Fant en aktorId tilknyttet til journalPost med journalpostId={}", jp.getJournalpostId());
 				return identConsumer.hentAktoerId(fnr);
 			} catch (PersonIkkeFunnetException | PdlFunctionalException | HttpServerErrorException e) {
 				log.warn("Det skjedde en feil i kallet til PDL, eller bruker ikke funnet i PDL med journalpostId: {}. Feilmelding: ", jp.getJournalpostId(), e);
@@ -124,12 +128,12 @@ public class OpprettOppgaveService {
 	}
 
 	private String extractEnhetsNr(Journalpost jp) {
-		return Journalpost.ENHETSNUMMER_GENERISK.equals(jp.getJournalforendeEnhet()) ? "" : jp.getJournalforendeEnhet();
+		return ENHETSNUMMER_GENERISK.equals(jp.getJournalforendeEnhet()) ? "" : jp.getJournalforendeEnhet();
 	}
 
 	private String extractTema(Journalpost jp) {
-		if (jp.getTema() == null || Oppgave.TEMA_UKJENT.equals(jp.getTema())) {
-			return Oppgave.TEMA_GENERELL;
+		if (jp.getTema() == null || TEMA_UKJENT.equals(jp.getTema())) {
+			return TEMA_GENERELL;
 		}
 		return jp.getTema();
 	}

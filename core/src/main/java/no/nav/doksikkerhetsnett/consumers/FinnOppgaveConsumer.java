@@ -16,9 +16,6 @@ import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -32,8 +29,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static no.nav.doksikkerhetsnett.constants.DomainConstants.BEARER_PREFIX;
+import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_FORDELING;
+import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_JOURNALFOERT;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
+import static org.apache.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Component
 public class FinnOppgaveConsumer {
@@ -95,10 +99,10 @@ public class FinnOppgaveConsumer {
 					.build();
 
 		} catch (HttpClientErrorException e) {
-			if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
+			if (NOT_FOUND.equals(e.getStatusCode())) {
 				throw new FinnOppgaveFinnesIkkeFunctionalException(String.format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
 						.getStatusCode(), e.getResponseBodyAsString(), oppgaveUrl), e);
-			} else if (HttpStatus.CONFLICT.equals(e.getStatusCode())) {
+			} else if (CONFLICT.equals(e.getStatusCode())) {
 				throw new FinnOppgaveTillaterIkkeTilknyttingFunctionalException(String.format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
 						.getStatusCode(), e.getResponseBodyAsString()), e);
 			} else {
@@ -115,8 +119,8 @@ public class FinnOppgaveConsumer {
 		String journalpostParams = Utils.listOfLongsToQueryParams(ids, PARAM_NAME_JOURNALPOSTID);
 		URI uri = UriComponentsBuilder.fromHttpUrl(oppgaveUrl)
 				.query(journalpostParams)
-				.queryParam(PARAM_NAME_OPPGAVETYPE, Oppgave.OPPGAVETYPE_JOURNALFOERT)
-				.queryParam(PARAM_NAME_OPPGAVETYPE, Oppgave.OPPGAVETYPE_FORDELING)
+				.queryParam(PARAM_NAME_OPPGAVETYPE, OPPGAVETYPE_JOURNALFOERT)
+				.queryParam(PARAM_NAME_OPPGAVETYPE, OPPGAVETYPE_FORDELING)
 				.queryParam(PARAM_NAME_STATUSKATEGORI, "AAPEN")
 				.queryParam(PARAM_NAME_SORTERINGSREKKEFOLGE, "ASC")
 				.queryParam(PARAM_NAME_LIMIT, LIMIT)
@@ -124,7 +128,7 @@ public class FinnOppgaveConsumer {
 		if (offset > 0) {
 			uri = Utils.appendQuery(uri, PARAM_NAME_OFFSET, Integer.toString(offset * LIMIT));
 		}
-		return restTemplate.exchange(uri, HttpMethod.GET, requestEntity, FinnOppgaveResponse.class)
+		return restTemplate.exchange(uri, GET, requestEntity, FinnOppgaveResponse.class)
 				.getBody();
 	}
 
@@ -133,8 +137,8 @@ public class FinnOppgaveConsumer {
 		MDCGenerate.generateNewCallIdIfThereAreNone();
 		HttpHeaders headers = new HttpHeaders();
 
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.set(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + stsRestConsumer.getOidcToken());
+		headers.setContentType(APPLICATION_JSON);
+		headers.set(AUTHORIZATION, BEARER_PREFIX + stsRestConsumer.getOidcToken());
 		headers.add(CORRELATION_HEADER, MDC.get(MDCConstants.MDC_CALL_ID));
 		return headers;
 	}
