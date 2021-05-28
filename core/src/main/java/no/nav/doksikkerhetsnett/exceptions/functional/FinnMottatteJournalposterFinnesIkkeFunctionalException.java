@@ -1,12 +1,12 @@
 package no.nav.doksikkerhetsnett.exceptions.functional;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
-public class FinnMottatteJournalposterFinnesIkkeFunctionalException extends AbstractDoksikkerhetsnettFunctionalException {
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
-    public FinnMottatteJournalposterFinnesIkkeFunctionalException(String message, Throwable cause) {
-        super(message, cause);
-    }
+@ResponseStatus(value = NOT_FOUND)
+public class FinnMottatteJournalposterFinnesIkkeFunctionalException extends AbstractDoksikkerhetsnettFunctionalException {
+	public FinnMottatteJournalposterFinnesIkkeFunctionalException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

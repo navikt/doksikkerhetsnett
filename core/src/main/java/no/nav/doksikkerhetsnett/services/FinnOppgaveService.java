@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 public class FinnOppgaveService {
 
-    FinnOppgaveConsumer finnOppgaveConsumer;
+    private final FinnOppgaveConsumer finnOppgaveConsumer;
 
     @Inject
     public FinnOppgaveService(FinnOppgaveConsumer finnOppgaveConsumer) {
@@ -21,9 +21,7 @@ public class FinnOppgaveService {
     }
 
     public FinnOppgaveResponse finnOppgaver(List<Journalpost> ubehandledeJournalposter) {
-
         return finnOppgaveConsumer.finnOppgaveForJournalposter(ubehandledeJournalposter);
     }
-
 }
 

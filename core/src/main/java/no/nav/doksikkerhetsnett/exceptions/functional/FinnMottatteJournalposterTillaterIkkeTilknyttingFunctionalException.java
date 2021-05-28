@@ -1,13 +1,14 @@
 package no.nav.doksikkerhetsnett.exceptions.functional;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.CONFLICT)
-public class FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException extends
-        AbstractDoksikkerhetsnettFunctionalException {
+import static org.springframework.http.HttpStatus.CONFLICT;
 
-    public FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException(String message, Throwable cause) {
-        super(message, cause);
-    }
+@ResponseStatus(value = CONFLICT)
+public class FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException extends
+		AbstractDoksikkerhetsnettFunctionalException {
+
+	public FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

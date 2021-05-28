@@ -31,10 +31,10 @@ public class DoksikkerhetsnettScheduled {
 	private final DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
 	private final MetricsScheduler metricsScheduler;
 
-	private final String TEMA_ALLE = "ALLE";
-	private final int EN_DAG = 1;
-	private final int TO_DAGER = 2;
-	private final int FEM_DAGER = 5;
+	private static final String TEMA_ALLE = "ALLE";
+	private static final int EN_DAG = 1;
+	private static final int TO_DAGER = 2;
+	private static final int FEM_DAGER = 5;
 
 
 	public DoksikkerhetsnettScheduled(FinnMottatteJournalposterService finnMottatteJournalposterService,
@@ -112,7 +112,6 @@ public class DoksikkerhetsnettScheduled {
 		}
 
 		log.info("Daglig kjøring av doksikkerhetsnett les-modus er ferdig");
-
 	}
 
 	private List<Journalpost> finnUbehandledeJournalposterUtenOppgaveForDagligeMetrics(String tema, int eldreEnn){
@@ -121,7 +120,7 @@ public class DoksikkerhetsnettScheduled {
 				Utils.logWithTema(tema),
 				Utils.logWithDager(eldreEnn));
 
-		ubehandledeJournalposter = findUbehandledeJournalposter(tema, eldreEnn);
+		ubehandledeJournalposter = finnUbehandledeJournalposter(tema, eldreEnn);
 		return findUbehandledeJournalposterUtenOppgave(tema, ubehandledeJournalposter, eldreEnn);
 	}
 
@@ -129,8 +128,9 @@ public class DoksikkerhetsnettScheduled {
 		List<Journalpost> ubehandletJournalpostsUtenOppgave = finnJournalposterUtenOppgave(tema);
 		try {
 			List<OpprettOppgaveResponse> opprettedeOppgaver = opprettOppgaveService.opprettOppgaver(ubehandletJournalpostsUtenOppgave);
-			if (opprettedeOppgaver.size() > 0) {
-				log.info("Doksikkerhetsnett har opprettet {} oppgaver {} med ID'ene: {}", opprettedeOppgaver.size(), Utils.logWithTema(tema), opprettedeOppgaver.stream().map(opg -> opg.getId()).collect(Collectors.toList()));
+			if (!opprettedeOppgaver.isEmpty()) {
+				log.info("Doksikkerhetsnett har opprettet {} oppgaver {} med ID'ene: {}", opprettedeOppgaver.size(), Utils.logWithTema(tema),
+						opprettedeOppgaver.stream().map(OpprettOppgaveResponse::getId).collect(Collectors.toList()));
 			}
 		} catch (Exception e) {
 			log.error("Doksikkerhetsnett feilet under oppretting av oppgaver {}", Utils.logWithTema(tema), e);
@@ -142,7 +142,7 @@ public class DoksikkerhetsnettScheduled {
 		List<Journalpost> ubehandledeJournalposterUtenOppgave;
 		log.info("Doksikkerhetsnett henter alle ubehandlede journalposter eldre enn 5 dager fra tema: {}", tema);
 
-		ubehandledeJournalposter = findUbehandledeJournalposter(tema, FEM_DAGER);
+		ubehandledeJournalposter = finnUbehandledeJournalposter(tema, FEM_DAGER);
 		ubehandledeJournalposterUtenOppgave = findUbehandledeJournalposterUtenOppgave(tema, ubehandledeJournalposter, FEM_DAGER);
 
 		metricsScheduler.incrementMetrics(ubehandledeJournalposter, ubehandledeJournalposterUtenOppgave);
@@ -156,16 +156,14 @@ public class DoksikkerhetsnettScheduled {
 				ubehandledeJournalposterUtenOppgave.size(),
 				Utils.logWithTema(tema), //Legger på teksten: med tema {tema}
 				dagerGamle,
-				ubehandledeJournalposterUtenOppgave.size() > 0 ?
-						"Journalpostene hadde ID'ene:" + ubehandledeJournalposterUtenOppgave +".":
-						"");
+				ubehandledeJournalposterUtenOppgave.isEmpty() ? "" :
+						"Journalpostene hadde ID'ene:" + ubehandledeJournalposterUtenOppgave + ".");
 		return ubehandledeJournalposterUtenOppgave;
 	}
 
-	private List<Journalpost> findUbehandledeJournalposter(String tema, int eldreEnn) {
+	private List<Journalpost> finnUbehandledeJournalposter(String tema, int eldreEnn) {
 		try {
-			return finnMottatteJournalposterService.finnMottatteJournalPoster(tema, eldreEnn)
-					.getJournalposter();
+			return finnMottatteJournalposterService.finnMottatteJournalPoster(tema, eldreEnn).getJournalposter();
 		} catch (Exception e) {
 			log.error("Doksikkerhetsnett feilet under hentingen av alle journalposter {}: " + e.getMessage(), Utils.logWithTema(tema), e);
 			return Collections.emptyList();
@@ -194,7 +192,7 @@ public class DoksikkerhetsnettScheduled {
 
 	private Set<String> temaerStringToSet(String temaer) {
 		return new HashSet(Arrays.asList(temaer.split(",")).stream()
-				.map(tema -> tema.trim())
+				.map(String::trim)
 				.collect(Collectors.toList()));
 	}
 }
