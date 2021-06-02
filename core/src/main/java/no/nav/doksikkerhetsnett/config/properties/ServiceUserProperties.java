@@ -19,10 +19,4 @@ public class ServiceUserProperties {
     @NotEmpty
     private String password;
 
-    // TODO: Fjern disse når servicebrukere får tilgang til Jira. Fjern fra itest.properties også
-    @NotEmpty
-    private String tmpusername;
-    @NotEmpty
-    private String tmppassword;
-
 } 
