@@ -47,12 +47,7 @@ public class JiraConsumer {
 		this.restTemplate = restTemplateBuilder
 				.setReadTimeout(Duration.ofSeconds(250))
 				.setConnectTimeout(Duration.ofSeconds(5))
-				// TODO: Bruker tmpbruker for å lage jira-issues. "Jira teamet" jobber med saken slik at servicebrukere skal få rettigheter
-				// Endre tilbake igjen så fort doksikkerhetsnetts servicebruker får tilgang selv
-				//.basicAuthentication(dokSikkerhetsnettProperties.getServiceuser().getUsername(),
-				//       dokSikkerhetsnettProperties.getServiceuser().getPassword())
-				.basicAuthentication(dokSikkerhetsnettProperties.getServiceuser().getTmpusername(),
-						dokSikkerhetsnettProperties.getServiceuser().getTmppassword())
+				.basicAuthentication(dokSikkerhetsnettProperties.getServiceuser().getUsername(), dokSikkerhetsnettProperties.getServiceuser().getPassword())
 				.build();
 		this.opprettJiraIssueUrl = dokSikkerhetsnettProperties.getOpprettjiraissueurl();
 	}
