@@ -49,8 +49,8 @@ public class DoksikkerhetsnettScheduled {
 		this.metricsScheduler = metricsScheduler;
 	}
 
-    // Satt til å kjøre klokken 07:00 på man, ons og fre
-    @Scheduled(cron = "0 0 7 * * MON,WED,FRI")
+    // Satt til å kjøre klokken 07:00 på man - fre
+    @Scheduled(cron = "0 0 7 * * MON-FRI")
     public void triggerOppdatering() {
 		log.info("Mandag/onsdag/fredag kjøring av doksikkerhetsnett skrive-modus er startet");
 
