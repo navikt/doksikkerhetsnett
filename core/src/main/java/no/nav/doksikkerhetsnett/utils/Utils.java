@@ -3,7 +3,6 @@ package no.nav.doksikkerhetsnett.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
-import wiremock.com.google.common.collect.Lists;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -13,6 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.collections4.ListUtils.partition;
 
 @Slf4j
 public class Utils {
@@ -37,7 +38,8 @@ public class Utils {
 			return new ArrayList<>();
 		}
 		List<Long> journalpostIds = ubehandledeJournalposter.stream().map(Journalpost::getJournalpostId).collect(Collectors.toList());
-		return Lists.partition(journalpostIds, limit);
+
+		return partition(journalpostIds, limit);
 	}
 
 	public static String listOfLongsToQueryParams(List<Long> values, String paramName) {
