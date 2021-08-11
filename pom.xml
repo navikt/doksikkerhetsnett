@@ -29,6 +29,7 @@
         <junit5-mockito.version>3.10.0</junit5-mockito.version>
         <spring-cloud-contract-wiremock.version>3.0.2</spring-cloud-contract-wiremock.version>
         <logstash-logback-encoder.version>6.6</logstash-logback-encoder.version>
+        <commons-collections4.version>4.4</commons-collections4.version>
     </properties>
 
     <dependencyManagement>
@@ -47,6 +48,11 @@
                 <groupId>javax.inject</groupId>
                 <artifactId>javax.inject</artifactId>
                 <version>${javax.inject.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>${commons-collections4.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.projectlombok</groupId>
