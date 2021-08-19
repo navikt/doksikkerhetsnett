@@ -1,6 +1,5 @@
 naiseratorPipeline {
     applicationName = "doksikkerhetsnett"
     dockerfileDir = "."
-    deployEnvironmentT = ""
-    deployEnvironmentQ = "q1"
+    deployEnvironmentQ = "q1,q2"
 }

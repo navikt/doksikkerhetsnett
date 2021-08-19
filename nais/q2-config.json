@@ -1,13 +1,13 @@
 {
-  "NAMESPACE": "q1",
-  "PDL_URL": "https://pdl-api-q1.dev.intern.nav.no/graphql",
+  "NAMESPACE": "teamdokumenthandtering",
+  "PDL_URL": "https://pdl-api.dev.intern.nav.no/graphql",
   "SRVDOKSIKKERHETSNETT": "/serviceuser/data/dev/srvdoksikkerhetsnt",
-  "DOKSIKKERHETSNETT_VAULT": "/kv/preprod/fss/doksikkerhetsnett/q1",
+  "DOKSIKKERHETSNETT_VAULT": "/kv/preprod/fss/doksikkerhetsnett/teamdokumenthandtering",
   "DOKSIKKERHETSNETT_SECURITYSERVICETOKENURL": "https://security-token-service.nais.preprod.local/rest/v1/sts/token",
   "DOKSIKKERHETSNETT_OPPGAVEURL": "https://oppgave.nais.preprod.local/api/v1/oppgaver",
-  "DOKSIKKERHETSNETT_FINNMOTTATTEJOURNALPOSTERURL": "https://dokarkiv-q1.dev.intern.nav.no/rest/intern/journalpostapi/v1/finnMottatteJournalposter/",
+  "DOKSIKKERHETSNETT_FINNMOTTATTEJOURNALPOSTERURL": "https://dokarkiv.dev.intern.nav.no/rest/intern/journalpostapi/v1/finnMottatteJournalposter/",
   "DOKSIKKERHETSNETT_OPPRETTJIRAISSUEURL": "https://jira-q1.adeo.no/rest/api/2/issue",
   "INGRESSES": [
-    "https://doksikkerhetsnett-q1.dev.intern.nav.no"
+    "https://doksikkerhetsnett.dev.intern.nav.no"
   ]
 }
