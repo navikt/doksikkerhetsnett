@@ -9,6 +9,7 @@ import no.nav.doksikkerhetsnett.consumers.JiraConsumer;
 import no.nav.doksikkerhetsnett.consumers.OpprettOppgaveConsumer;
 import no.nav.doksikkerhetsnett.consumers.StsRestConsumer;
 import no.nav.doksikkerhetsnett.consumers.pdl.IdentConsumer;
+import no.nav.doksikkerhetsnett.entities.Bruker;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.itest.config.TestConfig;
 import no.nav.doksikkerhetsnett.metrics.MetricsScheduler;
@@ -42,10 +43,15 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static java.util.Arrays.asList;
+import static no.nav.doksikkerhetsnett.entities.Bruker.TYPE_PERSON;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
+import static org.hamcrest.core.Is.is;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {TestConfig.class},
@@ -159,6 +165,31 @@ class DoksikkerhetsnettScheduledIT {
 		doksikkerhetsnettScheduled.lagOppgaverForGlemteJournalposter(dokSikkerhetsnettProperties.getSkrivTemaer());
 
 		WireMock.verify(exactly(4), postRequestedFor(urlMatching(URL_JIRA)));
+	}
+
+	@Test
+	void shouldFilterJournalposter(){
+		DoksikkerhetsnettScheduled doksikkerhetsnettScheduled = new DoksikkerhetsnettScheduled(
+				finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService, opprettOppgaveService, metricsScheduler);
+
+		Journalpost post1 = createJournalpost("UFM", "4303");
+		Journalpost post2 = createJournalpost("MED", "4303");
+		Journalpost post3 = createJournalpost("FAR", "4303");
+		Journalpost post4 = createJournalpost("FAR", "2021");
+
+		List<Journalpost> journalpostList = doksikkerhetsnettScheduled.filtererUonskedeJournalposter(asList(post1, post2, post3, post4));
+		assertEquals(2, journalpostList.size());
+		assertEquals("FAR", journalpostList.get(0).getTema());
+		assertEquals("FAR", journalpostList.get(1).getTema());
+	}
+
+	private Journalpost createJournalpost(String tema, String enhet){
+		return Journalpost.builder()
+				.journalpostId(333)
+				.bruker(Bruker.builder().id("1").type(TYPE_PERSON).build())
+				.tema(tema)
+				.journalforendeEnhet(enhet)
+				.build();
 	}
 
 	private void assertCorrectMetrics(Map<String, Integer> metricsCache, int expectedValue, String expectedString) {

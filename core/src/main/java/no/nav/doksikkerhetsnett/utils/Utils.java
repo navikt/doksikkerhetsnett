@@ -18,6 +18,10 @@ import static org.apache.commons.collections4.ListUtils.partition;
 @Slf4j
 public class Utils {
 
+	public static String TEMA_UFM = "UFM";
+	public static String TEMA_MED = "MED";
+	public static String ENHET4303 = "4303";
+
 	private Utils() {
 	}
 
@@ -98,6 +102,15 @@ public class Utils {
 		Set<String> alleTemaCopy = new HashSet(alleTema);
 		alleTemaCopy.removeAll(excluded);
 		return alleTemaCopy;
+	}
+
+	public static boolean isEnhet_4303_Tema_UFM_MED(Journalpost journalpost) {
+		if (TEMA_MED.equals(journalpost.getTema()) || TEMA_UFM.equals(journalpost.getTema())) {
+			if ( ENHET4303.equals(journalpost.getJournalforendeEnhet())) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
 
