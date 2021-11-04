@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
 import static org.apache.commons.collections4.ListUtils.partition;
 
 @Slf4j
@@ -20,7 +21,8 @@ public class Utils {
 
 	public static String TEMA_UFM = "UFM";
 	public static String TEMA_MED = "MED";
-	public static String ENHET4303 = "4303";
+	public static String ENHET_4303 = "4303";
+	public static String SRVEESI = "srvmelosys-eessi";
 
 	private Utils() {
 	}
@@ -104,11 +106,18 @@ public class Utils {
 		return alleTemaCopy;
 	}
 
+	/*
+	  Team melosys har problemer hvor de oppretter midlertidige journalposter som kan bli liggende en stund.
+	  Disse ligger midlertidig journalført fordi de skal til manuell behandling for å finne hvilken bruker de tilhører.
+	  Bruker skal derfor alltid være null; Midlertidig fix
+	 */
 	public static boolean isEnhet_4303_Tema_UFM_MED(Journalpost journalpost) {
 		if (TEMA_MED.equals(journalpost.getTema()) || TEMA_UFM.equals(journalpost.getTema())) {
-			if ( ENHET4303.equals(journalpost.getJournalforendeEnhet())) {
+			if (ENHET_4303.equals(journalpost.getJournalforendeEnhet()) && isNull(journalpost.getBruker())) {
+				log.info("Oppretter ikke oppgave for Journalpost med tema UFO/MED og journalpostID: " + journalpost.getJournalpostId());
 				return false;
 			}
+			log.info("Oppretter oppgave for Journalpost med tema UFO/MED og journalpostID: " + journalpost.getJournalpostId());
 		}
 		return true;
 	}

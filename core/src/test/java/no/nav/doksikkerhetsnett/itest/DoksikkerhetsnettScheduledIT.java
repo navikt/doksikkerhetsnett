@@ -45,8 +45,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static java.util.Arrays.asList;
 import static no.nav.doksikkerhetsnett.entities.Bruker.TYPE_PERSON;
+import static no.nav.doksikkerhetsnett.utils.Utils.ENHET_4303;
+import static no.nav.doksikkerhetsnett.utils.Utils.TEMA_MED;
+import static no.nav.doksikkerhetsnett.utils.Utils.TEMA_UFM;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -172,21 +176,30 @@ class DoksikkerhetsnettScheduledIT {
 		DoksikkerhetsnettScheduled doksikkerhetsnettScheduled = new DoksikkerhetsnettScheduled(
 				finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService, opprettOppgaveService, metricsScheduler);
 
-		Journalpost post1 = createJournalpost("UFM", "4303");
-		Journalpost post2 = createJournalpost("MED", "4303");
-		Journalpost post3 = createJournalpost("FAR", "4303");
-		Journalpost post4 = createJournalpost("FAR", "2021");
+		Journalpost post1 = createJournalpostWithOutBruker(TEMA_UFM, ENHET_4303);
+		Journalpost post2 = createJournalpostWithOutBruker(TEMA_MED, ENHET_4303);
+		Journalpost post11 = createJournalpostWithBruker(TEMA_UFM, ENHET_4303);
+		Journalpost post22 = createJournalpostWithBruker(TEMA_MED, ENHET_4303);
 
-		List<Journalpost> journalpostList = doksikkerhetsnettScheduled.filtererUonskedeJournalposter(asList(post1, post2, post3, post4));
+		List<Journalpost> journalpostList = doksikkerhetsnettScheduled.filtererUonskedeJournalposter(asList(post1, post2, post11, post22));
 		assertEquals(2, journalpostList.size());
-		assertEquals("FAR", journalpostList.get(0).getTema());
-		assertEquals("FAR", journalpostList.get(1).getTema());
+		assertTrue(journalpostList.stream().anyMatch(jp -> TEMA_UFM.equals(jp.getTema()) && jp.getBruker() != null && jp.getJournalforendeEnhet() == ENHET_4303));
+		assertTrue(journalpostList.stream().anyMatch(jp -> TEMA_MED.equals(jp.getTema()) && jp.getBruker() != null));
 	}
 
-	private Journalpost createJournalpost(String tema, String enhet){
+	private Journalpost createJournalpostWithBruker(String tema, String enhet){
 		return Journalpost.builder()
 				.journalpostId(333)
 				.bruker(Bruker.builder().id("1").type(TYPE_PERSON).build())
+				.tema(tema)
+				.journalforendeEnhet(enhet)
+				.build();
+	}
+
+	private Journalpost createJournalpostWithOutBruker(String tema, String enhet){
+		return Journalpost.builder()
+				.journalpostId(333)
+				.bruker(null)
 				.tema(tema)
 				.journalforendeEnhet(enhet)
 				.build();
