@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static no.nav.doksikkerhetsnett.utils.Utils.isWantedJournalpost;
+
 @Slf4j
 @Component
 public class DoksikkerhetsnettScheduled {
@@ -127,7 +129,8 @@ public class DoksikkerhetsnettScheduled {
 	public void lagOppgaverForGlemteJournalposter(String tema) {
 		List<Journalpost> ubehandletJournalpostsUtenOppgave = finnJournalposterUtenOppgave(tema);
 		try {
-			List<OpprettOppgaveResponse> opprettedeOppgaver = opprettOppgaveService.opprettOppgaver(ubehandletJournalpostsUtenOppgave);
+			List<OpprettOppgaveResponse> opprettedeOppgaver =
+					opprettOppgaveService.opprettOppgaver(filtererUonskedeJournalposter(ubehandletJournalpostsUtenOppgave));
 			if (!opprettedeOppgaver.isEmpty()) {
 				log.info("Doksikkerhetsnett har opprettet {} oppgaver {} med ID'ene: {}", opprettedeOppgaver.size(), Utils.logWithTema(tema),
 						opprettedeOppgaver.stream().map(OpprettOppgaveResponse::getId).collect(Collectors.toList()));
@@ -147,6 +150,12 @@ public class DoksikkerhetsnettScheduled {
 
 		metricsScheduler.incrementMetrics(ubehandledeJournalposter, ubehandledeJournalposterUtenOppgave);
 		return ubehandledeJournalposterUtenOppgave;
+	}
+
+	public List<Journalpost> filtererUonskedeJournalposter(List<Journalpost> journalpostList){
+		return journalpostList.stream()
+				.filter(jp -> isWantedJournalpost(jp))
+				.collect(Collectors.toList());
 	}
 
 	private List<Journalpost> findUbehandledeJournalposterUtenOppgave(String tema, List<Journalpost> ubehandledeJournalposter, int dagerGamle) {
