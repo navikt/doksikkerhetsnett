@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static no.nav.doksikkerhetsnett.utils.Utils.isEnhet_4303_Tema_UFM_MED;
+import static no.nav.doksikkerhetsnett.utils.Utils.isWantedJournalpost;
 
 @Slf4j
 @Component
@@ -154,7 +154,7 @@ public class DoksikkerhetsnettScheduled {
 
 	public List<Journalpost> filtererUonskedeJournalposter(List<Journalpost> journalpostList){
 		return journalpostList.stream()
-				.filter(jp -> isEnhet_4303_Tema_UFM_MED(jp))
+				.filter(jp -> isWantedJournalpost(jp))
 				.collect(Collectors.toList());
 	}
 

@@ -21,8 +21,8 @@ public class Utils {
 
 	public static String TEMA_UFM = "UFM";
 	public static String TEMA_MED = "MED";
-	public static String ENHET_4303 = "4303";
-	public static String SRVEESI = "srvmelosys-eessi";
+	public static String ENHET_4350 = "4350";
+	public static String EESSI = "EESSI";
 
 	private Utils() {
 	}
@@ -111,13 +111,15 @@ public class Utils {
 	  Disse ligger midlertidig journalført fordi de skal til manuell behandling for å finne hvilken bruker de tilhører.
 	  Bruker skal derfor alltid være null; Midlertidig fix
 	 */
-	public static boolean isEnhet_4303_Tema_UFM_MED(Journalpost journalpost) {
+	public static boolean isWantedJournalpost(Journalpost journalpost) {
 		if (TEMA_MED.equals(journalpost.getTema()) || TEMA_UFM.equals(journalpost.getTema())) {
-			if (ENHET_4303.equals(journalpost.getJournalforendeEnhet()) && isNull(journalpost.getBruker())) {
-				log.info("Oppretter ikke oppgave for Journalpost med tema UFO/MED og journalpostID: " + journalpost.getJournalpostId());
+			if (ENHET_4350.equals(journalpost.getJournalforendeEnhet())
+					&& isNull(journalpost.getBruker())
+					&& EESSI.equals(journalpost.getMottaksKanal())) {
+				log.info("Oppretter ikke oppgave for Journalpost med tema UFM/MED og journalpostID: " + journalpost.getJournalpostId());
 				return false;
 			}
-			log.info("Oppretter oppgave for Journalpost med tema UFO/MED og journalpostID: " + journalpost.getJournalpostId());
+			log.info("Oppretter oppgave for Journalpost med tema UFM/MED og journalpostID: " + journalpost.getJournalpostId());
 		}
 		return true;
 	}
