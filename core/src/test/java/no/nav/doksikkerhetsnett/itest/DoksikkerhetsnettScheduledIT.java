@@ -46,7 +46,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static java.util.Arrays.asList;
 import static no.nav.doksikkerhetsnett.entities.Bruker.TYPE_PERSON;
 import static no.nav.doksikkerhetsnett.utils.Utils.EESSI;
-import static no.nav.doksikkerhetsnett.utils.Utils.ENHET_4350;
+import static no.nav.doksikkerhetsnett.utils.Utils.ENHET_4530;
 import static no.nav.doksikkerhetsnett.utils.Utils.TEMA_MED;
 import static no.nav.doksikkerhetsnett.utils.Utils.TEMA_UFM;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -178,16 +178,16 @@ class DoksikkerhetsnettScheduledIT {
 		DoksikkerhetsnettScheduled doksikkerhetsnettScheduled = new DoksikkerhetsnettScheduled(
 				finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService, opprettOppgaveService, metricsScheduler);
 
-		Journalpost post1 = createJournalpostWithOutBruker(TEMA_UFM, ENHET_4350, EESSI);
-		Journalpost post2 = createJournalpostWithOutBruker(TEMA_MED, ENHET_4350, EESSI);
-		Journalpost post3 = createJournalpostWithOutBruker(TEMA_MED, ENHET_4350, IKKE_EESSI);
-		Journalpost post11 = createJournalpostWithBruker(TEMA_UFM, ENHET_4350, EESSI);
-		Journalpost post22 = createJournalpostWithBruker(TEMA_MED, ENHET_4350, EESSI);
+		Journalpost post1 = createJournalpostWithOutBruker(TEMA_UFM, ENHET_4530, EESSI);
+		Journalpost post2 = createJournalpostWithOutBruker(TEMA_MED, ENHET_4530, EESSI);
+		Journalpost post3 = createJournalpostWithOutBruker(TEMA_MED, ENHET_4530, IKKE_EESSI);
+		Journalpost post11 = createJournalpostWithBruker(TEMA_UFM, ENHET_4530, EESSI);
+		Journalpost post22 = createJournalpostWithBruker(TEMA_MED, ENHET_4530, EESSI);
 
 		List<Journalpost> journalpostList = doksikkerhetsnettScheduled.filtererUonskedeJournalposter(asList(post1, post2, post11, post22, post3));
 		assertEquals(3, journalpostList.size());
-		assertTrue(journalpostList.stream().anyMatch(jp -> TEMA_UFM.equals(jp.getTema()) && jp.getBruker() != null && jp.getJournalforendeEnhet() == ENHET_4350));
-		assertTrue(journalpostList.stream().anyMatch(jp -> TEMA_MED.equals(jp.getTema()) && jp.getBruker() != null && jp.getJournalforendeEnhet() == ENHET_4350));
+		assertTrue(journalpostList.stream().anyMatch(jp -> TEMA_UFM.equals(jp.getTema()) && jp.getBruker() != null && jp.getJournalforendeEnhet() == ENHET_4530));
+		assertTrue(journalpostList.stream().anyMatch(jp -> TEMA_MED.equals(jp.getTema()) && jp.getBruker() != null && jp.getJournalforendeEnhet() == ENHET_4530));
 		assertTrue(journalpostList.stream().anyMatch(jp -> TEMA_MED.equals(jp.getTema()) && jp.getMottaksKanal().equals(IKKE_EESSI)));
 	}
 

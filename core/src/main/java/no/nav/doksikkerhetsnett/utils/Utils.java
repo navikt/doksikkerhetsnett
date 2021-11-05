@@ -21,7 +21,7 @@ public class Utils {
 
 	public static String TEMA_UFM = "UFM";
 	public static String TEMA_MED = "MED";
-	public static String ENHET_4350 = "4350";
+	public static String ENHET_4530 = "4530";
 	public static String EESSI = "EESSI";
 
 	private Utils() {
@@ -113,7 +113,7 @@ public class Utils {
 	 */
 	public static boolean isWantedJournalpost(Journalpost journalpost) {
 		if (TEMA_MED.equals(journalpost.getTema()) || TEMA_UFM.equals(journalpost.getTema())) {
-			if (ENHET_4350.equals(journalpost.getJournalforendeEnhet())
+			if (ENHET_4530.equals(journalpost.getJournalforendeEnhet())
 					&& isNull(journalpost.getBruker())
 					&& EESSI.equals(journalpost.getMottaksKanal())) {
 				log.info("Oppretter ikke oppgave for Journalpost med tema UFM/MED og journalpostID: " + journalpost.getJournalpostId());
