@@ -95,6 +95,7 @@ public class OpprettOppgaveService {
 				.aktivDato(new Date())
 				.aktoerId(this.findAktorId(jp))
 				.beskrivelse(BESKRIVELSE_GJENOPPRETTET)
+				.fristFerdigstillelse(new Date())
 				.build();
 	}
 
@@ -110,6 +111,7 @@ public class OpprettOppgaveService {
 				.aktivDato(new Date())
 				.aktoerId(gammelOppgave.getAktoerId())
 				.beskrivelse(gammelOppgave.getBeskrivelse())
+				.fristFerdigstillelse(new Date())
 				.build();
 	}
 
