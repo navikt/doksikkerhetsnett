@@ -51,6 +51,9 @@ public class Oppgave {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date aktivDato;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private Date fristFerdigstillelse;
+
     public Oppgave(Oppgave o) {
         this.tildeltEnhetsnr = o.getTildeltEnhetsnr();
         this.opprettetAvEnhetsnr = o.getOpprettetAvEnhetsnr();
@@ -62,5 +65,6 @@ public class Oppgave {
         this.oppgavetype = o.getOppgavetype();
         this.prioritet = o.getPrioritet();
         this.aktivDato = o.getAktivDato();
+        this.fristFerdigstillelse = o.getFristFerdigstillelse();
     }
 }
