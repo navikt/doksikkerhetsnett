@@ -74,8 +74,8 @@ class UtilsTest {
 
 	@Test
 	void shouldGetAllTemas() {
-		assertEquals(55, Utils.getAlleTema().size());
-		assertEquals(52, Utils.getAlleTemaExcept(new HashSet<>(Arrays.asList("ERS", "RPO", "SAK"))).size());
-		assertEquals(52, Utils.getAlleTemaExcept("ERS,RPO,SAK").size());
+		assertEquals(57, Utils.getAlleTema().size());
+		assertEquals(54, Utils.getAlleTemaExcept(new HashSet<>(Arrays.asList("ERS", "RPO", "SAK"))).size());
+		assertEquals(54, Utils.getAlleTemaExcept("ERS,RPO,SAK").size());
 	}
 }
