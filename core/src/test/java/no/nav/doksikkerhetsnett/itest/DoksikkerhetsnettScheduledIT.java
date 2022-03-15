@@ -49,14 +49,11 @@ import static no.nav.doksikkerhetsnett.utils.Utils.EESSI;
 import static no.nav.doksikkerhetsnett.utils.Utils.ENHET_4530;
 import static no.nav.doksikkerhetsnett.utils.Utils.TEMA_MED;
 import static no.nav.doksikkerhetsnett.utils.Utils.TEMA_UFM;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
-import static org.hamcrest.core.Is.is;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {TestConfig.class},
@@ -152,7 +149,7 @@ class DoksikkerhetsnettScheduledIT {
 		List<Journalpost> journalposterUtenOppgaver = new ArrayList();
 		Utils.getAlleTema()
 				.forEach(tema -> journalposterUtenOppgaver.addAll(doksikkerhetsnettScheduled.finnJournalposterUtenOppgave(tema)));
-		assertEquals(220, journalposterUtenOppgaver.size());
+		assertEquals(228, journalposterUtenOppgaver.size());
 	}
 
 	@Test
