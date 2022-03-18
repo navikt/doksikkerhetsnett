@@ -1,8 +1,7 @@
 {
-  "NAMESPACE": "teamdokumenthandtering",
+  "APPNAVN": "doksikkerhetsnett",
   "PDL_URL": "https://pdl-api.dev.intern.nav.no/graphql",
   "SRVDOKSIKKERHETSNETT": "/serviceuser/data/dev/srvdoksikkerhetsnt",
-  "DOKSIKKERHETSNETT_VAULT": "/kv/preprod/fss/doksikkerhetsnett/teamdokumenthandtering",
   "DOKSIKKERHETSNETT_SECURITYSERVICETOKENURL": "https://security-token-service.nais.preprod.local/rest/v1/sts/token",
   "DOKSIKKERHETSNETT_OPPGAVEURL": "https://oppgave.nais.preprod.local/api/v1/oppgaver",
   "DOKSIKKERHETSNETT_FINNMOTTATTEJOURNALPOSTERURL": "https://dokarkiv.dev.intern.nav.no/rest/intern/journalpostapi/v1/finnMottatteJournalposter/",

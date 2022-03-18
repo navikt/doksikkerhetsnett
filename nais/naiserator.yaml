@@ -1,8 +1,8 @@
 kind: Application
 apiVersion: nais.io/v1alpha1
 metadata:
-  name: doksikkerhetsnett
-  namespace: {{ NAMESPACE }}
+  name: {{ APPNAVN }}
+  namespace: teamdokumenthandtering
   labels:
     team: teamdokumenthandtering
 spec:
@@ -49,5 +49,3 @@ spec:
     paths:
       - kvPath: {{ SRVDOKSIKKERHETSNETT }}
         mountPath: /var/run/secrets/nais.io/srvdoksikkerhetsnt
-      - kvPath: {{ DOKSIKKERHETSNETT_VAULT }}
-        mountPath: /var/run/secrets/nais.io/vault

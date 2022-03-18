@@ -1,12 +1,12 @@
 package no.nav.doksikkerhetsnett.services;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.consumers.FinnOppgaveConsumer;
+import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.responses.FinnOppgaveResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.List;
 
 @Slf4j
@@ -15,7 +15,7 @@ public class FinnOppgaveService {
 
     private final FinnOppgaveConsumer finnOppgaveConsumer;
 
-    @Inject
+    @Autowired
     public FinnOppgaveService(FinnOppgaveConsumer finnOppgaveConsumer) {
         this.finnOppgaveConsumer = finnOppgaveConsumer;
     }
