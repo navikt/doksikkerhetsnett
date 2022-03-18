@@ -24,8 +24,6 @@
     <properties>
         <java.version>17</java.version>
 
-        <javax.inject.version>1</javax.inject.version>
-
         <!-- Bør skifte til springdoc -->
         <swagger.version>3.0.0</swagger.version>
 
@@ -46,11 +44,6 @@
                 <groupId>net.logstash.logback</groupId>
                 <artifactId>logstash-logback-encoder</artifactId>
                 <version>${logstash-logback-encoder.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.inject</groupId>
-                <artifactId>javax.inject</artifactId>
-                <version>${javax.inject.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
