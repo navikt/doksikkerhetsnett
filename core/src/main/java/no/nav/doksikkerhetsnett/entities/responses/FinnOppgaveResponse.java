@@ -1,6 +1,5 @@
 package no.nav.doksikkerhetsnett.entities.responses;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,13 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class FinnOppgaveResponse {
 
-    @NotNull(message = "Feilet ved henting av oppgaver")
-    private int antallTreffTotalt;
-
-    @ApiModelProperty(
-            dataType = "List",
-            value = "oppgaver",
-            required = true
-    )
-    private List<Oppgave> oppgaver;
+	@NotNull(message = "Feilet ved henting av oppgaver")
+	private int antallTreffTotalt;
+	private List<Oppgave> oppgaver;
 }
