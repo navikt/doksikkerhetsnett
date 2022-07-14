@@ -1,6 +1,5 @@
 package no.nav.doksikkerhetsnett.entities.responses;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,11 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 public class FinnMottatteJournalposterResponse {
 
-    @NotNull(message = "FinnMottatteJournalposterResponse mangler Journalposter")
-    @ApiModelProperty(
-            dataType = "List",
-            value = "journalposter",
-            required = true
-    )
-    private List<Journalpost> journalposter;
+	@NotNull(message = "FinnMottatteJournalposterResponse mangler Journalposter")
+	private List<Journalpost> journalposter;
 }
