@@ -1,7 +1,6 @@
 package no.nav.doksikkerhetsnett.itest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.consumers.FinnMottatteJournalposterConsumer;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.responses.FinnMottatteJournalposterResponse;
@@ -11,12 +10,10 @@ import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterT
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnMottatteJournalposterTechnicalException;
 import no.nav.doksikkerhetsnett.itest.config.TestConfig;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
@@ -58,15 +55,9 @@ class FinnMottatteJournalposterIT {
 	private static final ArrayList<String> PERSONIDS = new ArrayList<>(List.of("33333333333", "44444444444"));
 	private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 	private static final String JUST_FOR_PATH = "does_not_matter";
-	private FinnMottatteJournalposterConsumer finnMottatteJournalposterConsumer;
 
-	@Autowired
-	private DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
-
-	@BeforeEach
-	void setUp() {
-		finnMottatteJournalposterConsumer = new FinnMottatteJournalposterConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties);
-	}
+	 @Autowired
+	 private FinnMottatteJournalposterConsumer finnMottatteJournalposterConsumer;
 
 	@AfterEach
 	void tearDown() {

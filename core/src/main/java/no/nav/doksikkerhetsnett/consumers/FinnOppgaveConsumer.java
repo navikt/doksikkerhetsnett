@@ -58,7 +58,7 @@ public class FinnOppgaveConsumer {
 	public FinnOppgaveConsumer(RestTemplateBuilder restTemplateBuilder,
 							   DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
 							   StsRestConsumer stsRestConsumer) {
-		this.oppgaveUrl = dokSikkerhetsnettProperties.getOppgaveurl();
+		this.oppgaveUrl = dokSikkerhetsnettProperties.getEndpoints().getOppgave();
 		this.stsRestConsumer = stsRestConsumer;
 		this.restTemplate = restTemplateBuilder
 				.setReadTimeout(Duration.ofSeconds(250))

@@ -2,6 +2,7 @@ package no.nav.doksikkerhetsnett;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
+import no.nav.doksikkerhetsnett.consumers.azure.AzureProperties;
 import no.nav.doksikkerhetsnett.metrics.DokTimedAspect;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -13,7 +14,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @ComponentScan
 @EnableAutoConfiguration
 @EnableAspectJAutoProxy
-@EnableConfigurationProperties(DokSikkerhetsnettProperties.class)
+@EnableConfigurationProperties({DokSikkerhetsnettProperties.class, AzureProperties.class})
 @Configuration
 public class ApplicationConfig {
 

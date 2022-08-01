@@ -8,6 +8,7 @@ import no.nav.doksikkerhetsnett.consumers.FinnOppgaveConsumer;
 import no.nav.doksikkerhetsnett.consumers.JiraConsumer;
 import no.nav.doksikkerhetsnett.consumers.OpprettOppgaveConsumer;
 import no.nav.doksikkerhetsnett.consumers.StsRestConsumer;
+import no.nav.doksikkerhetsnett.consumers.azure.AzureTokenConsumer;
 import no.nav.doksikkerhetsnett.consumers.pdl.IdentConsumer;
 import no.nav.doksikkerhetsnett.entities.Bruker;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
@@ -70,31 +71,18 @@ class DoksikkerhetsnettScheduledIT {
 	private static final String METRIC_TAGS = "UFO;ALTINN;0000";
 	private static final String IKKE_EESSI ="IKKE_ESSI";
 
-	private FinnMottatteJournalposterService finnMottatteJournalposterService;
-	private FinnOppgaveService finnOppgaveService;
-	private OpprettOppgaveService opprettOppgaveService;
-
 	@Autowired
 	private DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
-
-	@Autowired
-	private StsRestConsumer stsRestConsumer;
 
 	@Autowired
 	private MetricsScheduler metricsScheduler;
 
 	@Autowired
-	private JiraConsumer jiraConsumer;
-
-	@Autowired
-	private IdentConsumer identConsumer;
+	private DoksikkerhetsnettScheduled doksikkerhetsnettScheduled;
 
 	@BeforeEach
-	void setUpConsumer() {
+	void setup(){
 		setUpStubs();
-		finnOppgaveService = new FinnOppgaveService(new FinnOppgaveConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties, stsRestConsumer));
-		finnMottatteJournalposterService = new FinnMottatteJournalposterService(new FinnMottatteJournalposterConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties));
-		opprettOppgaveService = new OpprettOppgaveService(new OpprettOppgaveConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties, stsRestConsumer), jiraConsumer, identConsumer);
 	}
 
 	@AfterEach
@@ -129,8 +117,6 @@ class DoksikkerhetsnettScheduledIT {
 
 	@Test
 	void shouldFindMottatteJournalposter() {
-		DoksikkerhetsnettScheduled doksikkerhetsnettScheduled = new DoksikkerhetsnettScheduled(
-				finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService, opprettOppgaveService, metricsScheduler);
 		List<Journalpost> journalposterUtenOppgaver = new ArrayList();
 		Arrays.stream(dokSikkerhetsnettProperties.getSkrivTemaer().split(","))
 				.forEach(tema -> journalposterUtenOppgaver.addAll(doksikkerhetsnettScheduled.finnJournalposterUtenOppgave(tema)));
@@ -144,8 +130,6 @@ class DoksikkerhetsnettScheduledIT {
 
 	@Test
 	void shouldFindMottatteJournalposterForAlleTema() {
-		DoksikkerhetsnettScheduled doksikkerhetsnettScheduled = new DoksikkerhetsnettScheduled(
-				finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService, opprettOppgaveService, metricsScheduler);
 		List<Journalpost> journalposterUtenOppgaver = new ArrayList();
 		Utils.getAlleTema()
 				.forEach(tema -> journalposterUtenOppgaver.addAll(doksikkerhetsnettScheduled.finnJournalposterUtenOppgave(tema)));
@@ -162,9 +146,6 @@ class DoksikkerhetsnettScheduledIT {
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("opprettOppgave/jiraResponse-ok.json")));
 
-		DoksikkerhetsnettScheduled doksikkerhetsnettScheduled = new DoksikkerhetsnettScheduled(
-				finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService, opprettOppgaveService, metricsScheduler);
-
 		doksikkerhetsnettScheduled.lagOppgaverForGlemteJournalposter(dokSikkerhetsnettProperties.getSkrivTemaer());
 
 		WireMock.verify(exactly(4), postRequestedFor(urlMatching(URL_JIRA)));
@@ -172,8 +153,6 @@ class DoksikkerhetsnettScheduledIT {
 
 	@Test
 	void shouldFilterJournalposter(){
-		DoksikkerhetsnettScheduled doksikkerhetsnettScheduled = new DoksikkerhetsnettScheduled(
-				finnMottatteJournalposterService, dokSikkerhetsnettProperties, finnOppgaveService, opprettOppgaveService, metricsScheduler);
 
 		Journalpost post1 = createJournalpostWithOutBruker(TEMA_UFM, ENHET_4530, EESSI);
 		Journalpost post2 = createJournalpostWithOutBruker(TEMA_MED, ENHET_4530, EESSI);
