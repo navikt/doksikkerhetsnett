@@ -23,6 +23,8 @@ spec:
       value: {{ DOKSIKKERHETSNETT_PROXY_HOST }}
     - name: DOKSIKKERHETSNETT_PROXY_PORT
       value: "{{DOKSIKKERHETSNETT_PROXY_PORT}}"
+    - name: AZURE_APP_TOKEN_URL
+      value: {{ AZURE_APP_TOKEN_URL }}
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
