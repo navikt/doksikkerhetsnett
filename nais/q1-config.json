@@ -9,7 +9,7 @@
   "DOKSIKKERHETSNETT_ENDPOINTS_OPPGAVE": "https://oppgave.nais.preprod.local/api/v1/oppgaver",
   "DOKSIKKERHETSNETT_ENDPOINTS_OPPRETTJIRAISSUE": "https://jira-q1.adeo.no/rest/api/2/issue",
   "DOKSIKKERHETSNETT_ENDPOINTS_DOKARKIV_SCOPE": "api://dev-fss.teamdokumenthandtering.dokarkiv/.default",
-  "DOKSIKKERHETSNETT_ENDPOINTS_DOKARKIV_URL": "https://dokarkiv-q1.dev.intern.nav.no/rest/protected/intern/journalpostapi/v1/finnMottatteJournalposter/",
+  "DOKSIKKERHETSNETT_ENDPOINTS_DOKARKIV_URL": "https://dokarkiv-q1.dev.intern.nav.no/rest/internal/journalpostapi/v1/finnMottatteJournalposter/",
   "INGRESSES": [
     "https://doksikkerhetsnett-q1.dev.intern.nav.no"
   ]
