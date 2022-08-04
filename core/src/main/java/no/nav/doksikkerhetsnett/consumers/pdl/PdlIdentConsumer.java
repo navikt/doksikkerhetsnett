@@ -1,7 +1,7 @@
 package no.nav.doksikkerhetsnett.consumers.pdl;
 
+import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.consumers.StsRestConsumer;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -33,15 +33,15 @@ public class PdlIdentConsumer implements IdentConsumer {
 	private final StsRestConsumer stsRestConsumer;
 	private final URI pdlUri;
 
-	public PdlIdentConsumer(@Value("${pdl.url}") String pdlUrl,
-							RestTemplateBuilder restTemplateBuilder,
-							StsRestConsumer stsRestConsumer) {
+	public PdlIdentConsumer(RestTemplateBuilder restTemplateBuilder,
+							StsRestConsumer stsRestConsumer,
+							DokSikkerhetsnettProperties doksikkerhetsnettProperties) {
 		this.restTemplate = restTemplateBuilder
 				.setConnectTimeout(Duration.ofSeconds(3))
 				.setReadTimeout(Duration.ofSeconds(20))
 				.build();
 		this.stsRestConsumer = stsRestConsumer;
-		this.pdlUri = UriComponentsBuilder.fromHttpUrl(pdlUrl).build().toUri();
+		this.pdlUri = UriComponentsBuilder.fromHttpUrl(doksikkerhetsnettProperties.getEndpoints().getPdl()).build().toUri();
 	}
 
 	@Retryable(

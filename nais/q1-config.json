@@ -1,11 +1,15 @@
 {
   "APPNAVN": "doksikkerhetsnett-q1",
-  "PDL_URL": "https://pdl-api-q1.dev.intern.nav.no/graphql",
   "SRVDOKSIKKERHETSNETT": "/serviceuser/data/dev/srvdoksikkerhetsnt",
-  "DOKSIKKERHETSNETT_SECURITYSERVICETOKENURL": "https://security-token-service.nais.preprod.local/rest/v1/sts/token",
-  "DOKSIKKERHETSNETT_OPPGAVEURL": "https://oppgave.nais.preprod.local/api/v1/oppgaver",
-  "DOKSIKKERHETSNETT_FINNMOTTATTEJOURNALPOSTERURL": "https://dokarkiv-q1.dev.intern.nav.no/rest/intern/journalpostapi/v1/finnMottatteJournalposter/",
-  "DOKSIKKERHETSNETT_OPPRETTJIRAISSUEURL": "https://jira-q1.adeo.no/rest/api/2/issue",
+  "AZURE_APP_TOKEN_URL": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/oauth2/v2.0/token",
+  "DOKSIKKERHETSNETT_PROXY_HOST": "webproxy.nais",
+  "DOKSIKKERHETSNETT_PROXY_PORT": "8088",
+  "DOKSIKKERHETSNETT_ENDPOINTS_PDL": "https://pdl-api-q1.dev.intern.nav.no/graphql",
+  "DOKSIKKERHETSNETT_ENDPOINTS_STS": "https://security-token-service.nais.preprod.local/rest/v1/sts/token",
+  "DOKSIKKERHETSNETT_ENDPOINTS_OPPGAVE": "https://oppgave.nais.preprod.local/api/v1/oppgaver",
+  "DOKSIKKERHETSNETT_ENDPOINTS_OPPRETTJIRAISSUE": "https://jira-q1.adeo.no/rest/api/2/issue",
+  "DOKSIKKERHETSNETT_ENDPOINTS_DOKARKIV_SCOPE": "api://dev-fss.teamdokumenthandtering.dokarkiv/.default",
+  "DOKSIKKERHETSNETT_ENDPOINTS_DOKARKIV_URL": "https://dokarkiv-q1.dev.intern.nav.no/rest/internal/journalpostapi/v1/finnMottatteJournalposter/",
   "INGRESSES": [
     "https://doksikkerhetsnett-q1.dev.intern.nav.no"
   ]

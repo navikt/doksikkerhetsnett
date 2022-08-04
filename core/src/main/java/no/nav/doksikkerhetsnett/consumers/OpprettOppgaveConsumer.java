@@ -44,7 +44,7 @@ public class OpprettOppgaveConsumer {
 						dokSikkerhetsnettProperties.getServiceuser().getPassword())
 				.build();
 		this.stsRestConsumer = stsRestConsumer;
-		this.oppgaveUrl = dokSikkerhetsnettProperties.getOppgaveurl();
+		this.oppgaveUrl = dokSikkerhetsnettProperties.getEndpoints().getOppgave();
 	}
 
 	public OpprettOppgaveResponse opprettOppgave(Oppgave oppgave) {
