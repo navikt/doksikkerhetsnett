@@ -47,10 +47,6 @@ public class DokSikkerhetsnettProperties {
         @NotNull
         private AzureEndpoint dokarkiv;
 
-        /*
-        @NotNull
-        private String finnmottattejournalposter;*/
-
         @NotNull
         private String pdl;
 
