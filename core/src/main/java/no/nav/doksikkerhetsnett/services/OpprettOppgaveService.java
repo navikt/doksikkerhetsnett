@@ -25,9 +25,13 @@ import static no.nav.doksikkerhetsnett.entities.Oppgave.ENHETSNUMMER_GENERISK;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_FORDELING;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_JOURNALFOERT;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.PRIORITET_NORMAL;
+import static no.nav.doksikkerhetsnett.entities.Oppgave.TEMA_BID;
+import static no.nav.doksikkerhetsnett.entities.Oppgave.TEMA_FAR;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.TEMA_GENERELL;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.TEMA_PENSJON;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.TEMA_UKJENT;
+import static no.nav.doksikkerhetsnett.utils.Utils.mapJpTemaToOppgaveTema;
+import static org.apache.logging.log4j.util.Strings.isEmpty;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 @Slf4j
@@ -82,9 +86,9 @@ public class OpprettOppgaveService {
 
 	private Oppgave createOppgaveFromJournalpost(Journalpost jp) {
 		String tildeltEnhetsnr = extractEnhetsNr(jp);
-		String tema = extractTema(jp);
+		String tema = mapJpTemaToOppgaveTema(jp);
 
-		return Oppgave.builder()
+		Oppgave oppgave =  Oppgave.builder()
 				.tildeltEnhetsnr(tildeltEnhetsnr)
 				.opprettetAvEnhetsnr(ENHETSNUMMER_GENERISK)
 				.journalpostId(Long.toString(jp.getJournalpostId()))
@@ -97,6 +101,7 @@ public class OpprettOppgaveService {
 				.beskrivelse(BESKRIVELSE_GJENOPPRETTET)
 				.fristFerdigstillelse(new Date())
 				.build();
+		return oppgave;
 	}
 
 	private Oppgave createNewOppgave(Oppgave gammelOppgave, String oppgavetype) {
@@ -131,12 +136,5 @@ public class OpprettOppgaveService {
 
 	private String extractEnhetsNr(Journalpost jp) {
 		return ENHETSNUMMER_GENERISK.equals(jp.getJournalforendeEnhet()) ? "" : jp.getJournalforendeEnhet();
-	}
-
-	private String extractTema(Journalpost jp) {
-		if (jp.getTema() == null || TEMA_UKJENT.equals(jp.getTema())) {
-			return TEMA_GENERELL;
-		}
-		return jp.getTema();
 	}
 }
