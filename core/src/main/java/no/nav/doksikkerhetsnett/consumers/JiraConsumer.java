@@ -49,7 +49,7 @@ public class JiraConsumer {
 				.setConnectTimeout(Duration.ofSeconds(5))
 				.basicAuthentication(dokSikkerhetsnettProperties.getServiceuser().getUsername(), dokSikkerhetsnettProperties.getServiceuser().getPassword())
 				.build();
-		this.opprettJiraIssueUrl = dokSikkerhetsnettProperties.getOpprettjiraissueurl();
+		this.opprettJiraIssueUrl = dokSikkerhetsnettProperties.getEndpoints().getOpprettjiraissue();
 	}
 
 	public JiraResponse opprettJiraIssue(Oppgave oppgave, HttpClientErrorException exception) {

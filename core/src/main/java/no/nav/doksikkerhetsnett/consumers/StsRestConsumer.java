@@ -31,7 +31,7 @@ public class StsRestConsumer {
     @Autowired
     public StsRestConsumer(RestTemplateBuilder restTemplateBuilder,
                            DokSikkerhetsnettProperties dokSikkerhetsnettProperties) {
-        this.stsUrl = dokSikkerhetsnettProperties.getSecurityservicetokenurl();
+        this.stsUrl = dokSikkerhetsnettProperties.getEndpoints().getSts();
         this.restTemplate = restTemplateBuilder
                 .setReadTimeout(Duration.ofSeconds(20))
                 .setConnectTimeout(Duration.ofSeconds(5))
