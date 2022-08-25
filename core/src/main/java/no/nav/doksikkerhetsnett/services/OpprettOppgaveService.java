@@ -88,7 +88,7 @@ public class OpprettOppgaveService {
 		String tildeltEnhetsnr = extractEnhetsNr(jp);
 		String tema = mapJpTemaToOppgaveTema(jp);
 
-		Oppgave oppgave =  Oppgave.builder()
+		return Oppgave.builder()
 				.tildeltEnhetsnr(tildeltEnhetsnr)
 				.opprettetAvEnhetsnr(ENHETSNUMMER_GENERISK)
 				.journalpostId(Long.toString(jp.getJournalpostId()))
@@ -101,7 +101,6 @@ public class OpprettOppgaveService {
 				.beskrivelse(BESKRIVELSE_GJENOPPRETTET)
 				.fristFerdigstillelse(new Date())
 				.build();
-		return oppgave;
 	}
 
 	private Oppgave createNewOppgave(Oppgave gammelOppgave, String oppgavetype) {
