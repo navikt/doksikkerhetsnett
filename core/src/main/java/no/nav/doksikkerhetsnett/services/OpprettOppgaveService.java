@@ -25,13 +25,8 @@ import static no.nav.doksikkerhetsnett.entities.Oppgave.ENHETSNUMMER_GENERISK;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_FORDELING;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_JOURNALFOERT;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.PRIORITET_NORMAL;
-import static no.nav.doksikkerhetsnett.entities.Oppgave.TEMA_BID;
-import static no.nav.doksikkerhetsnett.entities.Oppgave.TEMA_FAR;
-import static no.nav.doksikkerhetsnett.entities.Oppgave.TEMA_GENERELL;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.TEMA_PENSJON;
-import static no.nav.doksikkerhetsnett.entities.Oppgave.TEMA_UKJENT;
-import static no.nav.doksikkerhetsnett.utils.Utils.mapJpTemaToOppgaveTema;
-import static org.apache.logging.log4j.util.Strings.isEmpty;
+import static no.nav.doksikkerhetsnett.mappers.OppgaveTemaMapper.mapJpTemaToOppgaveTema;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 @Slf4j

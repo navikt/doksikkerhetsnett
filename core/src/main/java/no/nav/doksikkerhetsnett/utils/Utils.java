@@ -14,12 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
-import static no.nav.doksikkerhetsnett.entities.Oppgave.TEMA_BID;
-import static no.nav.doksikkerhetsnett.entities.Oppgave.TEMA_FAR;
-import static no.nav.doksikkerhetsnett.entities.Oppgave.TEMA_GENERELL;
-import static no.nav.doksikkerhetsnett.entities.Oppgave.TEMA_UKJENT;
 import static org.apache.commons.collections4.ListUtils.partition;
-import static org.apache.logging.log4j.util.Strings.isEmpty;
 
 @Slf4j
 public class Utils {
@@ -127,17 +122,6 @@ public class Utils {
 			log.info("Oppretter oppgave for Journalpost med tema UFM/MED og journalpostID: " + journalpost.getJournalpostId());
 		}
 		return true;
-	}
-
-
-	public static String mapJpTemaToOppgaveTema(Journalpost jp) {
-		if (isEmpty(jp.getTema()) || TEMA_UKJENT.equals(jp.getTema())) {
-			return TEMA_GENERELL;
-			//Farskapssaker som blir plukket opp i doksikkerhetsnett skal sparkes videre til Bidrag, ref MMA-6349
-		} else if (TEMA_FAR.equals(jp.getTema())){
-			return TEMA_BID;
-		}
-		return jp.getTema();
 	}
 }
 

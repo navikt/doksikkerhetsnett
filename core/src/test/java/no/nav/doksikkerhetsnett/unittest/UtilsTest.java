@@ -3,8 +3,6 @@ package no.nav.doksikkerhetsnett.unittest;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.utils.Utils;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -15,9 +13,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static no.nav.doksikkerhetsnett.utils.Utils.mapJpTemaToOppgaveTema;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class UtilsTest {
@@ -70,19 +65,6 @@ class UtilsTest {
 		URI uriAppendedParamsTwice = Utils.appendQuery(uriAppendedParamsOnce, "appendedName", "appendedValue");
 		assertEquals(new URI("http://url.com?appendedName=appendedValue"), uriAppendedParamsOnce);
 		assertEquals(new URI("http://url.com?appendedName=appendedValue&appendedName=appendedValue"), uriAppendedParamsTwice);
-	}
-
-	@ParameterizedTest
-	@CsvSource(value = {
-			"FAR, BID", //MMA-6349
-			"UKJ, GEN",
-			"PEN, PEN",
-			"AAP, AAP"
-	})
-	void shouldMapTemasCorrectly(String tema, String expectedResult){
-		Journalpost jp = Journalpost.builder().tema(tema).build();
-		String resultTema = mapJpTemaToOppgaveTema(jp);
-		assertThat(resultTema, is(expectedResult));
 	}
 
 	@Test
