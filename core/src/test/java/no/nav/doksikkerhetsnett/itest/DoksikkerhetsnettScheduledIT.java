@@ -3,33 +3,19 @@ package no.nav.doksikkerhetsnett.itest;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.doksikkerhetsnett.DoksikkerhetsnettScheduled;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
-import no.nav.doksikkerhetsnett.consumers.FinnMottatteJournalposterConsumer;
-import no.nav.doksikkerhetsnett.consumers.FinnOppgaveConsumer;
-import no.nav.doksikkerhetsnett.consumers.JiraConsumer;
-import no.nav.doksikkerhetsnett.consumers.OpprettOppgaveConsumer;
-import no.nav.doksikkerhetsnett.consumers.StsRestConsumer;
-import no.nav.doksikkerhetsnett.consumers.azure.AzureTokenConsumer;
-import no.nav.doksikkerhetsnett.consumers.pdl.IdentConsumer;
-import no.nav.doksikkerhetsnett.entities.Bruker;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.itest.config.TestConfig;
 import no.nav.doksikkerhetsnett.metrics.MetricsScheduler;
-import no.nav.doksikkerhetsnett.services.FinnMottatteJournalposterService;
-import no.nav.doksikkerhetsnett.services.FinnOppgaveService;
-import no.nav.doksikkerhetsnett.services.OpprettOppgaveService;
 import no.nav.doksikkerhetsnett.utils.Utils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,21 +30,16 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static java.util.Arrays.asList;
-import static no.nav.doksikkerhetsnett.entities.Bruker.TYPE_PERSON;
-import static no.nav.doksikkerhetsnett.utils.Utils.EESSI;
-import static no.nav.doksikkerhetsnett.utils.Utils.ENHET_4530;
-import static no.nav.doksikkerhetsnett.utils.Utils.TEMA_MED;
-import static no.nav.doksikkerhetsnett.utils.Utils.TEMA_UFM;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {TestConfig.class},
-		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+		classes = {TestConfig.class},
+		webEnvironment = RANDOM_PORT
+)
 @AutoConfigureWireMock(port = 0)
 @ActiveProfiles("itest")
 class DoksikkerhetsnettScheduledIT {
@@ -69,7 +50,6 @@ class DoksikkerhetsnettScheduledIT {
 	private static final String URL_JIRA = "/rest/api/2/issue";
 	private static final String URL_PDL = "/pdl";
 	private static final String METRIC_TAGS = "UFO;ALTINN;0000";
-	private static final String IKKE_EESSI ="IKKE_ESSI";
 
 	@Autowired
 	private DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
@@ -149,42 +129,6 @@ class DoksikkerhetsnettScheduledIT {
 		doksikkerhetsnettScheduled.lagOppgaverForGlemteJournalposter(dokSikkerhetsnettProperties.getSkrivTemaer());
 
 		WireMock.verify(exactly(4), postRequestedFor(urlMatching(URL_JIRA)));
-	}
-
-	@Test
-	void shouldFilterJournalposter(){
-
-		Journalpost post1 = createJournalpostWithOutBruker(TEMA_UFM, ENHET_4530, EESSI);
-		Journalpost post2 = createJournalpostWithOutBruker(TEMA_MED, ENHET_4530, EESSI);
-		Journalpost post3 = createJournalpostWithOutBruker(TEMA_MED, ENHET_4530, IKKE_EESSI);
-		Journalpost post11 = createJournalpostWithBruker(TEMA_UFM, ENHET_4530, EESSI);
-		Journalpost post22 = createJournalpostWithBruker(TEMA_MED, ENHET_4530, EESSI);
-
-		List<Journalpost> journalpostList = doksikkerhetsnettScheduled.filtererUonskedeJournalposter(asList(post1, post2, post11, post22, post3));
-		assertEquals(3, journalpostList.size());
-		assertTrue(journalpostList.stream().anyMatch(jp -> TEMA_UFM.equals(jp.getTema()) && jp.getBruker() != null && jp.getJournalforendeEnhet() == ENHET_4530));
-		assertTrue(journalpostList.stream().anyMatch(jp -> TEMA_MED.equals(jp.getTema()) && jp.getBruker() != null && jp.getJournalforendeEnhet() == ENHET_4530));
-		assertTrue(journalpostList.stream().anyMatch(jp -> TEMA_MED.equals(jp.getTema()) && jp.getMottaksKanal().equals(IKKE_EESSI)));
-	}
-
-	private Journalpost createJournalpostWithBruker(String tema, String enhet, String mottaksKanal){
-		return Journalpost.builder()
-				.journalpostId(333)
-				.bruker(Bruker.builder().id("1").type(TYPE_PERSON).build())
-				.tema(tema)
-				.mottaksKanal(mottaksKanal)
-				.journalforendeEnhet(enhet)
-				.build();
-	}
-
-	private Journalpost createJournalpostWithOutBruker(String tema, String enhet, String mottaksKanal){
-		return Journalpost.builder()
-				.journalpostId(333)
-				.bruker(null)
-				.tema(tema)
-				.journalforendeEnhet(enhet)
-				.mottaksKanal(mottaksKanal)
-				.build();
 	}
 
 	private void assertCorrectMetrics(Map<String, Integer> metricsCache, int expectedValue, String expectedString) {
