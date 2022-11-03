@@ -4,9 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 @Data
 public class StsResponseTo {
 

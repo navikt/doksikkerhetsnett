@@ -13,9 +13,6 @@ import org.springframework.context.annotation.Profile;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Configuration
 @EnableCaching
 public class LokalCacheConfig {

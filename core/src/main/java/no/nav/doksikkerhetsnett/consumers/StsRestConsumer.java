@@ -19,9 +19,6 @@ import static no.nav.doksikkerhetsnett.config.cache.LokalCacheConfig.STS_CACHE;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.DELAY_SHORT;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.MULTIPLIER_SHORT;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 @Component
 public class StsRestConsumer {
 
