@@ -56,8 +56,8 @@ class FinnMottatteJournalposterIT {
 	private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 	private static final String JUST_FOR_PATH = "does_not_matter";
 
-	 @Autowired
-	 private FinnMottatteJournalposterConsumer finnMottatteJournalposterConsumer;
+	@Autowired
+	private FinnMottatteJournalposterConsumer finnMottatteJournalposterConsumer;
 
 	@AfterEach
 	void tearDown() {
