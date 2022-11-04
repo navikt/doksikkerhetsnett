@@ -11,13 +11,11 @@ import no.nav.doksikkerhetsnett.exceptions.technical.FinnMottatteJournalposterTe
 import no.nav.doksikkerhetsnett.itest.config.TestConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,6 +30,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -39,9 +38,10 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {TestConfig.class},
-		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+		classes = {TestConfig.class},
+		webEnvironment = RANDOM_PORT
+)
 @AutoConfigureWireMock(port = 0)
 @ActiveProfiles("itest")
 class FinnMottatteJournalposterIT {
@@ -56,8 +56,8 @@ class FinnMottatteJournalposterIT {
 	private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 	private static final String JUST_FOR_PATH = "does_not_matter";
 
-	 @Autowired
-	 private FinnMottatteJournalposterConsumer finnMottatteJournalposterConsumer;
+	@Autowired
+	private FinnMottatteJournalposterConsumer finnMottatteJournalposterConsumer;
 
 	@AfterEach
 	void tearDown() {

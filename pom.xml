@@ -12,10 +12,9 @@
 
     <groupId>no.nav.doksikkerhetsnett</groupId>
     <artifactId>doksikkerhetsnett</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>doksikkerhetsnett</name>
-
+    <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+
     <modules>
         <module>core</module>
         <module>app</module>
@@ -24,10 +23,15 @@
     <properties>
         <java.version>17</java.version>
 
-        <spring-cloud-contract-wiremock.version>3.1.4</spring-cloud-contract-wiremock.version>
         <logstash-logback-encoder.version>7.2</logstash-logback-encoder.version>
         <commons-collections4.version>4.4</commons-collections4.version>
         <resilience4j.version>1.7.1</resilience4j.version>
+
+        <!-- Plugins -->
+        <maven-toolchains-plugin.version>3.1.0</maven-toolchains-plugin.version>
+
+        <!-- Test -->
+        <spring-cloud-contract-wiremock.version>3.1.4</spring-cloud-contract-wiremock.version>
     </properties>
 
     <dependencyManagement>
@@ -53,6 +57,7 @@
                 <artifactId>resilience4j-spring-boot2</artifactId>
                 <version>${resilience4j.version}</version>
             </dependency>
+
             <!--test-->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
@@ -67,8 +72,12 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-toolchains-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>${maven-toolchains-plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -79,15 +88,11 @@
                 <configuration>
                     <toolchains>
                         <jdk>
-                            <version>17</version>
+                            <version>${java.version}</version>
                             <vendor>openjdk</vendor>
                         </jdk>
                     </toolchains>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

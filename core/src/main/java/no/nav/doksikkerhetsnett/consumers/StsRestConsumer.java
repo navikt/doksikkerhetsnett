@@ -4,7 +4,6 @@ import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.entities.responses.StsResponseTo;
 import no.nav.doksikkerhetsnett.exceptions.technical.AbstractDoksikkerhetsnettTechnicalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.StsTechnicalException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.retry.annotation.Backoff;
@@ -19,16 +18,12 @@ import static no.nav.doksikkerhetsnett.config.cache.LokalCacheConfig.STS_CACHE;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.DELAY_SHORT;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.MULTIPLIER_SHORT;
 
-/**
- * @author Sigurd Midttun, Visma Consulting.
- */
 @Component
 public class StsRestConsumer {
 
     private final RestTemplate restTemplate;
     private final String stsUrl;
 
-    @Autowired
     public StsRestConsumer(RestTemplateBuilder restTemplateBuilder,
                            DokSikkerhetsnettProperties dokSikkerhetsnettProperties) {
         this.stsUrl = dokSikkerhetsnettProperties.getEndpoints().getSts();
