@@ -8,8 +8,8 @@
   "DOKSIKKERHETSNETT_ENDPOINTS_STS": "https://security-token-service.nais.adeo.no/rest/v1/sts/token",
   "DOKSIKKERHETSNETT_ENDPOINTS_OPPGAVE": "https://oppgave.nais.adeo.no/api/v1/oppgaver",
   "DOKSIKKERHETSNETT_ENDPOINTS_OPPRETTJIRAISSUE": "https://jira.adeo.no/rest/api/2/issue",
-  "DOKSIKKERHETSNETT_ENDPOINTS_DOKARKIV_SCOPE": "api://prod-fss.teamdokumenthandtering.dokarkiv/.default",
-  "DOKSIKKERHETSNETT_ENDPOINTS_DOKARKIV_URL": "https://dokarkiv.intern.nav.no/rest/internal/journalpostapi/v1/finnMottatteJournalposter/",
+  "DOKSIKKERHETSNETT_DOKARKIV_SCOPE": "api://prod-fss.teamdokumenthandtering.dokarkiv/.default",
+  "DOKSIKKERHETSNETT_DOKARKIV_URL": "https://dokarkiv.intern.nav.no/rest/internal/journalpostapi/v1/finnMottatteJournalposter/",
   "INGRESSES": [
     "https://doksikkerhetsnett.intern.nav.no"
   ]

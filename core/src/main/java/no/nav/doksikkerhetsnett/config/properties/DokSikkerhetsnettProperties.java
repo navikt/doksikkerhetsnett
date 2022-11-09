@@ -19,6 +19,7 @@ public class DokSikkerhetsnettProperties {
 
     private final Proxy proxy = new Proxy();
     private final Endpoints endpoints = new Endpoints();
+    private final Dokarkiv dokarkiv = new Dokarkiv();
 
     @NotNull
     private ServiceUserProperties serviceuser;
@@ -45,9 +46,6 @@ public class DokSikkerhetsnettProperties {
     public static class Endpoints {
 
         @NotNull
-        private AzureEndpoint dokarkiv;
-
-        @NotNull
         private String pdl;
 
         @NotEmpty
@@ -60,22 +58,14 @@ public class DokSikkerhetsnettProperties {
         private String opprettjiraissue;
     }
 
-
     @Data
     @Validated
-    public static class AzureEndpoint {
-        /**
-         * Url til tjeneste som har azure autorisasjon
-         */
+    public static class Dokarkiv {
         @NotEmpty
         private String url;
-        /**
-         * Scope til azure client credential flow
-         */
         @NotEmpty
         private String scope;
     }
-
 }
 
 

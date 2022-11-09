@@ -1,80 +1,96 @@
 package no.nav.doksikkerhetsnett.consumers;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
-import no.nav.doksikkerhetsnett.consumers.azure.AzureTokenConsumer;
+import no.nav.doksikkerhetsnett.consumers.azure.AzureProperties;
 import no.nav.doksikkerhetsnett.entities.responses.FinnMottatteJournalposterResponse;
-import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFinnesIkkeFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFunctionalException;
-import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnMottatteJournalposterTechnicalException;
 import no.nav.doksikkerhetsnett.metrics.Metrics;
 import org.slf4j.MDC;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 
-import java.net.URI;
-import java.time.Duration;
+import java.util.Map;
+import java.util.function.Consumer;
 
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_ID;
+import static no.nav.doksikkerhetsnett.constants.RetryConstants.DELAY_SHORT;
+import static no.nav.doksikkerhetsnett.constants.RetryConstants.MAX_ATTEMPTS_SHORT;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpStatus.CONFLICT;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
+@Slf4j
 @Component
 public class FinnMottatteJournalposterConsumer {
-	private final RestTemplate restTemplate;
-	private final DokSikkerhetsnettProperties.AzureEndpoint finnMottatteJournalposter;
-	private final AzureTokenConsumer azureTokenConsumer;
 
-	public FinnMottatteJournalposterConsumer(RestTemplateBuilder restTemplateBuilder,
-											 DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
-											 AzureTokenConsumer azureTokenConsumer) {
-		this.finnMottatteJournalposter = dokSikkerhetsnettProperties.getEndpoints().getDokarkiv();
-		this.restTemplate = restTemplateBuilder
-				.setReadTimeout(Duration.ofSeconds(150))
-				.setConnectTimeout(Duration.ofSeconds(5))
-				.build();
-		this.azureTokenConsumer = azureTokenConsumer;
+	private final DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
+	private final ReactiveOAuth2AuthorizedClientManager oAuth2AuthorizedClientManager;
+	private final WebClient webClient;
+
+	public FinnMottatteJournalposterConsumer(DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
+											 ReactiveOAuth2AuthorizedClientManager oAuth2AuthorizedClientManager,
+											 WebClient webClient) {
+		this.dokSikkerhetsnettProperties = dokSikkerhetsnettProperties;
+		this.oAuth2AuthorizedClientManager = oAuth2AuthorizedClientManager;
+		this.webClient = webClient;
 	}
 
 	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnMottatteJournalposter"}, percentiles = {0.5, 0.95}, histogram = true)
+	@Retryable(include = FinnMottatteJournalposterTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT, multiplier = MAX_ATTEMPTS_SHORT))
 	public FinnMottatteJournalposterResponse finnMottatteJournalposter(String tema, int antallDager) {
-		try {
-			HttpEntity<?> requestEntity = new HttpEntity<>(createHeaders());
+		return webClient.get()
+				.uri(buildUri(tema, antallDager))
+				.attributes(getOAuth2AuthorizedClient())
+				.headers(this::createHeaders)
+				.retrieve()
+				.bodyToMono(FinnMottatteJournalposterResponse.class)
+				.doOnError(handleError(tema))
+				.block();
+	}
 
-			URI uri = UriComponentsBuilder.fromHttpUrl(finnMottatteJournalposter.getUrl())
-					.path(validateInput(tema))
-					.path("/" + antallDager)
-					.build().toUri();
+	private Consumer<Throwable> handleError(String tema) {
+		return error -> {
+			if (error instanceof WebClientResponseException && ((WebClientResponseException) error).getStatusCode().is4xxClientError()) {
+				WebClientResponseException thrownError = (WebClientResponseException) error;
+				log.error("finnMottatteJournalposter feilet funksjonelt med statuscode={} ved henting av tema={} , feilmelding={}", thrownError.getStatusCode(), tema, thrownError.getMessage());
+				throw new FinnMottatteJournalposterFunctionalException(String.format("finnMottatteJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s",
+						thrownError.getRawStatusCode(), thrownError.getResponseBodyAsString()), error);
 
-			return restTemplate.exchange(uri, GET, requestEntity, FinnMottatteJournalposterResponse.class)
-					.getBody();
-
-		} catch (HttpClientErrorException e) {
-			if (NOT_FOUND.equals(e.getStatusCode())) {
-				throw new FinnMottatteJournalposterFinnesIkkeFunctionalException(String.format("finnMottatteJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
-						.getStatusCode(), e.getResponseBodyAsString(), finnMottatteJournalposter.getUrl()), e);
-			} else if (CONFLICT.equals(e.getStatusCode())) {
-				throw new FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException(String.format("finnMottatteJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
-						.getStatusCode(), e.getResponseBodyAsString()), e);
 			} else {
-				throw new FinnMottatteJournalposterFunctionalException(String.format("finnMottatteJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
-						.getStatusCode(), e.getResponseBodyAsString(), finnMottatteJournalposter.getUrl()), e);
+				log.error("finnMottatteJournalposter feilet teknisk ved henting av tema={}, feilmelding={}", tema, error.getMessage());
+				throw new FinnMottatteJournalposterTechnicalException(
+						String.format("finnMottatteJournalposter feilet teknisk ved henting av tema={} ,feilmelding=%s",
+								tema,
+								error.getMessage()),
+						error);
 			}
-		} catch (HttpServerErrorException e) {
-			throw new FinnMottatteJournalposterTechnicalException(String.format("finnMottatteJournalposter feilet teknisk med statusKode=%s. Feilmelding=%s", e
-					.getStatusCode(), e.getMessage()), e);
+		};
+	}
+
+	private void createHeaders(HttpHeaders httpHeaders) {
+		httpHeaders.setContentType(APPLICATION_JSON);
+
+		if (MDC.get(MDC_NAV_CALL_ID) != null) {
+			httpHeaders.set(MDC_NAV_CALL_ID, MDC.get(MDC_NAV_CALL_ID));
 		}
+		if (MDC.get(MDC_NAV_CONSUMER_ID) != null) {
+			httpHeaders.set(MDC_NAV_CONSUMER_ID, MDC.get(MDC_NAV_CONSUMER_ID));
+		}
+	}
+
+	private String buildUri(String tema, int antallDager) {
+		return dokSikkerhetsnettProperties.getDokarkiv().getUrl() + validateInput(tema) + "/" + antallDager;
 	}
 
 	private String validateInput(String input) {
@@ -83,17 +99,9 @@ public class FinnMottatteJournalposterConsumer {
 		} else return input;
 	}
 
-	private HttpHeaders createHeaders() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(APPLICATION_JSON);
-		headers.setBearerAuth(azureTokenConsumer.getClientCredentialToken(finnMottatteJournalposter.getScope()).getAccess_token());
-
-		if (MDC.get(MDC_NAV_CALL_ID) != null) {
-			headers.add(MDC_NAV_CALL_ID, MDC.get(MDC_NAV_CALL_ID));
-		}
-		if (MDC.get(MDC_NAV_CONSUMER_ID) != null) {
-			headers.add(MDC_NAV_CONSUMER_ID, MDC.get(MDC_NAV_CONSUMER_ID));
-		}
-		return headers;
+	private Consumer<Map<String, Object>> getOAuth2AuthorizedClient() {
+		Mono<OAuth2AuthorizedClient> clientMono = oAuth2AuthorizedClientManager.authorize(AzureProperties.getOAuth2AuthorizeRequestForAzure(AzureProperties.CLIENT_REGISTRATION_DOKARKIV));
+		return ServerOAuth2AuthorizedClientExchangeFilterFunction.oauth2AuthorizedClient(clientMono.block());
 	}
+
 }
