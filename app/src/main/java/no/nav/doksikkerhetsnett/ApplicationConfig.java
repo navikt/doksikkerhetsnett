@@ -9,8 +9,10 @@ import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServic
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @EnableAutoConfiguration(exclude = UserDetailsServiceAutoConfiguration.class)
+@EnableAspectJAutoProxy
 @EnableConfigurationProperties({DokSikkerhetsnettProperties.class, AzureProperties.class})
 @Configuration
 public class ApplicationConfig {
