@@ -2,8 +2,6 @@
   "APPNAVN": "doksikkerhetsnett-q1",
   "SRVDOKSIKKERHETSNETT": "/serviceuser/data/dev/srvdoksikkerhetsnt",
   "AZURE_APP_TOKEN_URL": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/oauth2/v2.0/token",
-  "DOKSIKKERHETSNETT_PROXY_HOST": "webproxy.nais",
-  "DOKSIKKERHETSNETT_PROXY_PORT": "8088",
   "DOKSIKKERHETSNETT_ENDPOINTS_PDL": "https://pdl-api-q1.dev.intern.nav.no/graphql",
   "DOKSIKKERHETSNETT_ENDPOINTS_STS": "https://security-token-service.nais.preprod.local/rest/v1/sts/token",
   "DOKSIKKERHETSNETT_ENDPOINTS_OPPGAVE": "https://oppgave.nais.preprod.local/api/v1/oppgaver",

@@ -2,8 +2,6 @@
   "APPNAVN": "doksikkerhetsnett",
   "SRVDOKSIKKERHETSNETT": "/serviceuser/data/prod/srvdoksikkerhetsnt",
   "AZURE_APP_TOKEN_URL": "https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/oauth2/v2.0/token",
-  "DOKSIKKERHETSNETT_PROXY_HOST": "webproxy.nais",
-  "DOKSIKKERHETSNETT_PROXY_PORT": "8088",
   "DOKSIKKERHETSNETT_ENDPOINTS_PDL": "https://pdl-api.intern.nav.no/graphql",
   "DOKSIKKERHETSNETT_ENDPOINTS_STS": "https://security-token-service.nais.adeo.no/rest/v1/sts/token",
   "DOKSIKKERHETSNETT_ENDPOINTS_OPPGAVE": "https://oppgave.nais.adeo.no/api/v1/oppgaver",

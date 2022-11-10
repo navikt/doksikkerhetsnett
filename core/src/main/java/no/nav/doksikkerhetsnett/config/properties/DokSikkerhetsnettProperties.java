@@ -17,7 +17,6 @@ import javax.validation.constraints.NotNull;
 @Validated
 public class DokSikkerhetsnettProperties {
 
-    private final Proxy proxy = new Proxy();
     private final Endpoints endpoints = new Endpoints();
     private final Dokarkiv dokarkiv = new Dokarkiv();
 
@@ -29,17 +28,6 @@ public class DokSikkerhetsnettProperties {
 
     //kommaseparert liste, "ALLE" for å lese alle temaer.
     private String lesTemaer;
-
-    @Data
-    @Validated
-    public static class Proxy {
-        private String host;
-        private int port;
-
-        public boolean isSet() {
-            return (host != null && !host.equals(""));
-        }
-    }
 
     @Data
     @Validated
