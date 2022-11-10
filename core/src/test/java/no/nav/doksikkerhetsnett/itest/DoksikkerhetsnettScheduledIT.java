@@ -93,6 +93,11 @@ class DoksikkerhetsnettScheduledIT {
 				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("oppgave/stsResponse-happy.json")));
+		stubFor(post("/azure_token")
+				.willReturn(aResponse()
+						.withStatus(OK.value())
+						.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+						.withBodyFile("azure/token_response_dummy.json")));
 	}
 
 	@Test

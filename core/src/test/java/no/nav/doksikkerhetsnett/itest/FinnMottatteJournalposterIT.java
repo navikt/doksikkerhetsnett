@@ -4,17 +4,17 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.doksikkerhetsnett.consumers.FinnMottatteJournalposterConsumer;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.responses.FinnMottatteJournalposterResponse;
-import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFinnesIkkeFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFunctionalException;
-import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnMottatteJournalposterTechnicalException;
 import no.nav.doksikkerhetsnett.itest.config.TestConfig;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.text.ParseException;
@@ -25,6 +25,7 @@ import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -58,6 +59,15 @@ class FinnMottatteJournalposterIT {
 
 	@Autowired
 	private FinnMottatteJournalposterConsumer finnMottatteJournalposterConsumer;
+
+	@BeforeEach
+	void setup() {
+		stubFor(post("/azure_token")
+				.willReturn(aResponse()
+						.withStatus(OK.value())
+						.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+						.withBodyFile("azure/token_response_dummy.json")));
+	}
 
 	@AfterEach
 	void tearDown() {
@@ -117,28 +127,28 @@ class FinnMottatteJournalposterIT {
 	void shouldFindMottatteJournalposterMedTemaNull() {
 		stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER + "/5"))
 				.willReturn(aResponse().withStatus(BAD_REQUEST.value())));
-		assertThrows(FinnMottatteJournalposterFinnesIkkeFunctionalException.class, () -> finnMottatteJournalposterConsumer.finnMottatteJournalposter(null, 5));
+		assertThrows(FinnMottatteJournalposterFunctionalException.class, () -> finnMottatteJournalposterConsumer.finnMottatteJournalposter(null, 5));
 	}
 
 	@Test
 	void shouldFindMottatteJournalposterHappyPathTemaNone() {
 		stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER + "/5"))
 				.willReturn(aResponse().withStatus(BAD_REQUEST.value())));
-		assertThrows(FinnMottatteJournalposterFinnesIkkeFunctionalException.class, () -> finnMottatteJournalposterConsumer.finnMottatteJournalposter(TEMA_NONE, 5));
+		assertThrows(FinnMottatteJournalposterFunctionalException.class, () -> finnMottatteJournalposterConsumer.finnMottatteJournalposter(TEMA_NONE, 5));
 	}
 
 	@Test
 	void shouldThrowFinnMottatteJournalposterFinnesIkkeFunctionalException() {
 		stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER + JUST_FOR_PATH + "/5"))
 				.willReturn(aResponse().withStatus(NOT_FOUND.value())));
-		assertThrows(FinnMottatteJournalposterFinnesIkkeFunctionalException.class, () -> finnMottatteJournalposterConsumer.finnMottatteJournalposter(JUST_FOR_PATH, 5));
+		assertThrows(FinnMottatteJournalposterFunctionalException.class, () -> finnMottatteJournalposterConsumer.finnMottatteJournalposter(JUST_FOR_PATH, 5));
 	}
 
 	@Test
 	void shouldThrowFinnOppgaveTillaterIkkeTilknytningFunctionalException() {
 		stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER + JUST_FOR_PATH + "/5"))
 				.willReturn(aResponse().withStatus(CONFLICT.value())));
-		assertThrows(FinnMottatteJournalposterTillaterIkkeTilknyttingFunctionalException.class, () -> finnMottatteJournalposterConsumer.finnMottatteJournalposter(JUST_FOR_PATH, 5));
+		assertThrows(FinnMottatteJournalposterFunctionalException.class, () -> finnMottatteJournalposterConsumer.finnMottatteJournalposter(JUST_FOR_PATH, 5));
 	}
 
 	@Test

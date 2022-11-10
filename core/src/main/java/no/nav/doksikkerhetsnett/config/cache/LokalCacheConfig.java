@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 public class LokalCacheConfig {
 
     public static final String STS_CACHE = "stsCache";
-    public static final String AZURE_CACHE = "azureCache";
 
     @Bean
     @Primary
@@ -28,10 +27,6 @@ public class LokalCacheConfig {
         manager.setCaches(Arrays.asList(
                 new CaffeineCache(STS_CACHE, Caffeine.newBuilder()
                         .expireAfterWrite(55, TimeUnit.MINUTES)
-                        .build()),
-                new CaffeineCache(AZURE_CACHE, Caffeine.newBuilder()
-                        .expireAfterWrite(50, TimeUnit.MINUTES)
-                        .maximumSize(10)
                         .build())
         ));
         return manager;

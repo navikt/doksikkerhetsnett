@@ -1,7 +1,7 @@
 package no.nav.doksikkerhetsnett.consumers.azure;
 
-import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotEmpty;
@@ -9,18 +9,22 @@ import javax.validation.constraints.NotEmpty;
 /**
  * Konfigurert av naiserator. https://doc.nais.io/security/auth/azure-ad/#runtime-variables-credentials
  */
-@Data
-@ConfigurationProperties("azure.app")
 @Validated
-public class AzureProperties {
-	@NotEmpty
-	private String tokenUrl;
-	@NotEmpty
-	private String clientId;
-	@NotEmpty
-	private String clientSecret;
-	@NotEmpty
-	private String tenantId;
-	@NotEmpty
-	private String wellKnownUrl;
+@ConfigurationProperties(prefix = "azure.app")
+public record AzureProperties(
+		@NotEmpty String tokenUrl,
+		@NotEmpty String clientId,
+		@NotEmpty String clientSecret,
+		@NotEmpty String tenantId,
+		@NotEmpty String wellKnownUrl
+) {
+	public static final String SPRING_DEFAULT_PRINCIPAL = "anonymousUser";
+	public static final String CLIENT_REGISTRATION_DOKARKIV = "azure-dokarkiv";
+
+	public static OAuth2AuthorizeRequest getOAuth2AuthorizeRequestForAzure(String clientRegistrationId) {
+		return OAuth2AuthorizeRequest
+				.withClientRegistrationId(clientRegistrationId)
+				.principal(SPRING_DEFAULT_PRINCIPAL)
+				.build();
+	}
 }
