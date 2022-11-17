@@ -50,7 +50,7 @@ public class DoksikkerhetsnettScheduled {
 	}
 
     // Satt til å kjøre klokken 07:00 på man - fre
-    @Scheduled(cron = "0 20 8 * * MON-FRI")
+    @Scheduled(cron = "${cron.opprett.opppgave}")
     public void triggerOppdatering() {
 		log.info("Starter den daglige skriv-kjøringen (man-fre)");
 

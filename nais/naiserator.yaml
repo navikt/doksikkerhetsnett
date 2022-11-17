@@ -21,6 +21,8 @@ spec:
       value: {{ DOKSIKKERHETSNETT_DOKARKIV_SCOPE }}
     - name: AZURE_APP_TOKEN_URL
       value: {{ AZURE_APP_TOKEN_URL }}
+    - name: CRON_OPPRETT_OPPGAVE
+      value: {{ CRON_OPPRETT_OPPGAVE }}
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
