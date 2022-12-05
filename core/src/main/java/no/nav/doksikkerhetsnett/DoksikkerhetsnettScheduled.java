@@ -137,19 +137,13 @@ public class DoksikkerhetsnettScheduled {
 		}
 	}
 
-	private static final String TEMA_HJE = "HJE";
 	public List<Journalpost> finnJournalposterUtenOppgave(String tema) {
 		List<Journalpost> ubehandledeJournalposter;
 		List<Journalpost> ubehandledeJournalposterUtenOppgave;
 		log.info("Doksikkerhetsnett henter alle ubehandlede journalposter eldre enn 5 dager fra tema: {}", tema);
 
-		//	Hjelpeområdet har hatt en feil som gjør at de fikk 300 oppgaver uten bruker.
-		//	De har derfor slettet opgpavene og ønsker at vi oppretter nye for de vha doksikkerhetsnett, men helst før det har gått 5 dager.
-		// Journalpostene er fra den 29.11
-		int eldreEnn = TEMA_HJE.equalsIgnoreCase(tema) ? 2 : FEM_DAGER;
-
-		ubehandledeJournalposter = finnUbehandledeJournalposter(tema, eldreEnn);
-		ubehandledeJournalposterUtenOppgave = findUbehandledeJournalposterUtenOppgave(tema, ubehandledeJournalposter, eldreEnn);
+		ubehandledeJournalposter = finnUbehandledeJournalposter(tema, FEM_DAGER);
+		ubehandledeJournalposterUtenOppgave = findUbehandledeJournalposterUtenOppgave(tema, ubehandledeJournalposter, FEM_DAGER);
 
 		metricsScheduler.incrementMetrics(ubehandledeJournalposter, ubehandledeJournalposterUtenOppgave);
 		return ubehandledeJournalposterUtenOppgave;
