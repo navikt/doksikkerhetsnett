@@ -118,7 +118,7 @@ class DoksikkerhetsnettScheduledIT {
 		List<Journalpost> journalposterUtenOppgaver = new ArrayList();
 		Utils.getAlleTema()
 				.forEach(tema -> journalposterUtenOppgaver.addAll(doksikkerhetsnettScheduled.finnJournalposterUtenOppgave(tema)));
-		assertEquals(228, journalposterUtenOppgaver.size());
+		assertEquals(248, journalposterUtenOppgaver.size());
 	}
 
 	@Test
