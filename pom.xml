@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.6</version>
+        <version>3.0.0</version>
     </parent>
 
     <groupId>no.nav.doksikkerhetsnett</groupId>
@@ -31,7 +31,7 @@
         <maven-toolchains-plugin.version>3.1.0</maven-toolchains-plugin.version>
 
         <!-- Test -->
-        <spring-cloud-contract-wiremock.version>3.1.4</spring-cloud-contract-wiremock.version>
+        <spring-cloud-contract-wiremock.version>4.0.0</spring-cloud-contract-wiremock.version>
     </properties>
 
     <dependencyManagement>
