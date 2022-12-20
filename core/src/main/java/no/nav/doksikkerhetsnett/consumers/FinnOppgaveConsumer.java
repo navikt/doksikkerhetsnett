@@ -33,7 +33,7 @@ import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_FORDELING;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_JOURNALFOERT;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
-import static org.apache.http.HttpHeaders.AUTHORIZATION;
+import static org.apache.hc.core5.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;

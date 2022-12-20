@@ -5,7 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 
 @Getter
 @Setter
