@@ -1,0 +1,61 @@
+package no.nav.doksikkerhetsnett.itest;
+
+import no.nav.doksikkerhetsnett.OpprettOppgaverScheduled;
+import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
+import no.nav.doksikkerhetsnett.entities.Journalpost;
+import no.nav.doksikkerhetsnett.itest.config.DoksikkerhetsnettItest;
+import no.nav.doksikkerhetsnett.itest.config.TestConfig;
+import no.nav.doksikkerhetsnett.metrics.MetricsUtil;
+import no.nav.doksikkerhetsnett.services.FinnGjenglemteJournalposterService;
+import no.nav.doksikkerhetsnett.utils.Utils;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.test.context.ActiveProfiles;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+
+@SpringBootTest(
+		classes = {TestConfig.class},
+		webEnvironment = RANDOM_PORT
+)
+@AutoConfigureWireMock(port = 0)
+@ActiveProfiles("itest")
+class FinnGjenglemteJournalposterIT extends DoksikkerhetsnettItest {
+
+	@Autowired
+	private FinnGjenglemteJournalposterService finnGjenglemteJournalposterService;
+
+	@Test
+	void shouldFindMottatteJournalposter() {
+		List<Journalpost> journalposterUtenOppgaver = new ArrayList();
+		Arrays.stream(dokSikkerhetsnettProperties.getSkrivTemaer().split(","))
+				.forEach(tema -> journalposterUtenOppgaver.addAll(finnGjenglemteJournalposterService.finnJournalposterUtenOppgave(tema, 5)));
+		assertEquals(4, journalposterUtenOppgaver.size());
+
+		Map<String, Integer> totalMetricsCache = metricsScheduler.getCaches().get(0);
+		Map<String, Integer> utenOppgaveMetricsCache = metricsScheduler.getCaches().get(1);
+		assertCorrectMetrics(totalMetricsCache, 6, METRIC_TAGS);
+		assertCorrectMetrics(utenOppgaveMetricsCache, 4, METRIC_TAGS);
+	}
+
+	@Test
+	void shouldFindMottatteJournalposterForAlleTema() {
+		List<Journalpost> journalposterUtenOppgaver = new ArrayList();
+		Utils.getAlleTema()
+				.forEach(tema -> journalposterUtenOppgaver.addAll(finnGjenglemteJournalposterService.finnJournalposterUtenOppgave(tema, 5)));
+		assertEquals(248, journalposterUtenOppgaver.size());
+	}
+
+	private void assertCorrectMetrics(Map<String, Integer> metricsCache, int expectedValue, String expectedString) {
+		assertEquals(expectedValue, (int) metricsCache.entrySet().iterator().next().getValue());
+		assertEquals(expectedString, metricsCache.entrySet().iterator().next().getKey());
+	}
+}

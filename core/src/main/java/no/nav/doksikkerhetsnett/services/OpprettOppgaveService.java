@@ -33,14 +33,16 @@ import static org.apache.logging.log4j.util.Strings.isNotBlank;
 @Service
 public class OpprettOppgaveService {
 
-	private final OpprettOppgaveConsumer opprettOppgaveConsumer;
 	private final JiraConsumer jiraConsumer;
 	private final IdentConsumer identConsumer;
+	private final OpprettOppgaveConsumer opprettOppgaveConsumer;
 
-	public OpprettOppgaveService(OpprettOppgaveConsumer opprettOppgaveConsumer, JiraConsumer jiraConsumer, IdentConsumer identConsumer) {
-		this.opprettOppgaveConsumer = opprettOppgaveConsumer;
+	public OpprettOppgaveService(JiraConsumer jiraConsumer,
+								 IdentConsumer identConsumer,
+								 OpprettOppgaveConsumer opprettOppgaveConsumer) {
 		this.jiraConsumer = jiraConsumer;
 		this.identConsumer = identConsumer;
+		this.opprettOppgaveConsumer = opprettOppgaveConsumer;
 	}
 
 	public List<OpprettOppgaveResponse> opprettOppgaver(List<Journalpost> journalposts) {
@@ -62,6 +64,7 @@ public class OpprettOppgaveService {
 			return null;
 		}
 	}
+
 
 	public OpprettOppgaveResponse opprettOppgaveMedLiteMetadata(Oppgave oppgave) {
 		try {

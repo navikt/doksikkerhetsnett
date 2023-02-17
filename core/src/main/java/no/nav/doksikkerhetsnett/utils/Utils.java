@@ -3,6 +3,8 @@ package no.nav.doksikkerhetsnett.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
+import no.nav.doksikkerhetsnett.entities.Oppgave;
+import no.nav.doksikkerhetsnett.entities.responses.FinnOppgaveResponse;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -17,9 +19,6 @@ import static org.apache.commons.collections4.ListUtils.partition;
 
 @Slf4j
 public class Utils {
-
-	private Utils() {
-	}
 
 	// Alle temaer fra https://confluence.adeo.no/display/BOA/Enum%3A+Tema. Oppdatert 15.03.2022
 	private static final Set<String> alleTema = new HashSet(Arrays.asList("AAP", "AAR", "AGR", "ARP", "ARS", "BAR", "BID", "BIL", "DAG", "ENF", "ERS", "EYB", "EYO", "FAR", "FEI", "FIP", "FOR", "FOS", "FUL", "FRI", "GEN", "GRA", "GRU", "HEL", "HJE", "IAR", "IND", "KLL", "KON", "KTA", "KTR", "MED", "MOB", "OMS", "OPA", "OPP", "PEN", "PER", "REH", "REK", "RPO", "RVE", "SAA", "SAK", "SAP", "SER", "SIK", "STO", "SUP", "SYK", "SYM", "TIL", "TRK", "TRY", "TSO", "TSR", "UFM", "UFO", "UKJ", "VEN", "YRA", "YRK"));
@@ -68,21 +67,6 @@ public class Utils {
 
 	}
 
-	public static String logWithDager(int dagerGamle) {
-		return dagerGamle == 1 ? "1 dag" : dagerGamle + " dager";
-	}
-
-	// Hjelpefunksjon for finere logging ut ifra hvor mange temaer som er i kallet
-	public static String logWithTema(String temaer) {
-		if (temaer == null || temaer.isEmpty()) {
-			return "for alle temaer";
-		}
-		if (temaer.contains(",")) {
-			return "med tema blandt " + temaer;
-		}
-		return "med tema " + temaer;
-	}
-
 	public static Set<String> getAlleTema() {
 		return alleTema;
 	}
@@ -100,5 +84,10 @@ public class Utils {
 		return alleTemaCopy;
 	}
 
+	public static Set<String> temaerStringToSet(String temaer) {
+		return new HashSet(Arrays.asList(temaer.split(",")).stream()
+				.map(String::trim)
+				.collect(Collectors.toList()));
+	}
 }
 

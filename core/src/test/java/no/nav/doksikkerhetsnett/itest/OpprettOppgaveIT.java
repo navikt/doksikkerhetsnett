@@ -78,7 +78,7 @@ class OpprettOppgaveIT {
 		setupSts();
 		happyAktoerIdStub();
 		OpprettOppgaveConsumer opprettOppgaveConsumer = new OpprettOppgaveConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties, stsRestConsumer);
-		opprettOppgaveService = new OpprettOppgaveService(opprettOppgaveConsumer, jiraConsumer, identConsumer);
+		opprettOppgaveService = new OpprettOppgaveService (jiraConsumer, identConsumer, opprettOppgaveConsumer);
 	}
 
 	@AfterEach

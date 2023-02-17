@@ -7,7 +7,6 @@ import no.nav.doksikkerhetsnett.entities.Oppgave;
 import no.nav.doksikkerhetsnett.entities.responses.OpprettOppgaveResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.OpprettOppgaveFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.OpprettOppgaveTechnicalException;
-import no.nav.doksikkerhetsnett.jaxws.MDCGenerate;
 import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
@@ -19,8 +18,10 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
+import java.util.UUID;
 
 import static no.nav.doksikkerhetsnett.constants.DomainConstants.BEARER_PREFIX;
+import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -66,7 +67,11 @@ public class OpprettOppgaveConsumer {
 	}
 
 	private HttpHeaders createHeaders() {
-		MDCGenerate.generateNewCallIdIfThereAreNone();
+
+		if (MDC.get(MDC_CALL_ID) == null) {
+			MDC.put(MDC_CALL_ID, UUID.randomUUID().toString());
+		}
+
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(MediaType.APPLICATION_JSON);

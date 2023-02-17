@@ -20,6 +20,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CALL_ID;
@@ -33,6 +34,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Slf4j
 @Component
 public class FinnMottatteJournalposterConsumer {
+	public static final String NAV_CALL_ID = "Nav-Callid";
 
 	private final DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
 	private final ReactiveOAuth2AuthorizedClientManager oAuth2AuthorizedClientManager;
@@ -63,12 +65,10 @@ public class FinnMottatteJournalposterConsumer {
 		return error -> {
 			if (error instanceof WebClientResponseException && ((WebClientResponseException) error).getStatusCode().is4xxClientError()) {
 				WebClientResponseException thrownError = (WebClientResponseException) error;
-				log.error("finnMottatteJournalposter feilet funksjonelt med statuscode={} ved henting av tema={} , feilmelding={}", thrownError.getStatusCode(), tema, thrownError.getMessage());
-				throw new FinnMottatteJournalposterFunctionalException(String.format("finnMottatteJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s",
-						thrownError.getRawStatusCode(), thrownError.getResponseBodyAsString()), error);
+				throw new FinnMottatteJournalposterFunctionalException(String.format("finnMottatteJournalposter feilet funksjonelt for tema=%S med statusKode=%s. Feilmelding=%s",
+						tema, thrownError.getRawStatusCode(), thrownError.getResponseBodyAsString()), error);
 
 			} else {
-				log.error("finnMottatteJournalposter feilet teknisk ved henting av tema={}, feilmelding={}", tema, error.getMessage());
 				throw new FinnMottatteJournalposterTechnicalException(
 						String.format("finnMottatteJournalposter feilet teknisk ved henting av tema={} ,feilmelding=%s",
 								tema,
@@ -80,13 +80,7 @@ public class FinnMottatteJournalposterConsumer {
 
 	private void createHeaders(HttpHeaders httpHeaders) {
 		httpHeaders.setContentType(APPLICATION_JSON);
-
-		if (MDC.get(MDC_NAV_CALL_ID) != null) {
-			httpHeaders.set(MDC_NAV_CALL_ID, MDC.get(MDC_NAV_CALL_ID));
-		}
-		if (MDC.get(MDC_NAV_CONSUMER_ID) != null) {
-			httpHeaders.set(MDC_NAV_CONSUMER_ID, MDC.get(MDC_NAV_CONSUMER_ID));
-		}
+		httpHeaders.set(NAV_CALL_ID, UUID.randomUUID().toString());
 	}
 
 	private String buildUri(String tema, int antallDager) {

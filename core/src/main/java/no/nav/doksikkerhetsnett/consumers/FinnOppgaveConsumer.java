@@ -9,7 +9,6 @@ import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFinnesIkkeFunct
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveTillaterIkkeTilknyttingFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnOppgaveTechnicalException;
-import no.nav.doksikkerhetsnett.jaxws.MDCGenerate;
 import no.nav.doksikkerhetsnett.metrics.Metrics;
 import no.nav.doksikkerhetsnett.utils.Utils;
 import org.slf4j.MDC;
@@ -26,9 +25,11 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static no.nav.doksikkerhetsnett.constants.DomainConstants.BEARER_PREFIX;
+import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_FORDELING;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_JOURNALFOERT;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
@@ -134,7 +135,11 @@ public class FinnOppgaveConsumer {
 
 
 	private HttpHeaders createHeaders() {
-		MDCGenerate.generateNewCallIdIfThereAreNone();
+
+		if (MDC.get(MDC_CALL_ID) == null) {
+			MDC.put(MDC_CALL_ID, UUID.randomUUID().toString());
+		}
+
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(APPLICATION_JSON);
