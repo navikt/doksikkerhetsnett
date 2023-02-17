@@ -65,7 +65,6 @@ public class OpprettOppgaveService {
 		}
 	}
 
-
 	public OpprettOppgaveResponse opprettOppgaveMedLiteMetadata(Oppgave oppgave) {
 		try {
 			log.info(

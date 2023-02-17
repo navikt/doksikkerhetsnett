@@ -85,7 +85,7 @@ public class MetricsUtil {
         for (Gauge gauge : gauges) {
             meterRegistry.remove(gauge);
         }
-
+        gauges.clear();
         totalGaugeCache.clear();
         utenOppgaveGaugeCache.clear();
     }
