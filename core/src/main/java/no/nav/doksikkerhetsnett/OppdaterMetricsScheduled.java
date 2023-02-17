@@ -44,7 +44,7 @@ public class OppdaterMetricsScheduled {
 				int antall = finnGjenglemteJournalposterService.finnJournalposterUtenOppgave(tema, EN_DAG).size();
 				log.info("Fant {} journalposter uten oppgave som var èn dag eller eldre.", antall);
 			} catch (Exception e){
-				log.warn("Klarte ikke å oppdatere daglige metrics for tema={}", tema);
+				log.error("Klarte ikke å oppdatere daglige metrics for tema={}", tema, e);
 			}
 		}
 
@@ -53,7 +53,7 @@ public class OppdaterMetricsScheduled {
 				int antall = finnGjenglemteJournalposterService.finnJournalposterUtenOppgave(tema, TO_DAGER).size();
 				log.info("Fant {} journalposter uten oppgave som var 2 dager eller eldre.", antall);
 			} catch (Exception e){
-				log.warn("Klarte ikke å oppdatere 2-dagers metrics for tema={}", tema);
+				log.error("Klarte ikke å oppdatere 2-dagers metrics for tema={}", tema, e);
 			}
 		}
 

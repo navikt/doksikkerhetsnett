@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static no.nav.doksikkerhetsnett.utils.Utils.getAlleTema;
 import static no.nav.doksikkerhetsnett.utils.Utils.temaerStringToSet;
 
 @Slf4j
@@ -39,15 +40,10 @@ public class OpprettOppgaverScheduled {
 	@Scheduled(cron = "0 0 7 * * MON-FRI")
 	public void doOpprettOppgaverForGjenglemteJournalposter() {
 		log.info("Starter den daglige skriv-kj?ringen (man-fre)");
-		if (dokSikkerhetsnettProperties.getSkrivTemaer() != null && dokSikkerhetsnettProperties.getSkrivTemaer().length() > 0) {
-			Set<String> temaer = TEMA_ALLE.equals(dokSikkerhetsnettProperties.getSkrivTemaer()) ?
-					Utils.getAlleTema() : temaerStringToSet(dokSikkerhetsnettProperties.getSkrivTemaer());
 
-			temaer.forEach(this::lagOppgaverForGlemteJournalposter);
+		temaerStringToSet(dokSikkerhetsnettProperties.getSkrivTemaer())
+			.forEach(this::lagOppgaverForGlemteJournalposter);
 
-		} else {
-			log.info("Det er ikke spesifisert noen temaer ? opprette oppgaver for");
-		}
 		log.info("Avslutter den daglige skriv-kj?ringen (man-fre)");
 	}
 
