@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.responses.OpprettOppgaveResponse;
-import no.nav.doksikkerhetsnett.metrics.MetricsUtil;
 import no.nav.doksikkerhetsnett.services.FinnGjenglemteJournalposterService;
 import no.nav.doksikkerhetsnett.services.OpprettOppgaveService;
 import no.nav.doksikkerhetsnett.utils.Utils;
@@ -53,9 +52,8 @@ public class OpprettOppgaverScheduled {
 	}
 
 	public void lagOppgaverForGlemteJournalposter(String tema) {
-		List<Journalpost> ubehandletJournalpostsUtenOppgave = finnGjenglemteJournalposterService.finnJournalposterUtenOppgave(tema, FEM_DAGER);
-
 		try {
+			List<Journalpost> ubehandletJournalpostsUtenOppgave = finnGjenglemteJournalposterService.finnJournalposterUtenOppgave(tema, FEM_DAGER);
 			List<OpprettOppgaveResponse> opprettedeOppgaver = opprettOppgaveService.opprettOppgaver(ubehandletJournalpostsUtenOppgave);
 			if (!opprettedeOppgaver.isEmpty()) {
 				log.info("Doksikkerhetsnett har opprettet {} oppgaver for tema {} med ID'ene: {}", opprettedeOppgaver.size(), tema,

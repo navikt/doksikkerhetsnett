@@ -6,8 +6,6 @@ import no.nav.doksikkerhetsnett.consumers.azure.AzureProperties;
 import no.nav.doksikkerhetsnett.entities.responses.FinnMottatteJournalposterResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnMottatteJournalposterTechnicalException;
-import no.nav.doksikkerhetsnett.metrics.Metrics;
-import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -23,12 +21,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CALL_ID;
-import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_ID;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.DELAY_SHORT;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.MAX_ATTEMPTS_SHORT;
-import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
-import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Slf4j
@@ -48,7 +42,6 @@ public class FinnMottatteJournalposterConsumer {
 		this.webClient = webClient;
 	}
 
-	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnMottatteJournalposter"}, percentiles = {0.5, 0.95}, histogram = true)
 	@Retryable(include = FinnMottatteJournalposterTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT, multiplier = MAX_ATTEMPTS_SHORT))
 	public FinnMottatteJournalposterResponse finnMottatteJournalposter(String tema, int antallDager) {
 		return webClient.get()

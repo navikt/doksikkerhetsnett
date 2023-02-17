@@ -9,7 +9,6 @@ import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFinnesIkkeFunct
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveTillaterIkkeTilknyttingFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnOppgaveTechnicalException;
-import no.nav.doksikkerhetsnett.metrics.Metrics;
 import no.nav.doksikkerhetsnett.utils.Utils;
 import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -32,8 +31,6 @@ import static no.nav.doksikkerhetsnett.constants.DomainConstants.BEARER_PREFIX;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_FORDELING;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_JOURNALFOERT;
-import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
-import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 import static org.apache.hc.core5.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.CONFLICT;
@@ -69,7 +66,6 @@ public class FinnOppgaveConsumer {
 				.build();
 	}
 
-	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnOppgaveForJournalposter"}, percentiles = {0.5, 0.95}, histogram = true)
 	public FinnOppgaveResponse finnOppgaveForJournalposter(List<Journalpost> ubehandledeJournalposter) {
 		try {
 			HttpHeaders headers = createHeaders();

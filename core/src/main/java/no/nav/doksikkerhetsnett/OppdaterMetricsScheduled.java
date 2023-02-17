@@ -40,13 +40,21 @@ public class OppdaterMetricsScheduled {
 
 
 		for (String tema : Utils.getAlleTema()) {
-			int antall = finnGjenglemteJournalposterService.finnJournalposterUtenOppgave(tema, EN_DAG).size();
-			log.info("Fant {} journalposter uten oppgave som var èn dag eller eldre.", antall);
+			try {
+				int antall = finnGjenglemteJournalposterService.finnJournalposterUtenOppgave(tema, EN_DAG).size();
+				log.info("Fant {} journalposter uten oppgave som var èn dag eller eldre.", antall);
+			} catch (Exception e){
+				log.warn("Klarte ikke å oppdatere daglige metrics for tema={}", tema);
+			}
 		}
 
 		for (String tema : Utils.getAlleTema()) {
-			int antall = finnGjenglemteJournalposterService.finnJournalposterUtenOppgave(tema, TO_DAGER).size();
-			log.info("Fant {} journalposter uten oppgave som var 2 dager eller eldre.", antall);
+			try {
+				int antall = finnGjenglemteJournalposterService.finnJournalposterUtenOppgave(tema, TO_DAGER).size();
+				log.info("Fant {} journalposter uten oppgave som var 2 dager eller eldre.", antall);
+			} catch (Exception e){
+				log.warn("Klarte ikke å oppdatere 2-dagers metrics for tema={}", tema);
+			}
 		}
 
 		log.info("Daglig kjøring av doksikkerhetsnett les-modus er ferdig");
