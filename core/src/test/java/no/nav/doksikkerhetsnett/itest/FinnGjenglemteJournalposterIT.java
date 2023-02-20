@@ -34,7 +34,7 @@ class FinnGjenglemteJournalposterIT extends DoksikkerhetsnettItest {
 	void shouldFindMottatteJournalposter() {
 		List<Journalpost> journalposterUtenOppgaver = new ArrayList();
 		Arrays.stream(dokSikkerhetsnettProperties.getSkrivTemaer().split(","))
-				.forEach(tema -> journalposterUtenOppgaver.addAll(finnGjenglemteJournalposterService.finnJournalposterUtenOppgave(tema, 5)));
+				.forEach(tema -> journalposterUtenOppgaver.addAll(finnGjenglemteJournalposterService.finnJournalposterUtenOppgaveUpdateMetrics(tema, 5)));
 		assertEquals(4, journalposterUtenOppgaver.size());
 
 		Map<String, Integer> totalMetricsCache = metricsScheduler.getCaches().get(0);
@@ -47,7 +47,7 @@ class FinnGjenglemteJournalposterIT extends DoksikkerhetsnettItest {
 	void shouldFindMottatteJournalposterForAlleTema() {
 		List<Journalpost> journalposterUtenOppgaver = new ArrayList();
 		Tema.getAlleTema()
-				.forEach(tema -> journalposterUtenOppgaver.addAll(finnGjenglemteJournalposterService.finnJournalposterUtenOppgave(tema, 5)));
+				.forEach(tema -> journalposterUtenOppgaver.addAll(finnGjenglemteJournalposterService.finnJournalposterUtenOppgaveUpdateMetrics(tema, 5)));
 		assertEquals(248, journalposterUtenOppgaver.size());
 	}
 

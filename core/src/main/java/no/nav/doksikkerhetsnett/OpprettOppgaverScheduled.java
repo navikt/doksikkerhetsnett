@@ -6,7 +6,7 @@ import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.responses.OpprettOppgaveResponse;
 import no.nav.doksikkerhetsnett.services.FinnGjenglemteJournalposterService;
 import no.nav.doksikkerhetsnett.services.OpprettOppgaveService;
-import org.jboss.logging.MDC;
+import org.slf4j.MDC;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -37,8 +37,8 @@ public class OpprettOppgaverScheduled {
 
 	// Satt til å kjøre klokken 07:00 man - fre
 	@Scheduled(cron = "0 0 7 * * MON-FRI")
-	public void doOpprettOppgaverForGjenglemteJournalposter() {
-		MDC.put(MDC_CALL_ID, UUID.randomUUID());
+	public void opprettOppgaverForGjenglemteJournalposter() {
+		MDC.put(MDC_CALL_ID, UUID.randomUUID().toString());
 		log.info("Starter den daglige skriv-kjøringen (man-fre)");
 
 		temaerStringToSet(dokSikkerhetsnettProperties.getSkrivTemaer())
@@ -50,7 +50,7 @@ public class OpprettOppgaverScheduled {
 
 	public void lagOppgaverForGlemteJournalposter(String tema) {
 		try {
-			List<Journalpost> ubehandletJournalpostsUtenOppgave = finnGjenglemteJournalposterService.finnJournalposterUtenOppgave(tema, FEM_DAGER);
+			List<Journalpost> ubehandletJournalpostsUtenOppgave = finnGjenglemteJournalposterService.finnJournalposterUtenOppgaveUpdateMetrics(tema, FEM_DAGER);
 			List<OpprettOppgaveResponse> opprettedeOppgaver = opprettOppgaveService.opprettOppgaver(ubehandletJournalpostsUtenOppgave);
 			if (!opprettedeOppgaver.isEmpty()) {
 				log.info("Doksikkerhetsnett har opprettet {} oppgaver for tema {} med ID'ene: {}", opprettedeOppgaver.size(), tema,

@@ -29,7 +29,7 @@ public class FinnGjenglemteJournalposterService {
 		this.finnOppgaveConsumer = finnOppgaveConsumer;
 	}
 
-	public List<Journalpost> finnJournalposterUtenOppgave(String tema, int dager) {
+	public List<Journalpost> finnJournalposterUtenOppgaveUpdateMetrics(String tema, int dager) {
 		List<Journalpost> ubehandledeJournalposter;
 		List<Journalpost> ubehandledeJournalposterUtenOppgave;
 		log.info("Doksikkerhetsnett henter alle ubehandlede journalposter eldre enn {} dager fra tema: {}", dager, tema);
