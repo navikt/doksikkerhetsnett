@@ -1,13 +1,10 @@
 package no.nav.doksikkerhetsnett.itest;
 
-import no.nav.doksikkerhetsnett.OpprettOppgaverScheduled;
-import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.itest.config.DoksikkerhetsnettItest;
 import no.nav.doksikkerhetsnett.itest.config.TestConfig;
-import no.nav.doksikkerhetsnett.metrics.MetricsUtil;
 import no.nav.doksikkerhetsnett.services.FinnGjenglemteJournalposterService;
-import no.nav.doksikkerhetsnett.utils.Utils;
+import no.nav.doksikkerhetsnett.utils.Tema;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,7 +46,7 @@ class FinnGjenglemteJournalposterIT extends DoksikkerhetsnettItest {
 	@Test
 	void shouldFindMottatteJournalposterForAlleTema() {
 		List<Journalpost> journalposterUtenOppgaver = new ArrayList();
-		Utils.getAlleTema()
+		Tema.getAlleTema()
 				.forEach(tema -> journalposterUtenOppgaver.addAll(finnGjenglemteJournalposterService.finnJournalposterUtenOppgave(tema, 5)));
 		assertEquals(248, journalposterUtenOppgaver.size());
 	}

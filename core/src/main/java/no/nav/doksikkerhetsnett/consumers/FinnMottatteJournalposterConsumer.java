@@ -6,6 +6,7 @@ import no.nav.doksikkerhetsnett.consumers.azure.AzureProperties;
 import no.nav.doksikkerhetsnett.entities.responses.FinnMottatteJournalposterResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnMottatteJournalposterTechnicalException;
+import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -18,9 +19,9 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Consumer;
 
+import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.DELAY_SHORT;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.MAX_ATTEMPTS_SHORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -73,7 +74,7 @@ public class FinnMottatteJournalposterConsumer {
 
 	private void createHeaders(HttpHeaders httpHeaders) {
 		httpHeaders.setContentType(APPLICATION_JSON);
-		httpHeaders.set(NAV_CALL_ID, UUID.randomUUID().toString());
+		httpHeaders.set(NAV_CALL_ID, MDC.get(MDC_CALL_ID));
 	}
 
 	private String buildUri(String tema, int antallDager) {

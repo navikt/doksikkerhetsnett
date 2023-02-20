@@ -2,7 +2,7 @@ package no.nav.doksikkerhetsnett.itest.config;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
-import no.nav.doksikkerhetsnett.metrics.MetricsUtil;
+import no.nav.doksikkerhetsnett.metrics.MetricsService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +11,6 @@ import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -51,7 +47,7 @@ public abstract class DoksikkerhetsnettItest {
 	protected DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
 
 	@Autowired
-	protected MetricsUtil metricsScheduler;
+	protected MetricsService metricsScheduler;
 
 	@AfterEach
 	void tearDown() {

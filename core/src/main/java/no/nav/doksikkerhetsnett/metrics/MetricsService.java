@@ -19,12 +19,10 @@ import static no.nav.doksikkerhetsnett.metrics.MetricLabels.MOTTAKSKANAL;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.TEMA;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.TOTAL_NAME;
 import static no.nav.doksikkerhetsnett.metrics.MetricLabels.UTEN_OPPGAVE_NAME;
-import static no.nav.doksikkerhetsnett.metrics.MetricLabels.UTEN_OPPGAVE_NAME_EN_DAG;
-import static no.nav.doksikkerhetsnett.metrics.MetricLabels.UTEN_OPPGAVE_NAME_TO_DAGER;
 
 @Slf4j
 @Component
-public class MetricsUtil {
+public class MetricsService {
 
     private final MeterRegistry meterRegistry;
 
@@ -32,7 +30,7 @@ public class MetricsUtil {
     private final Map<String, Integer> totalGaugeCache = new HashMap<>();
     private final Map<String, Integer> utenOppgaveGaugeCache = new HashMap<>();
 
-    MetricsUtil(MeterRegistry meterRegistry) {
+    MetricsService(MeterRegistry meterRegistry) {
         this.meterRegistry = meterRegistry;
     }
 

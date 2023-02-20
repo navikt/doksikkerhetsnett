@@ -6,7 +6,7 @@ import no.nav.doksikkerhetsnett.consumers.FinnOppgaveConsumer;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
 import no.nav.doksikkerhetsnett.entities.responses.FinnOppgaveResponse;
-import no.nav.doksikkerhetsnett.metrics.MetricsUtil;
+import no.nav.doksikkerhetsnett.metrics.MetricsService;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -18,13 +18,13 @@ import java.util.stream.Collectors;
 @Component
 public class FinnGjenglemteJournalposterService {
 
-	private final MetricsUtil metricsUtil;
+	private final MetricsService metricsService;
 	private final FinnOppgaveConsumer finnOppgaveConsumer;
 	private final FinnMottatteJournalposterConsumer journalpostConsumer;
 
-	public FinnGjenglemteJournalposterService(MetricsUtil metricsUtil, FinnOppgaveConsumer finnOppgaveConsumer,
+	public FinnGjenglemteJournalposterService(MetricsService metricsService, FinnOppgaveConsumer finnOppgaveConsumer,
 											  FinnMottatteJournalposterConsumer journalpostConsumer) {
-		this.metricsUtil = metricsUtil;
+		this.metricsService = metricsService;
 		this.journalpostConsumer = journalpostConsumer;
 		this.finnOppgaveConsumer = finnOppgaveConsumer;
 	}
@@ -37,7 +37,7 @@ public class FinnGjenglemteJournalposterService {
 		ubehandledeJournalposter = journalpostConsumer.finnMottatteJournalposter(tema, dager).getJournalposter();
 		ubehandledeJournalposterUtenOppgave = findUbehandledeJournalposterUtenOppgave(tema, ubehandledeJournalposter, dager);
 
-		metricsUtil.UpdateGauges(ubehandledeJournalposter, ubehandledeJournalposterUtenOppgave, dager);
+		metricsService.UpdateGauges(ubehandledeJournalposter, ubehandledeJournalposterUtenOppgave, dager);
 		return ubehandledeJournalposterUtenOppgave;
 	}
 

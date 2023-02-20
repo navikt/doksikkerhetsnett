@@ -68,10 +68,6 @@ public class OpprettOppgaveConsumer {
 
 	private HttpHeaders createHeaders() {
 
-		if (MDC.get(MDC_CALL_ID) == null) {
-			MDC.put(MDC_CALL_ID, UUID.randomUUID().toString());
-		}
-
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(MediaType.APPLICATION_JSON);

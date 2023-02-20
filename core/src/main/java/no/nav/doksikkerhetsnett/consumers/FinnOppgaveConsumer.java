@@ -1,5 +1,6 @@
 package no.nav.doksikkerhetsnett.consumers;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.constants.MDCConstants;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
@@ -9,7 +10,6 @@ import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFinnesIkkeFunct
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveTillaterIkkeTilknyttingFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnOppgaveTechnicalException;
-import no.nav.doksikkerhetsnett.utils.Utils;
 import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
@@ -21,22 +21,23 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static no.nav.doksikkerhetsnett.constants.DomainConstants.BEARER_PREFIX;
-import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_FORDELING;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_JOURNALFOERT;
+import static org.apache.commons.collections4.ListUtils.partition;
 import static org.apache.hc.core5.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
+@Slf4j
 @Component
 public class FinnOppgaveConsumer {
 
@@ -70,7 +71,7 @@ public class FinnOppgaveConsumer {
 		try {
 			HttpHeaders headers = createHeaders();
 			HttpEntity<?> requestEntity = new HttpEntity<>(headers);
-			List<List<Long>> partitionedIds = Utils.journalpostListToPartitionedJournalpostIdList(ubehandledeJournalposter, LIMIT);
+			List<List<Long>> partitionedIds = journalpostListToPartitionedJournalpostIdList(ubehandledeJournalposter, LIMIT);
 			ArrayList<FinnOppgaveResponse> oppgaveResponses = new ArrayList<>();
 
 			for (List<Long> ids : partitionedIds) {
@@ -113,7 +114,7 @@ public class FinnOppgaveConsumer {
 	}
 
 	private FinnOppgaveResponse executeGetRequest(List<Long> ids, HttpEntity<?> requestEntity, int offset) {
-		String journalpostParams = Utils.listOfLongsToQueryParams(ids, PARAM_NAME_JOURNALPOSTID);
+		String journalpostParams = listOfLongsToQueryParams(ids, PARAM_NAME_JOURNALPOSTID);
 		URI uri = UriComponentsBuilder.fromHttpUrl(oppgaveUrl)
 				.query(journalpostParams)
 				.queryParam(PARAM_NAME_OPPGAVETYPE, OPPGAVETYPE_JOURNALFOERT)
@@ -123,19 +124,49 @@ public class FinnOppgaveConsumer {
 				.queryParam(PARAM_NAME_LIMIT, LIMIT)
 				.build().toUri();
 		if (offset > 0) {
-			uri = Utils.appendQuery(uri, PARAM_NAME_OFFSET, Integer.toString(offset * LIMIT));
+			uri = appendQuery(uri, PARAM_NAME_OFFSET, Integer.toString(offset * LIMIT));
 		}
 		return restTemplate.exchange(uri, GET, requestEntity, FinnOppgaveResponse.class)
 				.getBody();
 	}
 
-
-	private HttpHeaders createHeaders() {
-
-		if (MDC.get(MDC_CALL_ID) == null) {
-			MDC.put(MDC_CALL_ID, UUID.randomUUID().toString());
+	private URI appendQuery(URI oldUri, String name, String value) {
+		String appendQuery = name + "=" + value;
+		String newQuery = oldUri.getQuery();
+		if (newQuery == null) {
+			newQuery = appendQuery;
+		} else {
+			newQuery += "&" + appendQuery;
+		}
+		try {
+			return new URI(oldUri.getScheme(), oldUri.getAuthority(),
+					oldUri.getPath(), newQuery, oldUri.getFragment());
+		} catch (URISyntaxException e) {
+			log.error("Append query feilet å legge til {} til uri'en {}", appendQuery, oldUri, e);
+			return null;
 		}
 
+	}
+
+	private String listOfLongsToQueryParams(List<Long> values, String paramName) {
+		StringBuilder result = new StringBuilder();
+		for (Long value : values) {
+			result.append(paramName).append("=").append(value).append("&");
+		}
+		return result.substring(0, result.length() - 1);
+	}
+
+	public static List<List<Long>> journalpostListToPartitionedJournalpostIdList(List<Journalpost> ubehandledeJournalposter, int limit) {
+		if (ubehandledeJournalposter == null) {
+			return new ArrayList<>();
+		}
+		List<Long> journalpostIds = ubehandledeJournalposter.stream().map(Journalpost::getJournalpostId).collect(Collectors.toList());
+
+		return partition(journalpostIds, limit);
+	}
+
+
+	private HttpHeaders createHeaders() {
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(APPLICATION_JSON);

@@ -6,16 +6,16 @@ import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.responses.OpprettOppgaveResponse;
 import no.nav.doksikkerhetsnett.services.FinnGjenglemteJournalposterService;
 import no.nav.doksikkerhetsnett.services.OpprettOppgaveService;
-import no.nav.doksikkerhetsnett.utils.Utils;
+import org.jboss.logging.MDC;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static no.nav.doksikkerhetsnett.utils.Utils.getAlleTema;
-import static no.nav.doksikkerhetsnett.utils.Utils.temaerStringToSet;
+import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
+import static no.nav.doksikkerhetsnett.utils.Tema.temaerStringToSet;
 
 @Slf4j
 @Component
@@ -26,7 +26,6 @@ public class OpprettOppgaverScheduled {
 	private final FinnGjenglemteJournalposterService finnGjenglemteJournalposterService;
 
 	private static final int FEM_DAGER = 5;
-	private static final String TEMA_ALLE = "ALLE";
 
 	public OpprettOppgaverScheduled(OpprettOppgaveService opprettOppgaveService,
 									DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
@@ -36,15 +35,17 @@ public class OpprettOppgaverScheduled {
 		this.finnGjenglemteJournalposterService = finnGjenglemteJournalposterService;
 	}
 
-	// Satt til ? k?jre klokken 07:00 man - fre
+	// Satt til å kjøre klokken 07:00 man - fre
 	@Scheduled(cron = "0 0 7 * * MON-FRI")
 	public void doOpprettOppgaverForGjenglemteJournalposter() {
-		log.info("Starter den daglige skriv-kj?ringen (man-fre)");
+		MDC.put(MDC_CALL_ID, UUID.randomUUID());
+		log.info("Starter den daglige skriv-kjøringen (man-fre)");
 
 		temaerStringToSet(dokSikkerhetsnettProperties.getSkrivTemaer())
 			.forEach(this::lagOppgaverForGlemteJournalposter);
 
-		log.info("Avslutter den daglige skriv-kj?ringen (man-fre)");
+		log.info("Avslutter den daglige skriv-kjøringen (man-fre)");
+		MDC.clear();
 	}
 
 	public void lagOppgaverForGlemteJournalposter(String tema) {
