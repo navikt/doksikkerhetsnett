@@ -6,7 +6,6 @@ import no.nav.doksikkerhetsnett.consumers.azure.AzureProperties;
 import no.nav.doksikkerhetsnett.entities.responses.FinnMottatteJournalposterResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnMottatteJournalposterTechnicalException;
-import no.nav.doksikkerhetsnett.metrics.Metrics;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.retry.annotation.Backoff;
@@ -22,17 +21,15 @@ import reactor.core.publisher.Mono;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CALL_ID;
-import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_ID;
+import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.DELAY_SHORT;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.MAX_ATTEMPTS_SHORT;
-import static no.nav.doksikkerhetsnett.metrics.MetricLabels.DOK_METRIC;
-import static no.nav.doksikkerhetsnett.metrics.MetricLabels.PROCESS_NAME;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Slf4j
 @Component
 public class FinnMottatteJournalposterConsumer {
+	public static final String NAV_CALL_ID = "Nav-Callid";
 
 	private final DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
 	private final ReactiveOAuth2AuthorizedClientManager oAuth2AuthorizedClientManager;
@@ -46,7 +43,6 @@ public class FinnMottatteJournalposterConsumer {
 		this.webClient = webClient;
 	}
 
-	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "finnMottatteJournalposter"}, percentiles = {0.5, 0.95}, histogram = true)
 	@Retryable(include = FinnMottatteJournalposterTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT, multiplier = MAX_ATTEMPTS_SHORT))
 	public FinnMottatteJournalposterResponse finnMottatteJournalposter(String tema, int antallDager) {
 		return webClient.get()
@@ -63,12 +59,10 @@ public class FinnMottatteJournalposterConsumer {
 		return error -> {
 			if (error instanceof WebClientResponseException && ((WebClientResponseException) error).getStatusCode().is4xxClientError()) {
 				WebClientResponseException thrownError = (WebClientResponseException) error;
-				log.error("finnMottatteJournalposter feilet funksjonelt med statuscode={} ved henting av tema={} , feilmelding={}", thrownError.getStatusCode(), tema, thrownError.getMessage());
-				throw new FinnMottatteJournalposterFunctionalException(String.format("finnMottatteJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s",
-						thrownError.getRawStatusCode(), thrownError.getResponseBodyAsString()), error);
+				throw new FinnMottatteJournalposterFunctionalException(String.format("finnMottatteJournalposter feilet funksjonelt for tema=%S med statusKode=%s. Feilmelding=%s",
+						tema, thrownError.getRawStatusCode(), thrownError.getResponseBodyAsString()), error);
 
 			} else {
-				log.error("finnMottatteJournalposter feilet teknisk ved henting av tema={}, feilmelding={}", tema, error.getMessage());
 				throw new FinnMottatteJournalposterTechnicalException(
 						String.format("finnMottatteJournalposter feilet teknisk ved henting av tema={} ,feilmelding=%s",
 								tema,
@@ -80,13 +74,7 @@ public class FinnMottatteJournalposterConsumer {
 
 	private void createHeaders(HttpHeaders httpHeaders) {
 		httpHeaders.setContentType(APPLICATION_JSON);
-
-		if (MDC.get(MDC_NAV_CALL_ID) != null) {
-			httpHeaders.set(MDC_NAV_CALL_ID, MDC.get(MDC_NAV_CALL_ID));
-		}
-		if (MDC.get(MDC_NAV_CONSUMER_ID) != null) {
-			httpHeaders.set(MDC_NAV_CONSUMER_ID, MDC.get(MDC_NAV_CONSUMER_ID));
-		}
+		httpHeaders.set(NAV_CALL_ID, MDC.get(MDC_CALL_ID));
 	}
 
 	private String buildUri(String tema, int antallDager) {
