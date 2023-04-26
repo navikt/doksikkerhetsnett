@@ -57,7 +57,6 @@ public class OpprettOppgaveService {
 			log.info("Prøver å opprette en oppgave med journalpostId={}", oppgave.getJournalpostId());
 			return opprettOppgaveConsumer.opprettOppgave(oppgave);
 		} catch (HttpClientErrorException e) {
-			log.info("Feilet å opprette en oppgave med journalpostId={}", oppgave.getJournalpostId(), e);
 			return opprettOppgaveMedLiteMetadata(oppgave);
 		} catch (Exception e) {
 			log.error("Feil oppstod i opprettOppgave for journalpostId={}", oppgave.getJournalpostId(), e);
@@ -73,7 +72,7 @@ public class OpprettOppgaveService {
 					(TEMA_PENSJON.equals(oppgave.getTema()) ? OPPGAVETYPE_JOURNALFOERT : OPPGAVETYPE_FORDELING),
 					oppgave.getJournalpostId()
 			);
-			return opprettOppgaveConsumer.opprettOppgave(createNewOppgave(oppgave, TEMA_PENSJON.equals(oppgave.getTema()) ? OPPGAVETYPE_JOURNALFOERT : OPPGAVETYPE_FORDELING));
+			return opprettOppgaveConsumer.opprettOppgave(createMinimalOppgaveFromJournalpost(oppgave, TEMA_PENSJON.equals(oppgave.getTema()) ? OPPGAVETYPE_JOURNALFOERT : OPPGAVETYPE_FORDELING));
 		} catch (HttpClientErrorException e) {
 			JiraResponse response = jiraConsumer.opprettJiraIssue(oppgave, e);
 			log.info("Doksikkerhetsnett opprettet en jira-issue med kode {}", response.getKey());
@@ -100,7 +99,7 @@ public class OpprettOppgaveService {
 				.build();
 	}
 
-	private Oppgave createNewOppgave(Oppgave gammelOppgave, String oppgavetype) {
+	private Oppgave createMinimalOppgaveFromJournalpost(Oppgave gammelOppgave, String oppgavetype) {
 		return Oppgave.builder()
 				.tildeltEnhetsnr(null)
 				.opprettetAvEnhetsnr(ENHETSNUMMER_GENERISK)
