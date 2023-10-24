@@ -32,15 +32,14 @@ public class Tema {
 		if (excluded == null || excluded.isEmpty()) {
 			return getAlleTema();
 		}
-		Set<String> alleTemaCopy = new HashSet(alleTema);
+		Set<String> alleTemaCopy = new HashSet<>(alleTema);
 		alleTemaCopy.removeAll(excluded);
 		return alleTemaCopy;
 	}
 
 	public static Set<String> temaerStringToSet(String temaer) {
-		return new HashSet(Arrays.asList(temaer.split(",")).stream()
-				.map(String::trim)
-				.collect(Collectors.toSet()));
+		return Arrays.stream(temaer.split(","))
+				.map(String::trim).collect(Collectors.toSet());
 	}
 }
 
