@@ -32,7 +32,7 @@ class FinnGjenglemteJournalposterIT extends DoksikkerhetsnettItest {
 
 	@Test
 	void shouldFindMottatteJournalposter() {
-		List<Journalpost> journalposterUtenOppgaver = new ArrayList();
+		List<Journalpost> journalposterUtenOppgaver = new ArrayList<>();
 		Arrays.stream(dokSikkerhetsnettProperties.getSkrivTemaer().split(","))
 				.forEach(tema -> journalposterUtenOppgaver.addAll(finnGjenglemteJournalposterService.finnJournalposterUtenOppgaveUpdateMetrics(tema, 5)));
 		assertEquals(4, journalposterUtenOppgaver.size());
@@ -45,10 +45,10 @@ class FinnGjenglemteJournalposterIT extends DoksikkerhetsnettItest {
 
 	@Test
 	void shouldFindMottatteJournalposterForAlleTema() {
-		List<Journalpost> journalposterUtenOppgaver = new ArrayList();
+		List<Journalpost> journalposterUtenOppgaver = new ArrayList<>();
 		Tema.getAlleTema()
 				.forEach(tema -> journalposterUtenOppgaver.addAll(finnGjenglemteJournalposterService.finnJournalposterUtenOppgaveUpdateMetrics(tema, 5)));
-		assertEquals(248, journalposterUtenOppgaver.size());
+		assertEquals(244, journalposterUtenOppgaver.size());
 	}
 
 	private void assertCorrectMetrics(Map<String, Integer> metricsCache, int expectedValue, String expectedString) {

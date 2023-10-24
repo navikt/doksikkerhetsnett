@@ -11,9 +11,9 @@ import java.util.stream.Collectors;
 
 public class Tema {
 
-	// Alle temaer fra https://confluence.adeo.no/display/BOA/Enum%3A+Tema. Oppdatert 15.03.2022
+	// Alle temaer fra https://confluence.adeo.no/display/BOA/Enum%3A+Tema. Oppdatert 24.10.2023
 	@Getter
-	private static final Set<String> alleTema = Set.of("AAP", "AAR", "AGR", "ARP", "ARS", "BAR", "BID", "BIL", "DAG", "ENF", "ERS", "EYB", "EYO", "FAR", "FEI", "FIP", "FOR", "FOS", "FUL", "FRI", "GEN", "GRA", "GRU", "HEL", "HJE", "IAR", "IND", "KLL", "KON", "KTA", "KTR", "MED", "MOB", "OMS", "OPA", "OPP", "PEN", "PER", "REH", "REK", "RPO", "RVE", "SAA", "SAK", "SAP", "SER", "SIK", "STO", "SUP", "SYK", "SYM", "TIL", "TRK", "TRY", "TSO", "TSR", "UFM", "UFO", "UKJ", "VEN", "YRA", "YRK");
+	private static final Set<String> alleTema = Set.of("AAP", "AAR", "AGR", "ARP", "ARS", "BAR", "BID", "BIL", "DAG", "ENF", "ERS", "EYB", "EYO", "FAR", "FEI", "FIP", "FOR", "FOS", "FUL", "FRI", "GEN", "GRA", "GRU", "HEL", "HJE", "IAR", "IND", "KLL", "KON", "KTA", "KTR", "MED", "MOB", "OMS", "OPA", "OPP", "PEN", "PER", "REH", "REK", "RPO", "RVE", "SAA", "SAK", "SAP", "SER", "STO", "SUP", "SYK", "SYM", "TIL", "TRK", "TRY", "TSO", "TSR", "UFM", "UFO", "UKJ", "VEN", "YRA", "YRK");
 
 	public static String formatTemaList(List<String> temaer) {
 		if (temaer == null) {
@@ -32,15 +32,14 @@ public class Tema {
 		if (excluded == null || excluded.isEmpty()) {
 			return getAlleTema();
 		}
-		Set<String> alleTemaCopy = new HashSet(alleTema);
+		Set<String> alleTemaCopy = new HashSet<>(alleTema);
 		alleTemaCopy.removeAll(excluded);
 		return alleTemaCopy;
 	}
 
 	public static Set<String> temaerStringToSet(String temaer) {
-		return new HashSet(Arrays.asList(temaer.split(",")).stream()
-				.map(String::trim)
-				.collect(Collectors.toSet()));
+		return Arrays.stream(temaer.split(","))
+				.map(String::trim).collect(Collectors.toSet());
 	}
 }
 
