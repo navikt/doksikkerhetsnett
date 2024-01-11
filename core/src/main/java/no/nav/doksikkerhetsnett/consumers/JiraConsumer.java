@@ -23,7 +23,6 @@ import java.time.Duration;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static no.nav.doksikkerhetsnett.constants.DomainConstants.APP_NAME;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_ID;
@@ -34,6 +33,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Component
 public class JiraConsumer {
 
+	private static final String APP_NAME = "doksikkerhetsnett";
 	public static final String CORRELATION_HEADER = "X-Correlation-Id";
 	public static final String UUID_HEADER = "X-Uuid";
 	private static final String PROJECT_KEY = "ADMKDL";
