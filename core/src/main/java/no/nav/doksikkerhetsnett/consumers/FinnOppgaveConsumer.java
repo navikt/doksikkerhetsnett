@@ -159,7 +159,7 @@ public class FinnOppgaveConsumer {
 		if (ubehandledeJournalposter == null) {
 			return new ArrayList<>();
 		}
-		List<Long> journalpostIds = ubehandledeJournalposter.stream().map(Journalpost::getJournalpostId).collect(Collectors.toList());
+		List<Long> journalpostIds = ubehandledeJournalposter.stream().map(Journalpost::getJournalpostId).toList();
 
 		return partition(journalpostIds, limit);
 	}

@@ -21,14 +21,17 @@ import reactor.core.publisher.Mono;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import static java.lang.String.format;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.DELAY_SHORT;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.MAX_ATTEMPTS_SHORT;
+import static no.nav.doksikkerhetsnett.consumers.azure.AzureProperties.CLIENT_REGISTRATION_DOKARKIV;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Slf4j
 @Component
 public class FinnMottatteJournalposterConsumer {
+
 	public static final String NAV_CALL_ID = "Nav-Callid";
 
 	private final DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
@@ -43,7 +46,7 @@ public class FinnMottatteJournalposterConsumer {
 		this.webClient = webClient;
 	}
 
-	@Retryable(include = FinnMottatteJournalposterTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT, multiplier = MAX_ATTEMPTS_SHORT))
+	@Retryable(retryFor = FinnMottatteJournalposterTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT, multiplier = MAX_ATTEMPTS_SHORT))
 	public FinnMottatteJournalposterResponse finnMottatteJournalposter(String tema, int antallDager) {
 		return webClient.get()
 				.uri(buildUri(tema, antallDager))
@@ -57,17 +60,15 @@ public class FinnMottatteJournalposterConsumer {
 
 	private Consumer<Throwable> handleError(String tema) {
 		return error -> {
-			if (error instanceof WebClientResponseException && ((WebClientResponseException) error).getStatusCode().is4xxClientError()) {
-				WebClientResponseException thrownError = (WebClientResponseException) error;
-				throw new FinnMottatteJournalposterFunctionalException(String.format("finnMottatteJournalposter feilet funksjonelt for tema=%S med statusKode=%s. Feilmelding=%s",
-						tema, thrownError.getRawStatusCode(), thrownError.getResponseBodyAsString()), error);
+			if (error instanceof WebClientResponseException thrownError && ((WebClientResponseException) error).getStatusCode().is4xxClientError()) {
+				throw new FinnMottatteJournalposterFunctionalException(format("finnMottatteJournalposter feilet funksjonelt for tema=%S med statusKode=%s. Feilmelding=%s",
+						tema, thrownError.getStatusCode(), thrownError.getResponseBodyAsString()), error);
 
 			} else {
 				throw new FinnMottatteJournalposterTechnicalException(
-						String.format("finnMottatteJournalposter feilet teknisk ved henting av tema={} ,feilmelding=%s",
-								tema,
-								error.getMessage()),
-						error);
+						format("finnMottatteJournalposter feilet teknisk ved henting av tema=%s, feilmelding=%s", tema, error.getMessage()),
+						error
+				);
 			}
 		};
 	}
@@ -88,7 +89,7 @@ public class FinnMottatteJournalposterConsumer {
 	}
 
 	private Consumer<Map<String, Object>> getOAuth2AuthorizedClient() {
-		Mono<OAuth2AuthorizedClient> clientMono = oAuth2AuthorizedClientManager.authorize(AzureProperties.getOAuth2AuthorizeRequestForAzure(AzureProperties.CLIENT_REGISTRATION_DOKARKIV));
+		Mono<OAuth2AuthorizedClient> clientMono = oAuth2AuthorizedClientManager.authorize(AzureProperties.getOAuth2AuthorizeRequestForAzure(CLIENT_REGISTRATION_DOKARKIV));
 		return ServerOAuth2AuthorizedClientExchangeFilterFunction.oauth2AuthorizedClient(clientMono.block());
 	}
 

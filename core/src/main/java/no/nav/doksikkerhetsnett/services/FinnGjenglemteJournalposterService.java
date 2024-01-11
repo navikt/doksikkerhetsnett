@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
 
 @Slf4j
 @Component
@@ -62,10 +60,10 @@ public class FinnGjenglemteJournalposterService {
 
 		List<String> journalposterMedOppgaver = oppgaveResponse.getOppgaver().stream()
 				.map(Oppgave::getJournalpostId)
-				.collect(Collectors.toList());
+				.toList();
 
 		return new ArrayList<>(ubehandledeJournalpostList.stream()
 				.filter(ubehandletJournalpost -> !journalposterMedOppgaver.contains(Long.toString(ubehandletJournalpost.getJournalpostId())))
-				.collect(Collectors.toList()));
+				.toList());
 	}
 }
