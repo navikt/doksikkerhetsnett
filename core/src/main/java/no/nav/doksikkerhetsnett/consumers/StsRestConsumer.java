@@ -14,7 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 
-import static no.nav.doksikkerhetsnett.config.cache.LokalCacheConfig.STS_CACHE;
+import static no.nav.doksikkerhetsnett.config.cache.CacheConfig.STS_CACHE;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.DELAY_SHORT;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.MULTIPLIER_SHORT;
 
