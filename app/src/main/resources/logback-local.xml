@@ -10,5 +10,4 @@
 	<logger name="no.nav.doksikkerhetsnett" level="INFO" additivity="false">
 		<appender-ref ref="CONSOLE"/>
 	</logger>
-
 </included>

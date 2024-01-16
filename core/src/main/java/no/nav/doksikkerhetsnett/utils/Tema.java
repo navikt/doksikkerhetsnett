@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.Arrays.asList;
+
 public class Tema {
 
 	// Alle temaer fra https://confluence.adeo.no/display/BOA/Enum%3A+Tema. Oppdatert 24.10.2023
@@ -25,21 +27,24 @@ public class Tema {
 	}
 
 	public static Set<String> getAlleTemaExcept(String excluded) {
-		return getAlleTemaExcept(new HashSet<>(Arrays.asList(excluded.split(","))));
+		return getAlleTemaExcept(new HashSet<>(asList(excluded.split(","))));
 	}
 
 	public static Set<String> getAlleTemaExcept(Set<String> excluded) {
 		if (excluded == null || excluded.isEmpty()) {
 			return getAlleTema();
 		}
+
 		Set<String> alleTemaCopy = new HashSet<>(alleTema);
 		alleTemaCopy.removeAll(excluded);
+
 		return alleTemaCopy;
 	}
 
 	public static Set<String> temaerStringToSet(String temaer) {
 		return Arrays.stream(temaer.split(","))
-				.map(String::trim).collect(Collectors.toSet());
+				.map(String::trim)
+				.collect(Collectors.toSet());
 	}
 }
 

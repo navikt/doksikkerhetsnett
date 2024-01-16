@@ -2,7 +2,6 @@ package no.nav.doksikkerhetsnett.consumers;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
-import no.nav.doksikkerhetsnett.constants.MDCConstants;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
 import no.nav.doksikkerhetsnett.entities.responses.FinnOppgaveResponse;
@@ -27,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_FORDELING;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_JOURNALFOERT;
 import static org.apache.commons.collections4.ListUtils.partition;
@@ -88,7 +89,7 @@ public class FinnOppgaveConsumer {
 			}
 			List<Oppgave> allOppgaveResponses = oppgaveResponses.stream()
 					.flatMap(finnOppgaveResponse -> finnOppgaveResponse != null ? finnOppgaveResponse.getOppgaver().stream() : null)
-					.collect(Collectors.toList());
+					.toList();
 
 			return FinnOppgaveResponse.builder()
 					.oppgaver(allOppgaveResponses)
@@ -96,17 +97,17 @@ public class FinnOppgaveConsumer {
 
 		} catch (HttpClientErrorException e) {
 			if (NOT_FOUND.equals(e.getStatusCode())) {
-				throw new FinnOppgaveFinnesIkkeFunctionalException(String.format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
+				throw new FinnOppgaveFinnesIkkeFunctionalException(format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
 						.getStatusCode(), e.getResponseBodyAsString(), oppgaveUrl), e);
 			} else if (CONFLICT.equals(e.getStatusCode())) {
-				throw new FinnOppgaveTillaterIkkeTilknyttingFunctionalException(String.format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
+				throw new FinnOppgaveTillaterIkkeTilknyttingFunctionalException(format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
 						.getStatusCode(), e.getResponseBodyAsString()), e);
 			} else {
-				throw new FinnOppgaveFunctionalException(String.format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
+				throw new FinnOppgaveFunctionalException(format("finnOppgaveForJournalposter feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
 						.getStatusCode(), e.getResponseBodyAsString(), oppgaveUrl), e);
 			}
 		} catch (HttpServerErrorException e) {
-			throw new FinnOppgaveTechnicalException(String.format("finnOppgaveForJournalposter feilet teknisk med statusKode=%s. Feilmelding=%s", e
+			throw new FinnOppgaveTechnicalException(format("finnOppgaveForJournalposter feilet teknisk med statusKode=%s. Feilmelding=%s", e
 					.getStatusCode(), e.getMessage()), e);
 		}
 	}
@@ -158,7 +159,7 @@ public class FinnOppgaveConsumer {
 		if (ubehandledeJournalposter == null) {
 			return new ArrayList<>();
 		}
-		List<Long> journalpostIds = ubehandledeJournalposter.stream().map(Journalpost::getJournalpostId).collect(Collectors.toList());
+		List<Long> journalpostIds = ubehandledeJournalposter.stream().map(Journalpost::getJournalpostId).toList();
 
 		return partition(journalpostIds, limit);
 	}
@@ -169,7 +170,7 @@ public class FinnOppgaveConsumer {
 
 		headers.setContentType(APPLICATION_JSON);
 		headers.setBearerAuth(stsRestConsumer.getOidcToken());
-		headers.add(CORRELATION_HEADER, MDC.get(MDCConstants.MDC_CALL_ID));
+		headers.add(CORRELATION_HEADER, MDC.get(MDC_CALL_ID));
 		return headers;
 	}
 }

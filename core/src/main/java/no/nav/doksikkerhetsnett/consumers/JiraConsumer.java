@@ -10,7 +10,6 @@ import no.nav.doksikkerhetsnett.entities.jira.Project;
 import no.nav.doksikkerhetsnett.entities.responses.JiraResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFinnesIkkeFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnOppgaveTechnicalException;
-import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import java.time.Duration;
 import java.util.List;
 
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.NavHeaders.NAV_CALL_ID;
@@ -32,8 +32,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Component
 public class JiraConsumer {
 
-	public static final String CORRELATION_HEADER = "X-Correlation-Id";
-	public static final String UUID_HEADER = "X-Uuid";
 	private static final String PROJECT_KEY = "ADMKDL";
 	private static final String ISSUETYPE_NAME = "Avvik";
 	private static final List<String> LABELS = asList("morgenvakt", "doksikkerhetsnett");
@@ -55,15 +53,16 @@ public class JiraConsumer {
 			HttpHeaders headers = createHeaders();
 			Issue issue = createIssue(oppgave, exception);
 			HttpEntity<Issue> requestEntity = new HttpEntity<>(issue, headers);
+
 			log.info("doksikkerhetsnett prøver å lage en jira-issue i prosjekt {} med tittel \"{}\"", PROJECT_KEY, issue.getFields().getSummary());
-			return restTemplate.exchange(opprettJiraIssueUrl, POST, requestEntity, JiraResponse.class)
-					.getBody();
+
+			return restTemplate.exchange(opprettJiraIssueUrl, POST, requestEntity, JiraResponse.class).getBody();
 		} catch (HttpClientErrorException e) {
-			throw new FinnOppgaveFinnesIkkeFunctionalException(String.format("OpprettJiraIssue feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
-					.getStatusCode(), e.getResponseBodyAsString(), opprettJiraIssueUrl), e);
+			throw new FinnOppgaveFinnesIkkeFunctionalException(format("OpprettJiraIssue feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s",
+					e.getStatusCode(), e.getResponseBodyAsString(), opprettJiraIssueUrl), e);
 		} catch (HttpServerErrorException e) {
-			throw new FinnOppgaveTechnicalException(String.format("OpprettJiraIssue feilet teknisk med statusKode=%s. Feilmelding=%s", e
-					.getStatusCode(), e.getMessage()), e);
+			throw new FinnOppgaveTechnicalException(format("OpprettJiraIssue feilet teknisk med statusKode=%s. Feilmelding=%s",
+					e.getStatusCode(), e.getMessage()), e);
 		}
 	}
 
@@ -79,34 +78,31 @@ public class JiraConsumer {
 						.labels(LABELS)
 						.summary("Doksikkerhetsnett feilet med å opprette oppgave")
 						.description("Doksikkerhetsnett prøvde å lage en oppgave for den ubehandlede journalposten med id " + oppgave.getJournalpostId() + " og tema " + oppgave.getTema() + ".\n"
-								+ "Forsøkt opprettet oppgave så slik ut:\n"
-								+ prettifyOppgave(oppgave) + "\n\n"
-								+ "Oppgave-api kastet denne feilmeldingen:\n"
-								+ e.getResponseBodyAsString())
+									 + "Forsøkt opprettet oppgave så slik ut:\n"
+									 + prettifyOppgave(oppgave) + "\n\n"
+									 + "Oppgave-api kastet denne feilmeldingen:\n"
+									 + e.getResponseBodyAsString())
 						.build())
 				.build();
 	}
 
 	private String prettifyOppgave(Oppgave oppgave) {
 		return "tildeltEnhetsnr: " + oppgave.getTildeltEnhetsnr()
-				+ "\nopprettetAvEnhetsnr: " + oppgave.getOpprettetAvEnhetsnr()
-				+ "\njournalpostId: " + oppgave.getJournalpostId()
-				+ "\norgnr: " + oppgave.getOrgnr()
-				+ "\nbnr: " + oppgave.getBnr()
-				+ "\ntema: " + oppgave.getTema()
-				+ "\nbehandlingstema: " + oppgave.getBehandlingstema()
-				+ "\noppgavetype: " + oppgave.getOppgavetype()
-				+ "\nprioritet: " + oppgave.getPrioritet()
-				+ "\naktivDato: " + oppgave.getAktivDato();
+			   + "\nopprettetAvEnhetsnr: " + oppgave.getOpprettetAvEnhetsnr()
+			   + "\njournalpostId: " + oppgave.getJournalpostId()
+			   + "\norgnr: " + oppgave.getOrgnr()
+			   + "\nbnr: " + oppgave.getBnr()
+			   + "\ntema: " + oppgave.getTema()
+			   + "\nbehandlingstema: " + oppgave.getBehandlingstema()
+			   + "\noppgavetype: " + oppgave.getOppgavetype()
+			   + "\nprioritet: " + oppgave.getPrioritet()
+			   + "\naktivDato: " + oppgave.getAktivDato();
 	}
 
 	private HttpHeaders createHeaders() {
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(APPLICATION_JSON);
-		headers.add(CORRELATION_HEADER, MDC.get(MDC_CALL_ID));
-		headers.add(UUID_HEADER, MDC.get(MDC_CALL_ID));
-		headers.add(NAV_CALL_ID, MDC.get(MDC_CALL_ID));
 		return headers;
 	}
 }

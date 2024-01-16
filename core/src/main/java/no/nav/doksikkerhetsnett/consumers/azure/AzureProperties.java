@@ -13,9 +13,7 @@ import jakarta.validation.constraints.NotEmpty;
 public record AzureProperties(
 		@NotEmpty String tokenUrl,
 		@NotEmpty String clientId,
-		@NotEmpty String clientSecret,
-		@NotEmpty String tenantId,
-		@NotEmpty String wellKnownUrl
+		@NotEmpty String clientSecret
 ) {
 	public static final String CLIENT_REGISTRATION_DOKARKIV = "azure-dokarkiv";
 }

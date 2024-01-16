@@ -50,7 +50,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 	)
 	@Override
 	public String hentAktoerId(String folkeregisterIdent) throws PersonIkkeFunnetException {
-		if(isBlank(folkeregisterIdent)) {
+		if (isBlank(folkeregisterIdent)) {
 			throw new PersonIkkeFunnetException("Folkeregisterident er null eller blank.");
 		}
 		try {

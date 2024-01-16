@@ -80,5 +80,4 @@ public class FinnMottatteJournalposterConsumer {
 			return "";
 		} else return input;
 	}
-
 }

@@ -49,7 +49,7 @@ public class OpprettOppgaveService {
 		return journalposts.stream()
 				.map(jp -> opprettOppgave(createOppgaveFromJournalpost(jp)))
 				.filter(Objects::nonNull)
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	public OpprettOppgaveResponse opprettOppgave(Oppgave oppgave) {
