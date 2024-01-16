@@ -35,31 +35,34 @@ public class OppdaterMetricsScheduled {
 	 */
 	@Scheduled(cron = "0 30 6 * * MON-FRI")
 	public void updateDailyGrafanaMetrics() {
-		MDC.put(MDC_CALL_ID, UUID.randomUUID().toString());
-		log.info("Daglig kjøring av doksikkerhetsnett les-modus er startet");
+		try {
+			MDC.put(MDC_CALL_ID, UUID.randomUUID().toString());
+			log.info("Daglig kjøring av doksikkerhetsnett les-modus er startet");
 
-		metricsService.clearOldMetrics();
+			metricsService.clearOldMetrics();
 
 
-		for (String tema : Tema.getAlleTema()) {
-			try {
-				int antall = finnGjenglemteJournalposterService.finnJournalposterUtenOppgaveUpdateMetrics(tema, EN_DAG).size();
-				log.info("Fant {} journalposter uten oppgave som var {} dag eller eldre.", antall, EN_DAG);
-			} catch (Exception e) {
-				log.error("Klarte ikke å oppdatere daglige metrics for tema={}", tema, e);
+			for (String tema : Tema.getAlleTema()) {
+				try {
+					int antall = finnGjenglemteJournalposterService.finnJournalposterUtenOppgaveUpdateMetrics(tema, EN_DAG).size();
+					log.info("Fant {} journalposter uten oppgave som var {} dag eller eldre.", antall, EN_DAG);
+				} catch (Exception e) {
+					log.error("Klarte ikke å oppdatere daglige metrics for tema={}", tema, e);
+				}
 			}
-		}
 
-		for (String tema : Tema.getAlleTema()) {
-			try {
-				int antall = finnGjenglemteJournalposterService.finnJournalposterUtenOppgaveUpdateMetrics(tema, TO_DAGER).size();
-				log.info("Fant {} journalposter uten oppgave som var {} dager eller eldre.", antall, TO_DAGER);
-			} catch (Exception e) {
-				log.error("Klarte ikke å oppdatere 2-dagers metrics for tema={}", tema, e);
+			for (String tema : Tema.getAlleTema()) {
+				try {
+					int antall = finnGjenglemteJournalposterService.finnJournalposterUtenOppgaveUpdateMetrics(tema, TO_DAGER).size();
+					log.info("Fant {} journalposter uten oppgave som var {} dager eller eldre.", antall, TO_DAGER);
+				} catch (Exception e) {
+					log.error("Klarte ikke å oppdatere 2-dagers metrics for tema={}", tema, e);
+				}
 			}
+			log.info("Daglig kjøring av doksikkerhetsnett les-modus er ferdig");
+		} finally {
+			MDC.clear();
 		}
-		log.info("Daglig kjøring av doksikkerhetsnett les-modus er ferdig");
-		MDC.clear();
 	}
 
 }

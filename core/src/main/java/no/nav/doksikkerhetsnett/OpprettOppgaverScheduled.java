@@ -38,14 +38,17 @@ public class OpprettOppgaverScheduled {
 	// Satt til å kjøre klokken 07:00 man - fre
 	@Scheduled(cron = "0 0 7 * * MON-FRI")
 	public void opprettOppgaverForGjenglemteJournalposter() {
-		MDC.put(MDC_CALL_ID, UUID.randomUUID().toString());
-		log.info("Starter den daglige skriv-kjøringen (man-fre)");
+		try {
+			MDC.put(MDC_CALL_ID, UUID.randomUUID().toString());
+			log.info("Starter den daglige skriv-kjøringen (man-fre)");
 
-		temaerStringToSet(dokSikkerhetsnettProperties.getSkrivTemaer())
-			.forEach(this::lagOppgaverForGlemteJournalposter);
+			temaerStringToSet(dokSikkerhetsnettProperties.getSkrivTemaer())
+					.forEach(this::lagOppgaverForGlemteJournalposter);
 
-		log.info("Avslutter den daglige skriv-kjøringen (man-fre)");
-		MDC.clear();
+			log.info("Avslutter den daglige skriv-kjøringen (man-fre)");
+		} finally {
+			MDC.clear();
+		}
 	}
 
 	public void lagOppgaverForGlemteJournalposter(String tema) {

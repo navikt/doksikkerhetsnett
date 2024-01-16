@@ -28,20 +28,17 @@ public class FinnGjenglemteJournalposterService {
 	}
 
 	public List<Journalpost> finnJournalposterUtenOppgaveUpdateMetrics(String tema, int dager) {
-		List<Journalpost> ubehandledeJournalposter;
-		List<Journalpost> ubehandledeJournalposterUtenOppgave;
 		log.info("Doksikkerhetsnett henter alle ubehandlede journalposter eldre enn {} dager fra tema: {}", dager, tema);
 
-		ubehandledeJournalposter = journalpostConsumer.finnMottatteJournalposter(tema, dager).getJournalposter();
-		ubehandledeJournalposterUtenOppgave = findUbehandledeJournalposterUtenOppgave(tema, ubehandledeJournalposter, dager);
+		List<Journalpost> ubehandledeJournalposter = journalpostConsumer.finnMottatteJournalposter(tema, dager).getJournalposter();
+		List<Journalpost> ubehandledeJournalposterUtenOppgave = findUbehandledeJournalposterUtenOppgave(tema, ubehandledeJournalposter, dager);
 
-		metricsService.UpdateGauges(ubehandledeJournalposter, ubehandledeJournalposterUtenOppgave, dager);
+		metricsService.updateGauges(ubehandledeJournalposter, ubehandledeJournalposterUtenOppgave, dager);
 		return ubehandledeJournalposterUtenOppgave;
 	}
 
 	private List<Journalpost> findUbehandledeJournalposterUtenOppgave(String tema, List<Journalpost> ubehandledeJournalposter, int dagerGamle) {
-		List<Journalpost> ubehandledeJournalposterUtenOppgave;
-		ubehandledeJournalposterUtenOppgave = fjernJournalposterMedEksisterendeOppgaverFraListe(ubehandledeJournalposter);
+		List<Journalpost> ubehandledeJournalposterUtenOppgave = fjernJournalposterMedEksisterendeOppgaverFraListe(ubehandledeJournalposter);
 		log.info("Fant {} journalposter med tema {} som er eldre enn {} dag(er) og mangler oppgave. {}",
 				ubehandledeJournalposterUtenOppgave.size(),
 				tema,

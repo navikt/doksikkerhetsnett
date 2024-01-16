@@ -23,6 +23,8 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
+import static no.nav.doksikkerhetsnett.constants.NavHeaders.NAV_CALL_ID;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 

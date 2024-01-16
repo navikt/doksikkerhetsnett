@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.InMemoryReactiveClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
@@ -37,9 +38,9 @@ public class AzureOAuthEnabledWebClientConfig {
 				.responseTimeout(Duration.of(40, SECONDS));
 		var clientHttpConnector = new ReactorClientHttpConnector(nettyHttpClient);
 
-		//Setter max size til 10mb for ikke crashe mot doarkiv
+		// Setter max size til 10mb pga store json payloads fra dokarkiv
 		final ExchangeStrategies strategy = ExchangeStrategies.builder()
-				.codecs(codecs -> codecs.defaultCodecs().maxInMemorySize(10000000))
+				.codecs(codecs -> codecs.defaultCodecs().maxInMemorySize((int) DataSize.ofMegabytes(10).toBytes()))
 				.build();
 
 		return WebClient.builder()

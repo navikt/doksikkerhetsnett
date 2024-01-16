@@ -120,7 +120,7 @@ public class OpprettOppgaveService {
 
 		if (isNotBlank(fnr) && TYPE_PERSON.equals(jp.getBruker().getType())) {
 			try {
-				log.info("Fant en aktorId tilknyttet til journalPost med journalpostId={}", jp.getJournalpostId());
+				log.info("Fant en aktorId tilknyttet til journalpost med journalpostId={}", jp.getJournalpostId());
 				return identConsumer.hentAktoerId(fnr);
 			} catch (PersonIkkeFunnetException | PdlFunctionalException | HttpServerErrorException e) {
 				log.warn("Det skjedde en feil i kallet til PDL, eller bruker ikke funnet i PDL med journalpostId: {}. Feilmelding: ", jp.getJournalpostId(), e);

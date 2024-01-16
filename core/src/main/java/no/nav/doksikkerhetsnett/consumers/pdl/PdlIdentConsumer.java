@@ -20,17 +20,14 @@ import static java.util.Objects.requireNonNull;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.DELAY_SHORT;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.MULTIPLIER_SHORT;
 import static org.apache.logging.log4j.util.Strings.isBlank;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Component
 public class PdlIdentConsumer implements IdentConsumer {
-
-	private static final String HEADER_PDL_NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
+	private static final String HEADER_PDL_BEHANDLINGSNUMMER = "behandlingsnummer";
+	// https://behandlingskatalog.nais.adeo.no/process/purpose/ARKIVPLEIE/756fd557-b95e-4b20-9de9-6179fb8317e6
+	private static final String ARKIVPLEIE_BEHANDLINGSNUMMER = "B315";
 	private static final String PERSON_IKKE_FUNNET_CODE = "not_found";
-	private static final String BEARER_PREFIX = "Bearer ";
 
 	private final RestTemplate restTemplate;
 	private final StsRestConsumer stsRestConsumer;
@@ -87,8 +84,10 @@ public class PdlIdentConsumer implements IdentConsumer {
 		final String serviceuserToken = stsRestConsumer.getOidcToken();
 		return RequestEntity.post(pdlUri)
 				.accept(APPLICATION_JSON)
-				.header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-				.header(AUTHORIZATION, BEARER_PREFIX + serviceuserToken)
-				.header(HEADER_PDL_NAV_CONSUMER_TOKEN, BEARER_PREFIX + serviceuserToken);
+				.headers(httpHeaders -> {
+					httpHeaders.setContentType(APPLICATION_JSON);
+					httpHeaders.setBearerAuth(serviceuserToken);
+					httpHeaders.set(HEADER_PDL_BEHANDLINGSNUMMER, ARKIVPLEIE_BEHANDLINGSNUMMER);
+				});
 	}
 }
