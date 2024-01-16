@@ -3,8 +3,6 @@ package no.nav.doksikkerhetsnett.consumers.pdl;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.consumers.StsRestConsumer;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -19,15 +17,20 @@ import java.time.Duration;
 import java.util.HashMap;
 
 import static java.util.Objects.requireNonNull;
-import static no.nav.doksikkerhetsnett.constants.DomainConstants.BEARER_PREFIX;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.DELAY_SHORT;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.MULTIPLIER_SHORT;
 import static org.apache.logging.log4j.util.Strings.isBlank;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Component
 public class PdlIdentConsumer implements IdentConsumer {
+
 	private static final String HEADER_PDL_NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
 	private static final String PERSON_IKKE_FUNNET_CODE = "not_found";
+	private static final String BEARER_PREFIX = "Bearer ";
 
 	private final RestTemplate restTemplate;
 	private final StsRestConsumer stsRestConsumer;
@@ -45,12 +48,12 @@ public class PdlIdentConsumer implements IdentConsumer {
 	}
 
 	@Retryable(
-			include = HttpServerErrorException.class,
+			retryFor = HttpServerErrorException.class,
 			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
 	)
 	@Override
 	public String hentAktoerId(String folkeregisterIdent) throws PersonIkkeFunnetException {
-		if(isBlank(folkeregisterIdent)) {
+		if (isBlank(folkeregisterIdent)) {
 			throw new PersonIkkeFunnetException("Folkeregisterident er null eller blank.");
 		}
 		try {
@@ -83,9 +86,9 @@ public class PdlIdentConsumer implements IdentConsumer {
 	private RequestEntity.BodyBuilder baseRequest() {
 		final String serviceuserToken = stsRestConsumer.getOidcToken();
 		return RequestEntity.post(pdlUri)
-				.accept(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-				.header(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + serviceuserToken)
+				.accept(APPLICATION_JSON)
+				.header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.header(AUTHORIZATION, BEARER_PREFIX + serviceuserToken)
 				.header(HEADER_PDL_NAV_CONSUMER_TOKEN, BEARER_PREFIX + serviceuserToken);
 	}
 }

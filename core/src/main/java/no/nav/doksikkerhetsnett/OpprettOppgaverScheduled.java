@@ -54,7 +54,7 @@ public class OpprettOppgaverScheduled {
 			List<OpprettOppgaveResponse> opprettedeOppgaver = opprettOppgaveService.opprettOppgaver(ubehandletJournalpostsUtenOppgave);
 			if (!opprettedeOppgaver.isEmpty()) {
 				log.info("Doksikkerhetsnett har opprettet {} oppgaver for tema {} med ID'ene: {}", opprettedeOppgaver.size(), tema,
-						opprettedeOppgaver.stream().map(OpprettOppgaveResponse::getId).collect(Collectors.toList()));
+						opprettedeOppgaver.stream().map(OpprettOppgaveResponse::getId).toList());
 			}
 		} catch (Exception e) {
 			log.error("Doksikkerhetsnett feilet under oppretting av oppgaver for tema={}", tema, e);

@@ -14,7 +14,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 
-import static no.nav.doksikkerhetsnett.config.cache.LokalCacheConfig.STS_CACHE;
+import static java.lang.String.format;
+import static no.nav.doksikkerhetsnett.config.cache.CacheConfig.STS_CACHE;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.DELAY_SHORT;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.MULTIPLIER_SHORT;
 
@@ -34,15 +35,13 @@ public class StsRestConsumer {
                 .build();
     }
 
-    @Retryable(include = AbstractDoksikkerhetsnettTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT))
+    @Retryable(retryFor = AbstractDoksikkerhetsnettTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT))
     @Cacheable(STS_CACHE)
     public String getOidcToken() {
         try {
-            return restTemplate.getForObject(stsUrl + "?grant_type=client_credentials&scope=openid", StsResponseTo.class)
-                    .getAccessToken();
+            return restTemplate.getForObject(stsUrl + "?grant_type=client_credentials&scope=openid", StsResponseTo.class).getAccessToken();
         } catch (HttpStatusCodeException e) {
-            throw new StsTechnicalException(String.format("Kall mot STS feilet med status=%s feilmelding=%s.", e.getStatusCode(), e
-                    .getMessage()), e);
+            throw new StsTechnicalException(format("Kall mot STS feilet med status=%s feilmelding=%s.", e.getStatusCode(), e.getMessage()), e);
         }
     }
 }
