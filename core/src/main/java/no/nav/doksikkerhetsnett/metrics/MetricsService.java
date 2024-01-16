@@ -34,7 +34,7 @@ public class MetricsService {
         this.meterRegistry = meterRegistry;
     }
 
-    public void UpdateGauges(List<Journalpost> ubehandledeJournalposter, List<Journalpost> ubehandledeJournalposterUtenOppgave, int antallDager) {
+    public void updateGauges(List<Journalpost> ubehandledeJournalposter, List<Journalpost> ubehandledeJournalposterUtenOppgave, int antallDager) {
         Map<String, Integer> newMetricsTotal = extractMetrics(ubehandledeJournalposter);
         Map<String, Integer> newMetricsUtenOppgave = extractMetrics(ubehandledeJournalposterUtenOppgave);
         updateCaches(newMetricsTotal, newMetricsUtenOppgave);
@@ -78,7 +78,7 @@ public class MetricsService {
         return metrics;
     }
 
-    // vi ønsker ikke å lage metrikker på gammel data så vi må fjerne de eksisterende cachene og meterne
+    // vi ønsker ikke å lage metrikker på gamle data så vi må fjerne de eksisterende cachene og meterne
     public void clearOldMetrics(){
         for (Gauge gauge : gauges) {
             meterRegistry.remove(gauge);

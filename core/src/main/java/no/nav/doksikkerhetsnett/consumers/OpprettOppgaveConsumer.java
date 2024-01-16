@@ -18,10 +18,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
-import java.util.UUID;
 
-import static no.nav.doksikkerhetsnett.constants.DomainConstants.BEARER_PREFIX;
-import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -67,11 +64,10 @@ public class OpprettOppgaveConsumer {
 	}
 
 	private HttpHeaders createHeaders() {
-
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.set(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + stsRestConsumer.getOidcToken());
+		headers.setBearerAuth(stsRestConsumer.getOidcToken());
 		headers.add(CORRELATION_HEADER, MDC.get(MDCConstants.MDC_CALL_ID));
 		return headers;
 	}

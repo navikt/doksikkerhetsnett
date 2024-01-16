@@ -3,8 +3,6 @@ package no.nav.doksikkerhetsnett.consumers.pdl;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.consumers.StsRestConsumer;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -19,14 +17,16 @@ import java.time.Duration;
 import java.util.HashMap;
 
 import static java.util.Objects.requireNonNull;
-import static no.nav.doksikkerhetsnett.constants.DomainConstants.BEARER_PREFIX;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.DELAY_SHORT;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.MULTIPLIER_SHORT;
 import static org.apache.logging.log4j.util.Strings.isBlank;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Component
 public class PdlIdentConsumer implements IdentConsumer {
-	private static final String HEADER_PDL_NAV_CONSUMER_TOKEN = "Nav-Consumer-Token";
+	private static final String HEADER_PDL_BEHANDLINGSNUMMER = "behandlingsnummer";
+	// https://behandlingskatalog.nais.adeo.no/process/purpose/ARKIVPLEIE/756fd557-b95e-4b20-9de9-6179fb8317e6
+	private static final String ARKIVPLEIE_BEHANDLINGSNUMMER = "B315";
 	private static final String PERSON_IKKE_FUNNET_CODE = "not_found";
 
 	private final RestTemplate restTemplate;
@@ -45,7 +45,7 @@ public class PdlIdentConsumer implements IdentConsumer {
 	}
 
 	@Retryable(
-			include = HttpServerErrorException.class,
+			retryFor = HttpServerErrorException.class,
 			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
 	)
 	@Override
@@ -83,9 +83,11 @@ public class PdlIdentConsumer implements IdentConsumer {
 	private RequestEntity.BodyBuilder baseRequest() {
 		final String serviceuserToken = stsRestConsumer.getOidcToken();
 		return RequestEntity.post(pdlUri)
-				.accept(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-				.header(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + serviceuserToken)
-				.header(HEADER_PDL_NAV_CONSUMER_TOKEN, BEARER_PREFIX + serviceuserToken);
+				.accept(APPLICATION_JSON)
+				.headers(httpHeaders -> {
+					httpHeaders.setContentType(APPLICATION_JSON);
+					httpHeaders.setBearerAuth(serviceuserToken);
+					httpHeaders.set(HEADER_PDL_BEHANDLINGSNUMMER, ARKIVPLEIE_BEHANDLINGSNUMMER);
+				});
 	}
 }

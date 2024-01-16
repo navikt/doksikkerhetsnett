@@ -23,10 +23,8 @@ import java.time.Duration;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static no.nav.doksikkerhetsnett.constants.DomainConstants.APP_NAME;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
-import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CALL_ID;
-import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_ID;
+import static no.nav.doksikkerhetsnett.constants.NavHeaders.NAV_CALL_ID;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
@@ -108,8 +106,7 @@ public class JiraConsumer {
 		headers.setContentType(APPLICATION_JSON);
 		headers.add(CORRELATION_HEADER, MDC.get(MDC_CALL_ID));
 		headers.add(UUID_HEADER, MDC.get(MDC_CALL_ID));
-		headers.add(MDC_NAV_CONSUMER_ID, APP_NAME);
-		headers.add(MDC_NAV_CALL_ID, MDC.get(MDC_NAV_CALL_ID));
+		headers.add(NAV_CALL_ID, MDC.get(MDC_CALL_ID));
 		return headers;
 	}
 }

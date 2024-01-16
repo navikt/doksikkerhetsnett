@@ -1,7 +1,6 @@
 package no.nav.doksikkerhetsnett.consumers.azure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.validation.annotation.Validated;
 
 import jakarta.validation.constraints.NotEmpty;
@@ -18,13 +17,5 @@ public record AzureProperties(
 		@NotEmpty String tenantId,
 		@NotEmpty String wellKnownUrl
 ) {
-	public static final String SPRING_DEFAULT_PRINCIPAL = "anonymousUser";
 	public static final String CLIENT_REGISTRATION_DOKARKIV = "azure-dokarkiv";
-
-	public static OAuth2AuthorizeRequest getOAuth2AuthorizeRequestForAzure(String clientRegistrationId) {
-		return OAuth2AuthorizeRequest
-				.withClientRegistrationId(clientRegistrationId)
-				.principal(SPRING_DEFAULT_PRINCIPAL)
-				.build();
-	}
 }

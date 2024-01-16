@@ -27,11 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static no.nav.doksikkerhetsnett.constants.DomainConstants.BEARER_PREFIX;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_FORDELING;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_JOURNALFOERT;
 import static org.apache.commons.collections4.ListUtils.partition;
-import static org.apache.hc.core5.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -170,7 +168,7 @@ public class FinnOppgaveConsumer {
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(APPLICATION_JSON);
-		headers.set(AUTHORIZATION, BEARER_PREFIX + stsRestConsumer.getOidcToken());
+		headers.setBearerAuth(stsRestConsumer.getOidcToken());
 		headers.add(CORRELATION_HEADER, MDC.get(MDCConstants.MDC_CALL_ID));
 		return headers;
 	}
