@@ -11,10 +11,12 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.netty.http.client.HttpClientRequest;
 
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
+import static java.time.Duration.ofSeconds;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.NavHeaders.NAV_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.DELAY_SHORT;
@@ -44,6 +46,10 @@ public class FinnMottatteJournalposterConsumer {
 				.headers(httpHeaders -> {
 					httpHeaders.setContentType(APPLICATION_JSON);
 					httpHeaders.set(NAV_CALL_ID, callId);
+				})
+				.httpRequest(httpRequest -> {
+					HttpClientRequest reactorRequest = httpRequest.getNativeRequest();
+					reactorRequest.responseTimeout(ofSeconds(360));
 				})
 				.retrieve()
 				.bodyToMono(FinnMottatteJournalposterResponse.class)

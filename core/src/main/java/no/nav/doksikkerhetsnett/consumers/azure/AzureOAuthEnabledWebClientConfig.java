@@ -35,7 +35,7 @@ public class AzureOAuthEnabledWebClientConfig {
 		ServerOAuth2AuthorizedClientExchangeFilterFunction oAuth2AuthorizedClientExchangeFilterFunction = new ServerOAuth2AuthorizedClientExchangeFilterFunction(oAuth2AuthorizedClientManager);
 
 		var nettyHttpClient = HttpClient.create()
-				.responseTimeout(Duration.of(360, SECONDS));
+				.responseTimeout(Duration.of(40, SECONDS));
 		var clientHttpConnector = new ReactorClientHttpConnector(nettyHttpClient);
 
 		// Setter max size til 10mb pga store json payloads fra dokarkiv
