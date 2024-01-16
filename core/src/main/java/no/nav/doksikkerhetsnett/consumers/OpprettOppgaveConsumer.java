@@ -50,27 +50,27 @@ public class OpprettOppgaveConsumer {
 		try {
 			HttpHeaders headers = createHeaders();
 			HttpEntity<Oppgave> requestEntity = new HttpEntity<>(oppgave, headers);
-			return restTemplate.exchange(oppgaveUrl, POST, requestEntity, OpprettOppgaveResponse.class)
-					.getBody();
+
+			return restTemplate.exchange(oppgaveUrl, POST, requestEntity, OpprettOppgaveResponse.class).getBody();
 		} catch (HttpClientErrorException e) {
 			if (BAD_REQUEST.equals(e.getStatusCode())) {
 				throw e;
 			}
-			throw new OpprettOppgaveFunctionalException(format("opprettOppgave feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s", e
-					.getStatusCode(), e.getResponseBodyAsString(), oppgaveUrl), e);
+			throw new OpprettOppgaveFunctionalException(format("opprettOppgave feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s",
+					e.getStatusCode(), e.getResponseBodyAsString(), oppgaveUrl), e);
 		} catch (HttpServerErrorException e) {
-			throw new OpprettOppgaveTechnicalException(format("opprettOppgave feilet teknisk med statusKode=%s. Feilmelding=%s", e
-					.getStatusCode(), e.getMessage()), e);
+			throw new OpprettOppgaveTechnicalException(format("opprettOppgave feilet teknisk med statusKode=%s. Feilmelding=%s",
+					e.getStatusCode(), e.getMessage()), e);
 		}
 	}
 
 	private HttpHeaders createHeaders() {
-
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(APPLICATION_JSON);
 		headers.setBearerAuth(stsRestConsumer.getOidcToken());
 		headers.add(CORRELATION_HEADER, MDC.get(MDC_CALL_ID));
+
 		return headers;
 	}
 }

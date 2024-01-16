@@ -10,7 +10,6 @@ import no.nav.doksikkerhetsnett.entities.jira.Project;
 import no.nav.doksikkerhetsnett.entities.responses.JiraResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFinnesIkkeFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnOppgaveTechnicalException;
-import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -24,9 +23,6 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
-import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CALL_ID;
-import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_NAV_CONSUMER_ID;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
@@ -34,9 +30,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Component
 public class JiraConsumer {
 
-	private static final String APP_NAME = "doksikkerhetsnett";
-	public static final String CORRELATION_HEADER = "X-Correlation-Id";
-	public static final String UUID_HEADER = "X-Uuid";
 	private static final String PROJECT_KEY = "ADMKDL";
 	private static final String ISSUETYPE_NAME = "Avvik";
 	private static final List<String> LABELS = asList("morgenvakt", "doksikkerhetsnett");
@@ -58,9 +51,10 @@ public class JiraConsumer {
 			HttpHeaders headers = createHeaders();
 			Issue issue = createIssue(oppgave, exception);
 			HttpEntity<Issue> requestEntity = new HttpEntity<>(issue, headers);
+
 			log.info("doksikkerhetsnett prøver å lage en jira-issue i prosjekt {} med tittel \"{}\"", PROJECT_KEY, issue.getFields().getSummary());
-			return restTemplate.exchange(opprettJiraIssueUrl, POST, requestEntity, JiraResponse.class)
-					.getBody();
+
+			return restTemplate.exchange(opprettJiraIssueUrl, POST, requestEntity, JiraResponse.class).getBody();
 		} catch (HttpClientErrorException e) {
 			throw new FinnOppgaveFinnesIkkeFunctionalException(format("OpprettJiraIssue feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s",
 					e.getStatusCode(), e.getResponseBodyAsString(), opprettJiraIssueUrl), e);
@@ -107,10 +101,6 @@ public class JiraConsumer {
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(APPLICATION_JSON);
-		headers.add(CORRELATION_HEADER, MDC.get(MDC_CALL_ID));
-		headers.add(UUID_HEADER, MDC.get(MDC_CALL_ID));
-		headers.add(MDC_NAV_CONSUMER_ID, APP_NAME);
-		headers.add(MDC_NAV_CALL_ID, MDC.get(MDC_NAV_CALL_ID));
 		return headers;
 	}
 }
