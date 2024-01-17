@@ -16,6 +16,9 @@ import java.util.List;
 @Component
 public class FinnGjenglemteJournalposterService {
 
+	// journalpostId med mange elementer kan knekke visning i kibana
+	private static final int MAX_JOURNALPOSTID_LOGGING = 100;
+
 	private final MetricsService metricsService;
 	private final FinnOppgaveConsumer finnOppgaveConsumer;
 	private final FinnMottatteJournalposterConsumer journalpostConsumer;
@@ -40,12 +43,14 @@ public class FinnGjenglemteJournalposterService {
 	private List<Journalpost> findUbehandledeJournalposterUtenOppgave(String tema, List<Journalpost> ubehandledeJournalposter, int dagerGamle) {
 		List<Journalpost> ubehandledeJournalposterUtenOppgave = fjernJournalposterMedEksisterendeOppgaverFraListe(ubehandledeJournalposter);
 		log.info("Fant {} journalposter med tema {} som er eldre enn {} dag(er) og mangler oppgave. {}",
-				ubehandledeJournalposterUtenOppgave.size(),
-				tema,
-				dagerGamle,
-				ubehandledeJournalposterUtenOppgave.isEmpty() ? "" :
-						"Journalpostene hadde ID'ene:" + ubehandledeJournalposterUtenOppgave + ".");
+				ubehandledeJournalposterUtenOppgave.size(), tema, dagerGamle, ubehandledeJournalposterLogg(ubehandledeJournalposterUtenOppgave));
 		return ubehandledeJournalposterUtenOppgave;
+	}
+
+	private static String ubehandledeJournalposterLogg(List<Journalpost> ubehandledeJournalposterUtenOppgave) {
+		return ubehandledeJournalposterUtenOppgave.isEmpty() ? "" :
+				MAX_JOURNALPOSTID_LOGGING + " av journalpostene har journalpostId=" +
+				ubehandledeJournalposterUtenOppgave.subList(0, Math.min(ubehandledeJournalposterUtenOppgave.size(), MAX_JOURNALPOSTID_LOGGING)) + ".";
 	}
 
 	private ArrayList<Journalpost> fjernJournalposterMedEksisterendeOppgaverFraListe(List<Journalpost> ubehandledeJournalpostList) {

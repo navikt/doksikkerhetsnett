@@ -124,10 +124,8 @@ class FinnMottatteJournalposterIT {
 	}
 
 	@Test
-	void shouldFindMottatteJournalposterMedTemaNull() {
-		stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER + "/5"))
-				.willReturn(aResponse().withStatus(BAD_REQUEST.value())));
-		assertThrows(FinnMottatteJournalposterFunctionalException.class, () -> finnMottatteJournalposterConsumer.finnMottatteJournalposter(null, 5));
+	void shouldThrowIllegalArgumentExceptionWhenFindMottatteJournalposterMedTemaNull() {
+		assertThrows(IllegalArgumentException.class, () -> finnMottatteJournalposterConsumer.finnMottatteJournalposter(null, 5));
 	}
 
 	@Test
