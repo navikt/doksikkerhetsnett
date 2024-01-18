@@ -12,12 +12,14 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.commons.collections4.ListUtils.partition;
+
 @Slf4j
 @Component
 public class FinnGjenglemteJournalposterService {
 
 	// journalpostId med mange elementer kan knekke visning i kibana
-	private static final int MAX_JOURNALPOSTID_LOGGING = 100;
+	private static final int MAX_JOURNALPOSTID_LOGGING = 400;
 
 	private final MetricsService metricsService;
 	private final FinnOppgaveConsumer finnOppgaveConsumer;
@@ -42,15 +44,26 @@ public class FinnGjenglemteJournalposterService {
 
 	private List<Journalpost> findUbehandledeJournalposterUtenOppgave(String tema, List<Journalpost> ubehandledeJournalposter, int dagerGamle) {
 		List<Journalpost> ubehandledeJournalposterUtenOppgave = fjernJournalposterMedEksisterendeOppgaverFraListe(ubehandledeJournalposter);
-		log.info("Fant {} journalposter med tema {} som er eldre enn {} dag(er) og mangler oppgave. {}",
-				ubehandledeJournalposterUtenOppgave.size(), tema, dagerGamle, ubehandledeJournalposterLogg(ubehandledeJournalposterUtenOppgave));
+		loggUbehandledeJournalposter(tema, ubehandledeJournalposter, dagerGamle, ubehandledeJournalposterUtenOppgave);
 		return ubehandledeJournalposterUtenOppgave;
 	}
 
-	private static String ubehandledeJournalposterLogg(List<Journalpost> ubehandledeJournalposterUtenOppgave) {
-		return ubehandledeJournalposterUtenOppgave.isEmpty() ? "" :
-				MAX_JOURNALPOSTID_LOGGING + " av journalpostene har journalpostId=" +
-				ubehandledeJournalposterUtenOppgave.subList(0, Math.min(ubehandledeJournalposterUtenOppgave.size(), MAX_JOURNALPOSTID_LOGGING)) + ".";
+	private static void loggUbehandledeJournalposter(String tema, List<Journalpost> ubehandledeJournalposter, int dagerGamle, List<Journalpost> ubehandledeJournalposterUtenOppgave) {
+		if (ubehandledeJournalposter.size() > MAX_JOURNALPOSTID_LOGGING) {
+			var partitions = partition(ubehandledeJournalposter, MAX_JOURNALPOSTID_LOGGING);
+			partitions.forEach(partition -> loggUbehandledeJournalposterFunn(tema, dagerGamle, partition));
+		} else {
+			loggUbehandledeJournalposterFunn(tema, dagerGamle, ubehandledeJournalposterUtenOppgave);
+		}
+	}
+
+	private static void loggUbehandledeJournalposterFunn(String tema, int dagerGamle, List<Journalpost> ubehandledeJournalposterUtenOppgave) {
+		log.info("Fant {} journalposter med tema {} som er eldre enn {} dag(er) og mangler oppgave. {}",
+				ubehandledeJournalposterUtenOppgave.size(), tema, dagerGamle, ubehandledeJournalposterLoggSetning(ubehandledeJournalposterUtenOppgave));
+	}
+
+	private static String ubehandledeJournalposterLoggSetning(List<Journalpost> ubehandledeJournalposterUtenOppgave) {
+		return ubehandledeJournalposterUtenOppgave.isEmpty() ? "" : "journalpostene har journalpostId=" + ubehandledeJournalposterUtenOppgave;
 	}
 
 	private ArrayList<Journalpost> fjernJournalposterMedEksisterendeOppgaverFraListe(List<Journalpost> ubehandledeJournalpostList) {
