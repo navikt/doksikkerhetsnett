@@ -16,6 +16,7 @@ import reactor.netty.http.client.HttpClientRequest;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
+import static java.lang.String.valueOf;
 import static java.time.Duration.ofSeconds;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.NavHeaders.NAV_CALL_ID;
@@ -28,20 +29,24 @@ import static org.springframework.security.oauth2.client.web.reactive.function.c
 @Slf4j
 @Component
 public class FinnMottatteJournalposterConsumer {
-	private final DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
 	private final WebClient webClient;
 
 	public FinnMottatteJournalposterConsumer(DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
 											 WebClient webClient) {
-		this.dokSikkerhetsnettProperties = dokSikkerhetsnettProperties;
-		this.webClient = webClient;
+		this.webClient = webClient.mutate()
+				.baseUrl(dokSikkerhetsnettProperties.getDokarkiv().getUrl())
+				.build();
 	}
 
 	@Retryable(retryFor = FinnMottatteJournalposterTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT, multiplier = MAX_ATTEMPTS_SHORT))
 	public FinnMottatteJournalposterResponse finnMottatteJournalposter(String tema, int antallDager) {
+		if (tema == null) {
+			throw new IllegalArgumentException("Kan ikke kalle finnMottatteJournalposter med tema=null");
+		}
+
 		final String callId = MDC.get(MDC_CALL_ID);
 		return webClient.get()
-				.uri(buildUri(tema, antallDager))
+				.uri(uriBuilder -> uriBuilder.pathSegment(tema, valueOf(antallDager)).build())
 				.attributes(clientRegistrationId(CLIENT_REGISTRATION_DOKARKIV))
 				.headers(httpHeaders -> {
 					httpHeaders.setContentType(APPLICATION_JSON);
@@ -77,13 +82,4 @@ public class FinnMottatteJournalposterConsumer {
 		};
 	}
 
-	private String buildUri(String tema, int antallDager) {
-		return dokSikkerhetsnettProperties.getDokarkiv().getUrl() + validateInput(tema) + "/" + antallDager;
-	}
-
-	private String validateInput(String input) {
-		if (input == null) {
-			return "";
-		} else return input;
-	}
 }
