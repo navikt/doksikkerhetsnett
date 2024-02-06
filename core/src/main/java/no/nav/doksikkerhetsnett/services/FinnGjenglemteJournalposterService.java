@@ -44,13 +44,13 @@ public class FinnGjenglemteJournalposterService {
 
 	private List<Journalpost> findUbehandledeJournalposterUtenOppgave(String tema, List<Journalpost> ubehandledeJournalposter, int dagerGamle) {
 		List<Journalpost> ubehandledeJournalposterUtenOppgave = fjernJournalposterMedEksisterendeOppgaverFraListe(ubehandledeJournalposter);
-		loggUbehandledeJournalposter(tema, ubehandledeJournalposter, dagerGamle, ubehandledeJournalposterUtenOppgave);
+		loggUbehandledeJournalposter(tema, dagerGamle, ubehandledeJournalposterUtenOppgave);
 		return ubehandledeJournalposterUtenOppgave;
 	}
 
-	private static void loggUbehandledeJournalposter(String tema, List<Journalpost> ubehandledeJournalposter, int dagerGamle, List<Journalpost> ubehandledeJournalposterUtenOppgave) {
-		if (ubehandledeJournalposter.size() > MAX_JOURNALPOSTID_LOGGING) {
-			var partitions = partition(ubehandledeJournalposter, MAX_JOURNALPOSTID_LOGGING);
+	private static void loggUbehandledeJournalposter(String tema, int dagerGamle, List<Journalpost> ubehandledeJournalposterUtenOppgave) {
+		if (ubehandledeJournalposterUtenOppgave.size() > MAX_JOURNALPOSTID_LOGGING) {
+			var partitions = partition(ubehandledeJournalposterUtenOppgave, MAX_JOURNALPOSTID_LOGGING);
 			partitions.forEach(partition -> loggUbehandledeJournalposterFunn(tema, dagerGamle, partition));
 		} else {
 			loggUbehandledeJournalposterFunn(tema, dagerGamle, ubehandledeJournalposterUtenOppgave);
