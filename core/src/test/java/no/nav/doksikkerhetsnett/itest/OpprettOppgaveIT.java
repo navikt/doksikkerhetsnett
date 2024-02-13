@@ -7,7 +7,7 @@ import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.consumers.JiraConsumer;
 import no.nav.doksikkerhetsnett.consumers.OpprettOppgaveConsumer;
 import no.nav.doksikkerhetsnett.consumers.StsRestConsumer;
-import no.nav.doksikkerhetsnett.consumers.pdl.IdentConsumer;
+import no.nav.doksikkerhetsnett.consumers.pdl.PdlIdentConsumer;
 import no.nav.doksikkerhetsnett.entities.Bruker;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
@@ -71,14 +71,20 @@ class OpprettOppgaveIT {
 	private JiraConsumer jiraConsumer;
 
 	@Autowired
-	private IdentConsumer identConsumer;
+	private PdlIdentConsumer pdlIdentConsumer;
 
 	@BeforeEach
 	void setup() {
 		setupSts();
 		happyAktoerIdStub();
 		OpprettOppgaveConsumer opprettOppgaveConsumer = new OpprettOppgaveConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties, stsRestConsumer);
-		opprettOppgaveService = new OpprettOppgaveService (jiraConsumer, identConsumer, opprettOppgaveConsumer);
+		opprettOppgaveService = new OpprettOppgaveService (jiraConsumer, pdlIdentConsumer, opprettOppgaveConsumer);
+
+		stubFor(post("/azure_token")
+				.willReturn(aResponse()
+						.withStatus(OK.value())
+						.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+						.withBodyFile("azure/token_response_dummy.json")));
 	}
 
 	@AfterEach

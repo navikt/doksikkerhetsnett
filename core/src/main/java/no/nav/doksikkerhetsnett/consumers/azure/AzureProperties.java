@@ -16,4 +16,5 @@ public record AzureProperties(
 		@NotEmpty String clientSecret
 ) {
 	public static final String CLIENT_REGISTRATION_DOKARKIV = "azure-dokarkiv";
+	public static final String CLIENT_REGISTRATION_PDL = "azure-pdl";
 }

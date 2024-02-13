@@ -3,8 +3,8 @@ package no.nav.doksikkerhetsnett.services;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.consumers.JiraConsumer;
 import no.nav.doksikkerhetsnett.consumers.OpprettOppgaveConsumer;
-import no.nav.doksikkerhetsnett.consumers.pdl.IdentConsumer;
-import no.nav.doksikkerhetsnett.consumers.pdl.PdlFunctionalException;
+import no.nav.doksikkerhetsnett.exceptions.functional.PdlFunctionalException;
+import no.nav.doksikkerhetsnett.consumers.pdl.PdlIdentConsumer;
 import no.nav.doksikkerhetsnett.consumers.pdl.PersonIkkeFunnetException;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
@@ -17,7 +17,6 @@ import org.springframework.web.client.HttpServerErrorException;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static no.nav.doksikkerhetsnett.entities.Bruker.TYPE_PERSON;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.BESKRIVELSE_GJENOPPRETTET;
@@ -34,14 +33,14 @@ import static org.apache.logging.log4j.util.Strings.isNotBlank;
 public class OpprettOppgaveService {
 
 	private final JiraConsumer jiraConsumer;
-	private final IdentConsumer identConsumer;
+	private final PdlIdentConsumer pdlIdentConsumer;
 	private final OpprettOppgaveConsumer opprettOppgaveConsumer;
 
 	public OpprettOppgaveService(JiraConsumer jiraConsumer,
-								 IdentConsumer identConsumer,
+								 PdlIdentConsumer pdlIdentConsumer,
 								 OpprettOppgaveConsumer opprettOppgaveConsumer) {
 		this.jiraConsumer = jiraConsumer;
-		this.identConsumer = identConsumer;
+		this.pdlIdentConsumer = pdlIdentConsumer;
 		this.opprettOppgaveConsumer = opprettOppgaveConsumer;
 	}
 
@@ -121,7 +120,7 @@ public class OpprettOppgaveService {
 		if (isNotBlank(fnr) && TYPE_PERSON.equals(jp.getBruker().getType())) {
 			try {
 				log.info("Fant en aktorId tilknyttet til journalpost med journalpostId={}", jp.getJournalpostId());
-				return identConsumer.hentAktoerId(fnr);
+				return pdlIdentConsumer.hentAktoerId(fnr);
 			} catch (PersonIkkeFunnetException | PdlFunctionalException | HttpServerErrorException e) {
 				log.warn("Det skjedde en feil i kallet til PDL, eller bruker ikke funnet i PDL med journalpostId: {}. Feilmelding: ", jp.getJournalpostId(), e);
 			}

@@ -2,12 +2,13 @@
   "APPNAVN": "doksikkerhetsnett",
   "SRVDOKSIKKERHETSNETT": "/serviceuser/data/prod/srvdoksikkerhetsnt",
   "AZURE_APP_TOKEN_URL": "https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/oauth2/v2.0/token",
-  "DOKSIKKERHETSNETT_ENDPOINTS_PDL": "https://pdl-api.intern.nav.no/graphql",
   "DOKSIKKERHETSNETT_ENDPOINTS_STS": "https://security-token-service.nais.adeo.no/rest/v1/sts/token",
   "DOKSIKKERHETSNETT_ENDPOINTS_OPPGAVE": "https://oppgave.nais.adeo.no/api/v1/oppgaver",
   "DOKSIKKERHETSNETT_ENDPOINTS_OPPRETTJIRAISSUE": "https://jira.adeo.no/rest/api/2/issue",
-  "DOKSIKKERHETSNETT_DOKARKIV_SCOPE": "api://prod-fss.teamdokumenthandtering.dokarkiv/.default",
-  "DOKSIKKERHETSNETT_DOKARKIV_URL": "https://dokarkiv.intern.nav.no/rest/internal/journalpostapi/v1/finnMottatteJournalposter/",
+  "DOKSIKKERHETSNETT_ENDPOINTS_DOKARKIV_SCOPE": "api://prod-fss.teamdokumenthandtering.dokarkiv/.default",
+  "DOKSIKKERHETSNETT_ENDPOINTS_DOKARKIV_URL": "https://dokarkiv.intern.nav.no/rest/internal/journalpostapi/v1/finnMottatteJournalposter/",
+  "DOKSIKKERHETSNETT_ENDPOINTS_PDL_SCOPE": "api://prod-fss.pdl.pdl-api/.default",
+  "DOKSIKKERHETSNETT_ENDPOINTS_PDL_URL": "https://pdl-api.intern.nav.no/graphql",
   "INGRESSES": [
     "https://doksikkerhetsnett.intern.nav.no"
   ]

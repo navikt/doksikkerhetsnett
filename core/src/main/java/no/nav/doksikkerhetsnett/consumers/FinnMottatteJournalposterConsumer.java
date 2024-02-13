@@ -34,7 +34,7 @@ public class FinnMottatteJournalposterConsumer {
 	public FinnMottatteJournalposterConsumer(DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
 											 WebClient webClient) {
 		this.webClient = webClient.mutate()
-				.baseUrl(dokSikkerhetsnettProperties.getDokarkiv().getUrl())
+				.baseUrl(dokSikkerhetsnettProperties.getEndpoints().getDokarkiv().getUrl())
 				.build();
 	}
 
