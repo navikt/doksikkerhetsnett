@@ -3,11 +3,6 @@ package no.nav.doksikkerhetsnett.itest;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.stubbing.Scenario;
 import no.nav.doksikkerhetsnett.CoreConfig;
-import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
-import no.nav.doksikkerhetsnett.consumers.JiraConsumer;
-import no.nav.doksikkerhetsnett.consumers.OpprettOppgaveConsumer;
-import no.nav.doksikkerhetsnett.consumers.StsRestConsumer;
-import no.nav.doksikkerhetsnett.consumers.pdl.PdlIdentConsumer;
 import no.nav.doksikkerhetsnett.entities.Bruker;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
@@ -19,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -56,35 +50,16 @@ class OpprettOppgaveIT {
 
 	private static final String URL_OPPGAVE = "/api/v1/oppgaver";
 	private static final String URL_JIRA = "/rest/api/2/issue";
-	private static final String URL_PDL = "/pdl";
+	private static final String URL_PDL = "/pdl/graphql";
 	private static final String URL_STSAUTH = "/rest/v1/sts/token\\?grant_type=client_credentials&scope=openid";
 
+	@Autowired
 	private OpprettOppgaveService opprettOppgaveService;
-
-	@Autowired
-	private DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
-
-	@Autowired
-	private StsRestConsumer stsRestConsumer;
-
-	@Autowired
-	private JiraConsumer jiraConsumer;
-
-	@Autowired
-	private PdlIdentConsumer pdlIdentConsumer;
 
 	@BeforeEach
 	void setup() {
-		setupSts();
+		setUpTokenServices();
 		happyAktoerIdStub();
-		OpprettOppgaveConsumer opprettOppgaveConsumer = new OpprettOppgaveConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties, stsRestConsumer);
-		opprettOppgaveService = new OpprettOppgaveService (jiraConsumer, pdlIdentConsumer, opprettOppgaveConsumer);
-
-		stubFor(post("/azure_token")
-				.willReturn(aResponse()
-						.withStatus(OK.value())
-						.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-						.withBodyFile("azure/token_response_dummy.json")));
 	}
 
 	@AfterEach
@@ -271,11 +246,17 @@ class OpprettOppgaveIT {
 						.withBodyFile("opprettOppgave/opprettOppgave-happy333.json")));
 	}
 
-	private void setupSts() {
+	private void setUpTokenServices() {
 		stubFor(get(urlMatching(URL_STSAUTH))
 				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("oppgave/stsResponse-happy.json")));
+
+		stubFor(post("/azure_token")
+				.willReturn(aResponse()
+						.withStatus(OK.value())
+						.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+						.withBodyFile("azure/token_response_dummy.json")));
 	}
 
 	void happyAktoerIdStub() {

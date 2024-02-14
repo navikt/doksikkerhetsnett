@@ -41,11 +41,12 @@ public class PdlIdentConsumer {
 	}
 
 	@Retryable(
-			retryFor = {HttpServerErrorException.class, PdlTechnicalException.class},
+			retryFor = PdlTechnicalException.class,
 			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
 	)
 	public String hentAktoerId(String folkeregisterIdent) throws PersonIkkeFunnetException {
 		return webClient.post()
+				.uri("/graphql")
 				.attributes(clientRegistrationId(CLIENT_REGISTRATION_PDL))
 				.bodyValue(mapHentAktoerIdForFolkeregisterident(folkeregisterIdent))
 				.retrieve()

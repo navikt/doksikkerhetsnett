@@ -1,9 +1,7 @@
 package no.nav.doksikkerhetsnett.itest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.consumers.FinnOppgaveConsumer;
-import no.nav.doksikkerhetsnett.consumers.StsRestConsumer;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.responses.FinnOppgaveResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFinnesIkkeFunctionalException;
@@ -16,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -50,18 +47,13 @@ class FinnOppgaveIT {
 	private static final int HAPPY_INT = 111111111;
 	private static final int BAD_INT = 222;
 	private static final String OPPGAVER_BAD_REQUEST = "\\?journalpostId=222&oppgavetype=JFR&oppgavetype=FDR&statuskategori=AAPEN&sorteringsrekkefolge=ASC&limit=50";
+
+	@Autowired
 	private FinnOppgaveConsumer finnOppgaveConsumer;
-
-	@Autowired
-	private DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
-
-	@Autowired
-	private StsRestConsumer stsRestConsumer;
 
 	@BeforeEach
 	void setUpConsumer() {
 		setupSts();
-		finnOppgaveConsumer = new FinnOppgaveConsumer(new RestTemplateBuilder(), dokSikkerhetsnettProperties, stsRestConsumer);
 	}
 
 	@AfterEach
