@@ -36,7 +36,7 @@ public class OpprettOppgaverScheduled {
 	}
 
 	// Satt til å kjøre klokken 07:00 man - fre
-	@Scheduled(cron = "0 0 9 25 * MON-FRI")
+	@Scheduled(cron = "0 0 10 00 * MON-FRI")
 	public void opprettOppgaverForGjenglemteJournalposter() {
 		try {
 			MDC.put(MDC_CALL_ID, UUID.randomUUID().toString());
