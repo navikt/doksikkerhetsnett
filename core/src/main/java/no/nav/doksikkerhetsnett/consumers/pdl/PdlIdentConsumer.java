@@ -3,17 +3,17 @@ package no.nav.doksikkerhetsnett.consumers.pdl;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.exceptions.functional.PdlFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.PdlTechnicalException;
-import org.springframework.http.ProblemDetail;
+import org.slf4j.MDC;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
 
+import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
+import static no.nav.doksikkerhetsnett.constants.NavHeaders.NAV_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.DELAY_SHORT;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.MULTIPLIER_SHORT;
 import static no.nav.doksikkerhetsnett.consumers.azure.AzureProperties.CLIENT_REGISTRATION_PDL;
@@ -36,6 +36,7 @@ public class PdlIdentConsumer {
 				.defaultHeaders(httpHeaders -> {
 					httpHeaders.set(HEADER_PDL_BEHANDLINGSNUMMER, ARKIVPLEIE_BEHANDLINGSNUMMER);
 					httpHeaders.setContentType(APPLICATION_JSON);
+					httpHeaders.set(NAV_CALL_ID, MDC.get(MDC_CALL_ID));
 				})
 				.build();
 	}
@@ -78,13 +79,9 @@ public class PdlIdentConsumer {
 	}
 
 	private Consumer<Throwable> handlePdlErrors() {
-		return error -> {
-			if (error instanceof WebClientResponseException webException && ((WebClientResponseException) error).getStatusCode().is4xxClientError()) {
-				ProblemDetail problemDetail = webException.getResponseBodyAs(ProblemDetail.class);
-				throw new PdlFunctionalException("Kunne ikke hente person fra pdl. problem=" + problemDetail);
-			} else {
-				throw new PdlTechnicalException("Teknisk feil ved kall mot PDL. Se stacktrace", error);
-			}
+		return error ->
+		{
+			throw new PdlTechnicalException("Ukjent teknisk feil mot pdl: ", error);
 		};
 	}
 }
