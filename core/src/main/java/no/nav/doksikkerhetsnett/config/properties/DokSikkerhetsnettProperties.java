@@ -18,7 +18,6 @@ import jakarta.validation.constraints.NotNull;
 public class DokSikkerhetsnettProperties {
 
     private final Endpoints endpoints = new Endpoints();
-    private final Dokarkiv dokarkiv = new Dokarkiv();
 
     @NotNull
     private ServiceUserProperties serviceuser;
@@ -33,9 +32,6 @@ public class DokSikkerhetsnettProperties {
     @Validated
     public static class Endpoints {
 
-        @NotNull
-        private String pdl;
-
         @NotEmpty
         private String oppgave;
 
@@ -44,11 +40,17 @@ public class DokSikkerhetsnettProperties {
 
         @NotNull
         private String opprettjiraissue;
+
+        @NotNull
+        private AzureEndpoint dokarkiv;
+
+        @NotNull
+        private AzureEndpoint pdl;
     }
 
     @Data
     @Validated
-    public static class Dokarkiv {
+    public static class AzureEndpoint {
         @NotEmpty
         private String url;
         @NotEmpty

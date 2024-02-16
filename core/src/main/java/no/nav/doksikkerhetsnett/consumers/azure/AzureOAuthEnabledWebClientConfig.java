@@ -24,6 +24,7 @@ import java.util.List;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static no.nav.doksikkerhetsnett.consumers.azure.AzureProperties.CLIENT_REGISTRATION_DOKARKIV;
+import static no.nav.doksikkerhetsnett.consumers.azure.AzureProperties.CLIENT_REGISTRATION_PDL;
 import static org.springframework.security.oauth2.core.AuthorizationGrantType.CLIENT_CREDENTIALS;
 import static org.springframework.security.oauth2.core.ClientAuthenticationMethod.CLIENT_SECRET_BASIC;
 
@@ -94,7 +95,16 @@ public class AzureOAuthEnabledWebClientConfig {
 						.clientSecret(azureTokenProperties.clientSecret())
 						.clientAuthenticationMethod(CLIENT_SECRET_BASIC)
 						.authorizationGrantType(CLIENT_CREDENTIALS)
-						.scope(dokSikkerhetsnettProperties.getDokarkiv().getScope())
-						.build());
+						.scope(dokSikkerhetsnettProperties.getEndpoints().getDokarkiv().getScope())
+						.build(),
+				ClientRegistration.withRegistrationId(CLIENT_REGISTRATION_PDL)
+						.tokenUri(azureTokenProperties.tokenUrl())
+						.clientId(azureTokenProperties.clientId())
+						.clientSecret(azureTokenProperties.clientSecret())
+						.clientAuthenticationMethod(CLIENT_SECRET_BASIC)
+						.authorizationGrantType(CLIENT_CREDENTIALS)
+						.scope(dokSikkerhetsnettProperties.getEndpoints().getPdl().getScope())
+						.build()
+		);
 	}
 }
