@@ -29,6 +29,7 @@
 
         <!-- Plugins -->
         <maven-toolchains-plugin.version>3.1.0</maven-toolchains-plugin.version>
+        <cyclonedx.version>2.7.11</cyclonedx.version>
 
         <!-- Test -->
         <spring-cloud-contract-wiremock.version>4.1.0</spring-cloud-contract-wiremock.version>
@@ -93,6 +94,20 @@
                         </jdk>
                     </toolchains>
                 </configuration>
+            </plugin>
+            <!-- Gir økt oppløsning på dependency graph i salsa	for Maven-prosjekt -->
+            <plugin>
+                <groupId>org.cyclonedx</groupId>
+                <artifactId>cyclonedx-maven-plugin</artifactId>
+                <version>${cyclonedx.version}</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>makeAggregateBom</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
