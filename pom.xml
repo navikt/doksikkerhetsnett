@@ -100,9 +100,11 @@
                     </toolchains>
                 </configuration>
             </plugin>
+            <!-- Gir økt oppløsning på dependency graph i salsa	for Maven-prosjekt -->
             <plugin>
                 <groupId>org.cyclonedx</groupId>
                 <artifactId>cyclonedx-maven-plugin</artifactId>
+                <version>${cyclonedx.version}</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
