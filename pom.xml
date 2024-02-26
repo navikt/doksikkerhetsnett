@@ -29,6 +29,7 @@
 
         <!-- Plugins -->
         <maven-toolchains-plugin.version>3.1.0</maven-toolchains-plugin.version>
+        <cyclonedx.version>2.7.11</cyclonedx.version>
 
         <!-- Test -->
         <spring-cloud-contract-wiremock.version>4.1.0</spring-cloud-contract-wiremock.version>
@@ -36,6 +37,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.cyclonedx</groupId>
+                <artifactId>cyclonedx-maven-plugin</artifactId>
+                <version>${cyclonedx.version}</version>
+            </dependency>
             <dependency>
                 <groupId>no.nav.doksikkerhetsnett</groupId>
                 <artifactId>core</artifactId>
@@ -93,6 +99,18 @@
                         </jdk>
                     </toolchains>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.cyclonedx</groupId>
+                <artifactId>cyclonedx-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>makeAggregateBom</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

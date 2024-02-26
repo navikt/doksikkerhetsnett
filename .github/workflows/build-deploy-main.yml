@@ -12,5 +12,5 @@ jobs:
       contents: write
       packages: write
       pull-requests: write
-    uses: navikt/dok-workflows/.github/workflows/build-deploy-main.yml@main
+    uses: navikt/dok-workflows/.github/workflows/wip/1_0_build-deploy-main.yml@main
     secrets: inherit
