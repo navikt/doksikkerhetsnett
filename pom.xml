@@ -38,11 +38,6 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.cyclonedx</groupId>
-                <artifactId>cyclonedx-maven-plugin</artifactId>
-                <version>${cyclonedx.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>no.nav.doksikkerhetsnett</groupId>
                 <artifactId>core</artifactId>
                 <version>${project.version}</version>
