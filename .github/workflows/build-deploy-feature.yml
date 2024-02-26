@@ -12,5 +12,5 @@ jobs:
     permissions:
       contents: read
       packages: write
-    uses: navikt/dok-workflows/.github/workflows/wip/1_0_build-deploy-feature.yml@main
+    uses: navikt/dok-workflows/.github/workflows/1_0_build-deploy-feature.yml@main
     secrets: inherit

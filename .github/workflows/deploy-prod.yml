@@ -7,5 +7,5 @@ on:
 
 jobs:
   deploy-prod:
-    uses: navikt/dok-workflows/.github/workflows/wip/5_0_deploy-prod.yml@main
+    uses: navikt/dok-workflows/.github/workflows/5_0_deploy-prod.yml@main
     secrets: inherit
