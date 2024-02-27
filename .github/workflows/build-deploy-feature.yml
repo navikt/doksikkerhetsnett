@@ -13,5 +13,5 @@ jobs:
       contents: read
       packages: write
       id-token: write
-    uses: navikt/dok-workflows/.github/workflows/1_0_build-deploy-feature.yml@main
+    uses: navikt/dok-workflows/.github/workflows/build-deploy-feature-gar.yml@main
     secrets: inherit
