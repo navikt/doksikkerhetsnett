@@ -52,7 +52,6 @@ public class FinnGjenglemteJournalposterService {
 		if (ubehandledeJournalposterUtenOppgave.size() > MAX_JOURNALPOSTID_LOGGING) {
 			var partitions = partition(ubehandledeJournalposterUtenOppgave, MAX_JOURNALPOSTID_LOGGING);
 			loggUbehandledeJournalposterFunnOverMAX_JOURNALPOSTID_LOGGING(tema, dagerGamle, partitions.get(0), ubehandledeJournalposterUtenOppgave.size());
-			partitions.forEach(partition -> loggUbehandledeJournalposterFunn(tema, dagerGamle, partition));
 		} else {
 			loggUbehandledeJournalposterFunn(tema, dagerGamle, ubehandledeJournalposterUtenOppgave);
 		}
@@ -64,7 +63,7 @@ public class FinnGjenglemteJournalposterService {
 	}
 
 	private static void loggUbehandledeJournalposterFunnOverMAX_JOURNALPOSTID_LOGGING(String tema, int dagerGamle, List<Journalpost> ubehandledeJournalposterUtenOppgave, int antall) {
-		log.info("Fant totalt {} journalposter med tema {} som er eldre enn {} dag(er) og mangler oppgave. De første 400 journalpostene har journalpostId=" +ubehandledeJournalposterUtenOppgave,
+		log.info("Fant totalt {} journalposter med tema {} som er eldre enn {} dag(er) og mangler oppgave. De første 400 journalpostene har journalpostId=" + ubehandledeJournalposterUtenOppgave,
 				antall, tema, dagerGamle);
 	}
 
