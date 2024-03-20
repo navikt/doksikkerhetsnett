@@ -24,9 +24,6 @@ jobs:
     uses: navikt/dok-workflows/.github/workflows/deploy-nais-app-with-custom-checkout-gar.yml@main
     secrets: inherit
     permissions:
-      contents: write
-      packages: write
-      pull-requests: write
       id-token: write
     with:
       build-tag: ${{(contains(fromJson('["tag"]'), github.ref_type) && !contains(fromJson('["main", "master"]'), github.ref_name)) && github.ref_name || inputs.ref_name}}
