@@ -1,6 +1,6 @@
 name: Manual deployment of ref to environment
 # run-name kan kun referere til github og inputs kontekstene
-run-name: Manual deploy of ${{(contains(fromJson('["tag", "branch"]'), github.ref_type) && !contains(fromJson('["main", "master"]'), github.ref_name)) && github.ref_name || inputs.ref_name}} to ${{inputs.environment}}
+run-name: Manual deploy of ${{(contains(fromJson('["tag"]'), github.ref_type) && !contains(fromJson('["main", "master"]'), github.ref_name)) && github.ref_name || inputs.ref_name}} to ${{inputs.environment}}
 
 on:
   workflow_dispatch:
@@ -14,10 +14,10 @@ on:
           - p
           - q2
       ref_name:
-        description: 'Git ref_name. branch or tag'
+        description: 'Git tag'
         required: true
         type: string
-        default: 'Replace with tag or branch'
+        default: 'Replace with tag'
 
 jobs:
   deploy-env:
@@ -29,6 +29,6 @@ jobs:
       pull-requests: write
       id-token: write
     with:
-      build-tag: ${{(contains(fromJson('["tag", "branch"]'), github.ref_type) && !contains(fromJson('["main", "master"]'), github.ref_name)) && github.ref_name || inputs.ref_name}}
+      build-tag: ${{(contains(fromJson('["tag"]'), github.ref_type) && !contains(fromJson('["main", "master"]'), github.ref_name)) && github.ref_name || inputs.ref_name}}
       nav-cluster: ${{inputs.environment == 'p' && 'prod-fss' || 'dev-fss'}}
       nav-environment: ${{inputs.environment}}
