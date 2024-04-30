@@ -2,8 +2,6 @@ package no.nav.doksikkerhetsnett.consumers;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
-import no.nav.doksikkerhetsnett.entities.Journalpost;
-import no.nav.doksikkerhetsnett.entities.Oppgave;
 import no.nav.doksikkerhetsnett.entities.responses.FinnOppgaveResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFinnesIkkeFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFunctionalException;
@@ -22,15 +20,14 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
+import static no.nav.doksikkerhetsnett.constants.NavHeaders.X_CORRELATION_ID;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_FORDELING;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_JOURNALFOERT;
-import static org.apache.commons.collections4.ListUtils.partition;
+import static no.nav.doksikkerhetsnett.services.FinnGjenglemteJournalposterService.JOURNALPOSTER_PARTITION_LIMIT;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -44,14 +41,12 @@ public class FinnOppgaveConsumer {
 	private final RestTemplate restTemplate;
 	private final StsRestConsumer stsRestConsumer;
 
-	public static final String CORRELATION_HEADER = "X-Correlation-Id";
 	private static final String PARAM_NAME_JOURNALPOSTID = "journalpostId";
 	private static final String PARAM_NAME_OPPGAVETYPE = "oppgavetype";
 	private static final String PARAM_NAME_STATUSKATEGORI = "statuskategori";
 	private static final String PARAM_NAME_SORTERINGSREKKEFOLGE = "sorteringsrekkefolge";
 	private static final String PARAM_NAME_LIMIT = "limit";
 	private static final String PARAM_NAME_OFFSET = "offset";
-	private static final int LIMIT = 50;
 
 	public FinnOppgaveConsumer(RestTemplateBuilder restTemplateBuilder,
 							   DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
@@ -66,34 +61,30 @@ public class FinnOppgaveConsumer {
 				.build();
 	}
 
-	public FinnOppgaveResponse finnOppgaveForJournalposter(List<Journalpost> ubehandledeJournalposter) {
+	public FinnOppgaveResponse finnOppgaveForJournalposter(List<Long> ubehandledeJournalposter, int offset) {
+		if (ubehandledeJournalposter == null || ubehandledeJournalposter.isEmpty()) {
+			return null;
+		}
+
 		try {
 			HttpHeaders headers = createHeaders();
 			HttpEntity<?> requestEntity = new HttpEntity<>(headers);
-			List<List<Long>> partitionedIds = journalpostListToPartitionedJournalpostIdList(ubehandledeJournalposter, LIMIT);
-			ArrayList<FinnOppgaveResponse> oppgaveResponses = new ArrayList<>();
 
-			for (List<Long> ids : partitionedIds) {
-				FinnOppgaveResponse oppgaveResponse = executeGetRequest(ids, requestEntity, 0);
-				oppgaveResponses.add(oppgaveResponse);
-				if (oppgaveResponse != null) {
-					int differenceBetweenTotalReponsesAndResponseList = oppgaveResponse.getAntallTreffTotalt() - oppgaveResponse.getOppgaver()
-							.size();
-					if (differenceBetweenTotalReponsesAndResponseList != 0) {
-						int extraPages = differenceBetweenTotalReponsesAndResponseList / LIMIT;
-						for (int i = 1; i <= extraPages + 1; i++) {
-							oppgaveResponses.add(executeGetRequest(ids, requestEntity, i));
-						}
-					}
-				}
+			String journalpostParams = listOfLongsToQueryParams(ubehandledeJournalposter);
+
+			URI uri = UriComponentsBuilder.fromHttpUrl(oppgaveUrl)
+					.query(journalpostParams)
+					.queryParam(PARAM_NAME_OPPGAVETYPE, OPPGAVETYPE_JOURNALFOERT)
+					.queryParam(PARAM_NAME_OPPGAVETYPE, OPPGAVETYPE_FORDELING)
+					.queryParam(PARAM_NAME_STATUSKATEGORI, "AAPEN")
+					.queryParam(PARAM_NAME_SORTERINGSREKKEFOLGE, "ASC")
+					.queryParam(PARAM_NAME_LIMIT, JOURNALPOSTER_PARTITION_LIMIT)
+					.build().toUri();
+			if (offset > 0) {
+				uri = appendQuery(uri, Integer.toString(offset * JOURNALPOSTER_PARTITION_LIMIT));
 			}
-			List<Oppgave> allOppgaveResponses = oppgaveResponses.stream()
-					.flatMap(finnOppgaveResponse -> finnOppgaveResponse != null ? finnOppgaveResponse.getOppgaver().stream() : null)
-					.toList();
 
-			return FinnOppgaveResponse.builder()
-					.oppgaver(allOppgaveResponses)
-					.build();
+			return restTemplate.exchange(uri, GET, requestEntity, FinnOppgaveResponse.class).getBody();
 
 		} catch (HttpClientErrorException e) {
 			if (NOT_FOUND.equals(e.getStatusCode())) {
@@ -112,25 +103,8 @@ public class FinnOppgaveConsumer {
 		}
 	}
 
-	private FinnOppgaveResponse executeGetRequest(List<Long> ids, HttpEntity<?> requestEntity, int offset) {
-		String journalpostParams = listOfLongsToQueryParams(ids, PARAM_NAME_JOURNALPOSTID);
-		URI uri = UriComponentsBuilder.fromHttpUrl(oppgaveUrl)
-				.query(journalpostParams)
-				.queryParam(PARAM_NAME_OPPGAVETYPE, OPPGAVETYPE_JOURNALFOERT)
-				.queryParam(PARAM_NAME_OPPGAVETYPE, OPPGAVETYPE_FORDELING)
-				.queryParam(PARAM_NAME_STATUSKATEGORI, "AAPEN")
-				.queryParam(PARAM_NAME_SORTERINGSREKKEFOLGE, "ASC")
-				.queryParam(PARAM_NAME_LIMIT, LIMIT)
-				.build().toUri();
-		if (offset > 0) {
-			uri = appendQuery(uri, PARAM_NAME_OFFSET, Integer.toString(offset * LIMIT));
-		}
-		return restTemplate.exchange(uri, GET, requestEntity, FinnOppgaveResponse.class)
-				.getBody();
-	}
-
-	private URI appendQuery(URI oldUri, String name, String value) {
-		String appendQuery = name + "=" + value;
+	private URI appendQuery(URI oldUri, String value) {
+		String appendQuery = PARAM_NAME_OFFSET + "=" + value;
 		String newQuery = oldUri.getQuery();
 		if (newQuery == null) {
 			newQuery = appendQuery;
@@ -147,30 +121,20 @@ public class FinnOppgaveConsumer {
 
 	}
 
-	private String listOfLongsToQueryParams(List<Long> values, String paramName) {
+	private String listOfLongsToQueryParams(List<Long> values) {
 		StringBuilder result = new StringBuilder();
 		for (Long value : values) {
-			result.append(paramName).append("=").append(value).append("&");
+			result.append(PARAM_NAME_JOURNALPOSTID).append("=").append(value).append("&");
 		}
 		return result.substring(0, result.length() - 1);
 	}
-
-	public static List<List<Long>> journalpostListToPartitionedJournalpostIdList(List<Journalpost> ubehandledeJournalposter, int limit) {
-		if (ubehandledeJournalposter == null) {
-			return new ArrayList<>();
-		}
-		List<Long> journalpostIds = ubehandledeJournalposter.stream().map(Journalpost::getJournalpostId).toList();
-
-		return partition(journalpostIds, limit);
-	}
-
 
 	private HttpHeaders createHeaders() {
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(APPLICATION_JSON);
 		headers.setBearerAuth(stsRestConsumer.getOidcToken());
-		headers.add(CORRELATION_HEADER, MDC.get(MDC_CALL_ID));
+		headers.add(X_CORRELATION_ID, MDC.get(MDC_CALL_ID));
 		return headers;
 	}
 }

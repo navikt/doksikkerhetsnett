@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
@@ -16,8 +17,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(
 		classes = {TestConfig.class},
@@ -49,6 +59,27 @@ class FinnGjenglemteJournalposterIT extends DoksikkerhetsnettItest {
 		Tema.getAlleTema()
 				.forEach(tema -> journalposterUtenOppgaver.addAll(finnGjenglemteJournalposterService.finnJournalposterUtenOppgaveUpdateMetrics(tema, 5)));
 		assertEquals(244, journalposterUtenOppgaver.size());
+	}
+
+	@Test
+	void shouldPartitionRequestsToFinnOppgave() {
+
+		stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER))
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("finnmottattejournalposter/mottatteJournalposter51elementer-happy.json")));
+
+		stubFor(get(urlMatching(URL_OPPGAVE + ".*"))
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("finnoppgave/finnOppgaver-happy.json")));
+
+		var result = finnGjenglemteJournalposterService.finnJournalposterUtenOppgaveUpdateMetrics("UFO", 5);
+
+		assertThat(result).hasSize(51);
+
+		verify(2, getRequestedFor(urlMatching(URL_OPPGAVE + ".*")));
+
 	}
 
 	private void assertCorrectMetrics(Map<String, Integer> metricsCache, int expectedValue, String expectedString) {

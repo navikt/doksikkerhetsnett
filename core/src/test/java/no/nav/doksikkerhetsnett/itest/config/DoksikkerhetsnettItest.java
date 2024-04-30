@@ -64,7 +64,7 @@ public abstract class DoksikkerhetsnettItest {
 		stubFor(get(urlMatching(URL_OPPGAVE_JOURNALPOST_SEARCH))
 				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withBodyFile("finnoppgave/finnOppgaverAAPNE-happy.json")));
+						.withBodyFile("finnoppgave/finnOppgaver-happy.json")));
 		stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER))
 				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
