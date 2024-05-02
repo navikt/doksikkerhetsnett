@@ -1,5 +1,7 @@
 package no.nav.doksikkerhetsnett.itest;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.itest.config.DoksikkerhetsnettItest;
 import no.nav.doksikkerhetsnett.itest.config.TestConfig;
@@ -22,7 +24,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -78,7 +79,14 @@ class FinnGjenglemteJournalposterIT extends DoksikkerhetsnettItest {
 
 		assertThat(result).hasSize(51);
 
-		verify(2, getRequestedFor(urlMatching(URL_OPPGAVE + ".*")));
+		var request = WireMock.findAll(getRequestedFor(urlMatching(URL_OPPGAVE + ".*")));
+
+		var antallJournalpostIdRequestParamsPrRequest = request.stream()
+				.map(LoggedRequest::getQueryParams)
+				.map(queryParameters -> queryParameters.get("journalpostId").values().size())
+				.toList();
+
+		assertThat(antallJournalpostIdRequestParamsPrRequest).containsExactly(50, 1);
 
 	}
 

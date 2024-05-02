@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static org.apache.commons.collections4.ListUtils.partition;
 
@@ -81,8 +80,8 @@ public class FinnGjenglemteJournalposterService {
 
 		for (List<Long> ids : partitionedIds) {
 			FinnOppgaveResponse oppgaveResponse = finnOppgaveConsumer.finnOppgaveForJournalposter(ids, 0);
-			oppgaveResponses.add(oppgaveResponse);
 			if (oppgaveResponse != null) {
+				oppgaveResponses.add(oppgaveResponse);
 				int differenceBetweenTotalReponsesAndResponseList = oppgaveResponse.getAntallTreffTotalt() - oppgaveResponse.getOppgaver()
 						.size();
 				if (differenceBetweenTotalReponsesAndResponseList != 0) {
@@ -95,7 +94,6 @@ public class FinnGjenglemteJournalposterService {
 		}
 
 		List<String> journalposterMedOppgaver = oppgaveResponses.stream()
-				.filter(Objects::nonNull)
 				.flatMap(finnOppgaveResponse -> finnOppgaveResponse.getOppgaver().stream())
 				.map(Oppgave::getJournalpostId)
 				.toList();

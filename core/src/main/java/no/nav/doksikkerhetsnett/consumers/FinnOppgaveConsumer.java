@@ -21,6 +21,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
@@ -70,7 +71,7 @@ public class FinnOppgaveConsumer {
 			HttpHeaders headers = createHeaders();
 			HttpEntity<?> requestEntity = new HttpEntity<>(headers);
 
-			String journalpostParams = listOfLongsToQueryParams(ubehandledeJournalposter);
+			String journalpostParams = mapJournalpostIdListToQueryParams(ubehandledeJournalposter);
 
 			URI uri = UriComponentsBuilder.fromHttpUrl(oppgaveUrl)
 					.query(journalpostParams)
@@ -121,12 +122,10 @@ public class FinnOppgaveConsumer {
 
 	}
 
-	private String listOfLongsToQueryParams(List<Long> values) {
-		StringBuilder result = new StringBuilder();
-		for (Long value : values) {
-			result.append(PARAM_NAME_JOURNALPOSTID).append("=").append(value).append("&");
-		}
-		return result.substring(0, result.length() - 1);
+	private String mapJournalpostIdListToQueryParams(List<Long> values) {
+		return values.stream()
+				.map(value -> PARAM_NAME_JOURNALPOSTID + "=" + value)
+				.collect(Collectors.joining("&"));
 	}
 
 	private HttpHeaders createHeaders() {
