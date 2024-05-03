@@ -18,6 +18,8 @@ import static org.apache.commons.collections4.ListUtils.partition;
 @Component
 public class FinnGjenglemteJournalposterService {
 
+	public static final int JOURNALPOSTER_PARTITION_LIMIT = 50;
+
 	// journalpostId med mange elementer kan knekke visning i kibana
 	private static final int MAX_JOURNALPOSTID_LOGGING = 400;
 
@@ -72,13 +74,27 @@ public class FinnGjenglemteJournalposterService {
 	}
 
 	private ArrayList<Journalpost> fjernJournalposterMedEksisterendeOppgaverFraListe(List<Journalpost> ubehandledeJournalpostList) {
-		FinnOppgaveResponse oppgaveResponse = finnOppgaveConsumer.finnOppgaveForJournalposter(ubehandledeJournalpostList);
+		var partitionedIds = journalpostListToPartitionedJournalpostIdList(ubehandledeJournalpostList, JOURNALPOSTER_PARTITION_LIMIT);
 
-		if (oppgaveResponse.getOppgaver() == null) {
-			return new ArrayList<>();
+		ArrayList<FinnOppgaveResponse> oppgaveResponses = new ArrayList<>();
+
+		for (List<Long> ids : partitionedIds) {
+			FinnOppgaveResponse oppgaveResponse = finnOppgaveConsumer.finnOppgaveForJournalposter(ids, 0);
+			if (oppgaveResponse != null) {
+				oppgaveResponses.add(oppgaveResponse);
+				int differenceBetweenTotalReponsesAndResponseList = oppgaveResponse.getAntallTreffTotalt() - oppgaveResponse.getOppgaver()
+						.size();
+				if (differenceBetweenTotalReponsesAndResponseList != 0) {
+					int extraPages = differenceBetweenTotalReponsesAndResponseList / JOURNALPOSTER_PARTITION_LIMIT;
+					for (int i = 1; i <= extraPages + 1; i++) {
+						oppgaveResponses.add(finnOppgaveConsumer.finnOppgaveForJournalposter(ids, i));
+					}
+				}
+			}
 		}
 
-		List<String> journalposterMedOppgaver = oppgaveResponse.getOppgaver().stream()
+		List<String> journalposterMedOppgaver = oppgaveResponses.stream()
+				.flatMap(finnOppgaveResponse -> finnOppgaveResponse.getOppgaver().stream())
 				.map(Oppgave::getJournalpostId)
 				.toList();
 
@@ -86,4 +102,14 @@ public class FinnGjenglemteJournalposterService {
 				.filter(ubehandletJournalpost -> !journalposterMedOppgaver.contains(Long.toString(ubehandletJournalpost.getJournalpostId())))
 				.toList());
 	}
+
+	public static List<List<Long>> journalpostListToPartitionedJournalpostIdList(List<Journalpost> ubehandledeJournalposter, int limit) {
+		if (ubehandledeJournalposter == null) {
+			return new ArrayList<>();
+		}
+		List<Long> journalpostIds = ubehandledeJournalposter.stream().map(Journalpost::getJournalpostId).toList();
+
+		return partition(journalpostIds, limit);
+	}
+
 }

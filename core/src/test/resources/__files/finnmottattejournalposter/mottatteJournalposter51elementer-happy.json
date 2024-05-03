@@ -1,0 +1,667 @@
+{
+  "journalposter": [
+    {
+      "journalpostId": 111111110,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "33333333333",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2014-04-11T14:11:34.622+0000"
+    },
+    {
+      "journalpostId": 222222220,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 333333330,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 444444440,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 555555550,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 666666660,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 111111119,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "33333333333",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2014-04-11T14:11:34.622+0000"
+    },
+    {
+      "journalpostId": 222222221,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 333333331,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 444444441,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 555555551,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 666666661,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 111111112,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "33333333333",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2014-04-11T14:11:34.622+0000"
+    },
+    {
+      "journalpostId": 222222229,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 333333332,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 444444442,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 555555552,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 666666662,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 111111113,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "33333333333",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2014-04-11T14:11:34.622+0000"
+    },
+    {
+      "journalpostId": 222222223,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 333333333,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 444444443,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 555555553,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 666666663,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 111111114,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "33333333333",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2014-04-11T14:11:34.622+0000"
+    },
+    {
+      "journalpostId": 222222224,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 333333334,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 444444444,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 555555554,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 666666664,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 111111115,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "33333333333",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2014-04-11T14:11:34.622+0000"
+    },
+    {
+      "journalpostId": 222222225,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 333333335,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 444444445,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 555555555,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 666666665,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 111111116,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "33333333333",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2014-04-11T14:11:34.622+0000"
+    },
+    {
+      "journalpostId": 222222226,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 333333336,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 444444446,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 555555556,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 666666666,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 111111117,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "33333333333",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2014-04-11T14:11:34.622+0000"
+    },
+    {
+      "journalpostId": 222222227,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 333333337,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 444444447,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 555555557,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 666666667,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 111111118,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "33333333333",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2014-04-11T14:11:34.622+0000"
+    },
+    {
+      "journalpostId": 222222228,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    },
+    {
+      "journalpostId": 333333338,
+      "journalStatus": "M",
+      "mottaksKanal": "ALTINN",
+      "bruker": {
+        "id": "44444444444",
+        "type": "PERSON"
+      },
+      "tema": "UFO",
+      "behandlingstema": "ab0001",
+      "journalforendeEnhet": "0000",
+      "datoOpprettet": "2015-12-28T15:11:05.455+0000"
+    }
+  ]
+}
