@@ -34,7 +34,7 @@ class FinnOppgaveIT extends DoksikkerhetsnettItest {
 	private static final Long JOURNALPOSTID = 111111111L;
 	private static final Long JOURNALPOSTID_2 = 222222222L;
 
-	private static final String OPPGAVER_QUERY = "\\?%s&oppgavetype=JFR&oppgavetype=FDR&statuskategori=AAPEN&sorteringsrekkefolge=ASC&limit=50";
+	private static final String OPPGAVER_QUERY = "\\?%s&oppgavetype=JFR&oppgavetype=FDR&statuskategori=AAPEN&limit=50";
 
 	@Autowired
 	private FinnOppgaveConsumer finnOppgaveConsumer;

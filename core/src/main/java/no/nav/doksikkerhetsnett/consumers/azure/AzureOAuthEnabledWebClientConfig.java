@@ -24,6 +24,7 @@ import java.util.List;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static no.nav.doksikkerhetsnett.consumers.azure.AzureProperties.CLIENT_REGISTRATION_DOKARKIV;
+import static no.nav.doksikkerhetsnett.consumers.azure.AzureProperties.CLIENT_REGISTRATION_OPPGAVE;
 import static no.nav.doksikkerhetsnett.consumers.azure.AzureProperties.CLIENT_REGISTRATION_PDL;
 import static org.springframework.security.oauth2.core.AuthorizationGrantType.CLIENT_CREDENTIALS;
 import static org.springframework.security.oauth2.core.ClientAuthenticationMethod.CLIENT_SECRET_BASIC;
@@ -90,21 +91,30 @@ public class AzureOAuthEnabledWebClientConfig {
 	List<ClientRegistration> clientRegistration(AzureProperties azureTokenProperties, DokSikkerhetsnettProperties dokSikkerhetsnettProperties) {
 		return List.of(
 				ClientRegistration.withRegistrationId(CLIENT_REGISTRATION_DOKARKIV)
-						.tokenUri(azureTokenProperties.tokenUrl())
-						.clientId(azureTokenProperties.clientId())
-						.clientSecret(azureTokenProperties.clientSecret())
+						.tokenUri(azureTokenProperties.openidConfigTokenEndpoint())
+						.clientId(azureTokenProperties.appClientId())
+						.clientSecret(azureTokenProperties.appClientSecret())
 						.clientAuthenticationMethod(CLIENT_SECRET_BASIC)
 						.authorizationGrantType(CLIENT_CREDENTIALS)
 						.scope(dokSikkerhetsnettProperties.getEndpoints().getDokarkiv().getScope())
 						.build(),
 				ClientRegistration.withRegistrationId(CLIENT_REGISTRATION_PDL)
-						.tokenUri(azureTokenProperties.tokenUrl())
-						.clientId(azureTokenProperties.clientId())
-						.clientSecret(azureTokenProperties.clientSecret())
+						.tokenUri(azureTokenProperties.openidConfigTokenEndpoint())
+						.clientId(azureTokenProperties.appClientId())
+						.clientSecret(azureTokenProperties.appClientSecret())
 						.clientAuthenticationMethod(CLIENT_SECRET_BASIC)
 						.authorizationGrantType(CLIENT_CREDENTIALS)
 						.scope(dokSikkerhetsnettProperties.getEndpoints().getPdl().getScope())
+						.build(),
+				ClientRegistration.withRegistrationId(CLIENT_REGISTRATION_OPPGAVE)
+						.tokenUri(azureTokenProperties.openidConfigTokenEndpoint())
+						.clientId(azureTokenProperties.appClientId())
+						.clientSecret(azureTokenProperties.appClientSecret())
+						.clientAuthenticationMethod(CLIENT_SECRET_BASIC)
+						.authorizationGrantType(CLIENT_CREDENTIALS)
+						.scope(dokSikkerhetsnettProperties.getEndpoints().getOppgave().getScope())
 						.build()
+
 		);
 	}
 }

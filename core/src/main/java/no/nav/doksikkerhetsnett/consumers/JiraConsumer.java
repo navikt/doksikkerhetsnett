@@ -17,14 +17,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.time.Duration;
 import java.util.List;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
-import static no.nav.doksikkerhetsnett.constants.NavHeaders.NAV_CALL_ID;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
@@ -48,7 +47,7 @@ public class JiraConsumer {
 		this.opprettJiraIssueUrl = dokSikkerhetsnettProperties.getEndpoints().getOpprettjiraissue();
 	}
 
-	public JiraResponse opprettJiraIssue(Oppgave oppgave, HttpClientErrorException exception) {
+	public JiraResponse opprettJiraIssue(Oppgave oppgave, WebClientResponseException exception) {
 		try {
 			HttpHeaders headers = createHeaders();
 			Issue issue = createIssue(oppgave, exception);
@@ -66,7 +65,7 @@ public class JiraConsumer {
 		}
 	}
 
-	private Issue createIssue(Oppgave oppgave, HttpClientErrorException e) {
+	private Issue createIssue(Oppgave oppgave, WebClientResponseException e) {
 		return Issue.builder()
 				.fields(Fields.builder()
 						.project(Project.builder()

@@ -3,16 +3,16 @@ package no.nav.doksikkerhetsnett.services;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.doksikkerhetsnett.consumers.JiraConsumer;
 import no.nav.doksikkerhetsnett.consumers.OpprettOppgaveConsumer;
-import no.nav.doksikkerhetsnett.exceptions.functional.PdlFunctionalException;
 import no.nav.doksikkerhetsnett.consumers.pdl.PdlIdentConsumer;
 import no.nav.doksikkerhetsnett.consumers.pdl.PersonIkkeFunnetException;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
 import no.nav.doksikkerhetsnett.entities.responses.JiraResponse;
 import no.nav.doksikkerhetsnett.entities.responses.OpprettOppgaveResponse;
+import no.nav.doksikkerhetsnett.exceptions.functional.PdlFunctionalException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.Date;
 import java.util.List;
@@ -55,7 +55,7 @@ public class OpprettOppgaveService {
 		try {
 			log.info("Prøver å opprette en oppgave med journalpostId={}", oppgave.getJournalpostId());
 			return opprettOppgaveConsumer.opprettOppgave(oppgave);
-		} catch (HttpClientErrorException e) {
+		} catch (WebClientResponseException e) {
 			return opprettOppgaveMedLiteMetadata(oppgave);
 		} catch (Exception e) {
 			log.error("Feil oppstod i opprettOppgave for journalpostId={}", oppgave.getJournalpostId(), e);
@@ -72,7 +72,7 @@ public class OpprettOppgaveService {
 					oppgave.getJournalpostId()
 			);
 			return opprettOppgaveConsumer.opprettOppgave(createMinimalOppgaveFromJournalpost(oppgave, TEMA_PENSJON.equals(oppgave.getTema()) ? OPPGAVETYPE_JOURNALFOERT : OPPGAVETYPE_FORDELING));
-		} catch (HttpClientErrorException e) {
+		} catch (WebClientResponseException e) {
 			JiraResponse response = jiraConsumer.opprettJiraIssue(oppgave, e);
 			log.info("Doksikkerhetsnett opprettet en jira-issue med kode {}", response.getKey());
 			return null;

@@ -31,8 +31,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public abstract class DoksikkerhetsnettItest {
 
 	protected static final String URL_FINNMOTTATTEJOURNALPOSTER = "/rest/internal/journalpostapi/v1/finnMottatteJournalposter/.{3}/.{1}";
-	protected static final String URL_STSAUTH = "/rest/v1/sts/token\\?grant_type=client_credentials&scope=openid";
-	protected static final String URL_OPPGAVE_JOURNALPOST_SEARCH = "/api/v1/oppgaver\\?journalpostId=111111111&journalpostId=222222222&journalpostId=333333333&journalpostId=444444444&journalpostId=555555555&journalpostId=666666666&oppgavetype=JFR&oppgavetype=FDR&statuskategori=AAPEN&sorteringsrekkefolge=ASC&limit=50";
+	protected static final String URL_OPPGAVE_JOURNALPOST_SEARCH = "/api/v1/oppgaver\\?journalpostId=111111111&journalpostId=222222222&journalpostId=333333333&journalpostId=444444444&journalpostId=555555555&journalpostId=666666666&oppgavetype=JFR&oppgavetype=FDR&statuskategori=AAPEN&limit=50";
 	protected static final String URL_OPPGAVE = "/api/v1/oppgaver";
 	protected static final String URL_JIRA = "/rest/api/2/issue";
 	protected static final String URL_PDL = "/pdl";
@@ -57,10 +56,6 @@ public abstract class DoksikkerhetsnettItest {
 	}
 
 	void setUpStubs() {
-		stubFor(get(urlMatching(URL_STSAUTH))
-				.willReturn(aResponse().withStatus(OK.value())
-						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withBodyFile("oppgave/stsResponse-happy.json")));
 		stubFor(get(urlMatching(URL_OPPGAVE_JOURNALPOST_SEARCH))
 				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
@@ -73,10 +68,6 @@ public abstract class DoksikkerhetsnettItest {
 				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 						.withBodyFile("pdl/pdl-aktoerid-happy.json")));
-		stubFor(get(urlMatching(URL_STSAUTH))
-				.willReturn(aResponse().withStatus(OK.value())
-						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withBodyFile("oppgave/stsResponse-happy.json")));
 		stubFor(post("/azure_token")
 				.willReturn(aResponse()
 						.withStatus(OK.value())

@@ -5,72 +5,86 @@ import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
 import no.nav.doksikkerhetsnett.entities.responses.OpprettOppgaveResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.OpprettOppgaveFunctionalException;
+import no.nav.doksikkerhetsnett.exceptions.technical.FinnOppgaveTechnicalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.OpprettOppgaveTechnicalException;
 import org.slf4j.MDC;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.netty.http.client.HttpClientRequest;
 
-import java.time.Duration;
+import java.util.function.Consumer;
 
-import static java.lang.String.format;
+import static java.time.Duration.ofSeconds;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
-import static org.springframework.http.HttpMethod.POST;
+import static no.nav.doksikkerhetsnett.constants.NavHeaders.X_CORRELATION_ID;
+import static no.nav.doksikkerhetsnett.constants.RetryConstants.DELAY_SHORT;
+import static no.nav.doksikkerhetsnett.constants.RetryConstants.MAX_ATTEMPTS_SHORT;
+import static no.nav.doksikkerhetsnett.consumers.azure.AzureProperties.CLIENT_REGISTRATION_OPPGAVE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction.clientRegistrationId;
 
 @Slf4j
 @Component
 public class OpprettOppgaveConsumer {
 
-	public static final String CORRELATION_HEADER = "X-Correlation-Id";
+	private final WebClient webClient;
 
-	private final RestTemplate restTemplate;
-	private final StsRestConsumer stsRestConsumer;
-	private final String oppgaveUrl;
+	private static final String OPPGAVER_URI_PATH = "/api/v1/oppgaver";
 
-	public OpprettOppgaveConsumer(RestTemplateBuilder restTemplateBuilder,
-								  DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
-								  StsRestConsumer stsRestConsumer) {
-		this.restTemplate = restTemplateBuilder
-				.setReadTimeout(Duration.ofSeconds(250))
-				.setConnectTimeout(Duration.ofSeconds(5))
-				.basicAuthentication(dokSikkerhetsnettProperties.getServiceuser().getUsername(),
-						dokSikkerhetsnettProperties.getServiceuser().getPassword())
+	public OpprettOppgaveConsumer(DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
+								  WebClient webClient) {
+		this.webClient = webClient.mutate()
+				.baseUrl(dokSikkerhetsnettProperties.getEndpoints().getOppgave().getUrl())
+				.defaultHeaders(httpHeaders -> httpHeaders.setContentType(APPLICATION_JSON))
 				.build();
-		this.stsRestConsumer = stsRestConsumer;
-		this.oppgaveUrl = dokSikkerhetsnettProperties.getEndpoints().getOppgave();
 	}
 
+	@Retryable(retryFor = OpprettOppgaveTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT, multiplier = MAX_ATTEMPTS_SHORT))
 	public OpprettOppgaveResponse opprettOppgave(Oppgave oppgave) {
-		try {
-			HttpHeaders headers = createHeaders();
-			HttpEntity<Oppgave> requestEntity = new HttpEntity<>(oppgave, headers);
 
-			return restTemplate.exchange(oppgaveUrl, POST, requestEntity, OpprettOppgaveResponse.class).getBody();
-		} catch (HttpClientErrorException e) {
-			if (BAD_REQUEST.equals(e.getStatusCode())) {
-				throw e;
+		return webClient.post()
+				.uri(uriBuilder -> uriBuilder.path(OPPGAVER_URI_PATH).build())
+				.bodyValue(oppgave)
+				.attributes(clientRegistrationId(CLIENT_REGISTRATION_OPPGAVE))
+				.headers(httpHeaders -> httpHeaders.add(X_CORRELATION_ID, MDC.get(MDC_CALL_ID)))
+				.httpRequest(httpRequest -> {
+					HttpClientRequest reactorRequest = httpRequest.getNativeRequest();
+					reactorRequest.responseTimeout(ofSeconds(250));
+				})
+				.retrieve()
+				.bodyToMono(OpprettOppgaveResponse.class)
+				.doOnError(handleError())
+				.block();
+	}
+
+	private Consumer<Throwable> handleError() {
+		return error -> {
+			if (error instanceof WebClientResponseException exception) {
+				if (exception.getStatusCode().is4xxClientError()) {
+					//Denne blir spesialhåndtert i OpprettOppgaveService::opprettOppgave
+					if (exception.getStatusCode().isSameCodeAs(BAD_REQUEST))
+						throw exception;
+
+					throw new OpprettOppgaveFunctionalException("opprettOppgave feilet funksjonelt med statusKode=%s, feilmelding=%s".formatted(
+							exception.getStatusCode(),
+							exception.getResponseBodyAsString()),
+							error);
+				} else {
+					throw new OpprettOppgaveTechnicalException("opprettOppgave feilet teknisk med statusKode=%s, feilmelding=%s".formatted(
+							exception.getStatusCode(),
+							error.getMessage()),
+							error);
+				}
+			} else {
+				throw new OpprettOppgaveTechnicalException("opprettOppgave feilet med ukjent teknisk feil, feilmelding=%s".formatted(
+						error.getMessage()),
+						error);
 			}
-			throw new OpprettOppgaveFunctionalException(format("opprettOppgave feilet funksjonelt med statusKode=%s. Feilmelding=%s. Url=%s",
-					e.getStatusCode(), e.getResponseBodyAsString(), oppgaveUrl), e);
-		} catch (HttpServerErrorException e) {
-			throw new OpprettOppgaveTechnicalException(format("opprettOppgave feilet teknisk med statusKode=%s. Feilmelding=%s",
-					e.getStatusCode(), e.getMessage()), e);
-		}
+		};
 	}
 
-	private HttpHeaders createHeaders() {
-		HttpHeaders headers = new HttpHeaders();
-
-		headers.setContentType(APPLICATION_JSON);
-		headers.setBearerAuth(stsRestConsumer.getOidcToken());
-		headers.add(CORRELATION_HEADER, MDC.get(MDC_CALL_ID));
-
-		return headers;
-	}
 }
