@@ -51,7 +51,6 @@ class OpprettOppgaveIT {
 	private static final String URL_OPPGAVE = "/api/v1/oppgaver";
 	private static final String URL_JIRA = "/rest/api/2/issue";
 	private static final String URL_PDL = "/pdl/graphql";
-	private static final String URL_STSAUTH = "/rest/v1/sts/token\\?grant_type=client_credentials&scope=openid";
 
 	@Autowired
 	private OpprettOppgaveService opprettOppgaveService;
@@ -247,11 +246,6 @@ class OpprettOppgaveIT {
 	}
 
 	private void setUpTokenServices() {
-		stubFor(get(urlMatching(URL_STSAUTH))
-				.willReturn(aResponse().withStatus(OK.value())
-						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withBodyFile("oppgave/stsResponse-happy.json")));
-
 		stubFor(post("/azure_token")
 				.willReturn(aResponse()
 						.withStatus(OK.value())

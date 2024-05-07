@@ -1,14 +1,13 @@
 package no.nav.doksikkerhetsnett.config.properties;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
-
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -32,12 +31,6 @@ public class DokSikkerhetsnettProperties {
     @Validated
     public static class Endpoints {
 
-        @NotEmpty
-        private String oppgave;
-
-        @NotEmpty
-        private String sts;
-
         @NotNull
         private String opprettjiraissue;
 
@@ -46,6 +39,9 @@ public class DokSikkerhetsnettProperties {
 
         @NotNull
         private AzureEndpoint pdl;
+
+        @NotNull
+        private AzureEndpoint oppgave;
     }
 
     @Data

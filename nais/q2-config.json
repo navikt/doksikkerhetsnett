@@ -1,9 +1,8 @@
 {
   "APPNAVN": "doksikkerhetsnett",
   "SRVDOKSIKKERHETSNETT": "/serviceuser/data/dev/srvdoksikkerhetsnt",
-  "AZURE_APP_TOKEN_URL": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/oauth2/v2.0/token",
-  "DOKSIKKERHETSNETT_ENDPOINTS_STS": "https://security-token-service.nais.preprod.local/rest/v1/sts/token",
-  "DOKSIKKERHETSNETT_ENDPOINTS_OPPGAVE": "https://oppgave.nais.preprod.local/api/v1/oppgaver",
+  "DOKSIKKERHETSNETT_ENDPOINTS_OPPGAVE_URL": "http://oppgave.oppgavehandtering.svc.nais.local",
+  "DOKSIKKERHETSNETT_ENDPOINTS_OPPGAVE_SCOPE": "api://dev-fss.oppgavehandtering.oppgave/.default",
   "DOKSIKKERHETSNETT_ENDPOINTS_OPPRETTJIRAISSUE": "https://jira-q1.adeo.no/rest/api/2/issue",
   "DOKSIKKERHETSNETT_ENDPOINTS_DOKARKIV_SCOPE": "api://dev-fss.teamdokumenthandtering.dokarkiv/.default",
   "DOKSIKKERHETSNETT_ENDPOINTS_DOKARKIV_URL": "http://dokarkiv.teamdokumenthandtering.svc.nais.local",
