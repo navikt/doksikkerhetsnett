@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.ListUtils.partition;
 
@@ -87,16 +89,16 @@ public class FinnGjenglemteJournalposterService {
 				if (differenceBetweenTotalReponsesAndResponseList != 0) {
 					int extraPages = differenceBetweenTotalReponsesAndResponseList / JOURNALPOSTER_PARTITION_LIMIT;
 					for (int i = 1; i <= extraPages + 1; i++) {
-						oppgaveResponses.add(finnOppgaveConsumer.finnOppgaveForJournalposter(ids, i));
+						oppgaveResponses.add(finnOppgaveConsumer.finnOppgaveForJournalposter(ids, i * JOURNALPOSTER_PARTITION_LIMIT));
 					}
 				}
 			}
 		}
 
-		List<String> journalposterMedOppgaver = oppgaveResponses.stream()
+		Set<String> journalposterMedOppgaver = oppgaveResponses.stream()
 				.flatMap(finnOppgaveResponse -> finnOppgaveResponse.getOppgaver().stream())
 				.map(Oppgave::getJournalpostId)
-				.toList();
+				.collect(Collectors.toSet());
 
 		return new ArrayList<>(ubehandledeJournalpostList.stream()
 				.filter(ubehandletJournalpost -> !journalposterMedOppgaver.contains(Long.toString(ubehandletJournalpost.getJournalpostId())))

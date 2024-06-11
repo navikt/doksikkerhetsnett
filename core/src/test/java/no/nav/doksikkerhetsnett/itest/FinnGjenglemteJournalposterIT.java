@@ -87,7 +87,27 @@ class FinnGjenglemteJournalposterIT extends DoksikkerhetsnettItest {
 				.toList();
 
 		assertThat(antallJournalpostIdRequestParamsPrRequest).containsExactly(50, 1);
+	}
 
+	@Test
+	void shouldFinnOppgaveWhen50DuplikateOppgaver() {
+		stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER))
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("finnmottattejournalposter/mottatteJournalposterMedTemaSingle-happy.json")));
+
+		stubFor(get(urlMatching(URL_OPPGAVE + "\\?journalpostId=111111111&journalpostId=222222222&oppgavetype=JFR&oppgavetype=FDR&statuskategori=AAPEN&limit=50"))
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("finnoppgave/finnOppgaver-50-duplikater-offset0.json")));
+		stubFor(get(urlMatching(URL_OPPGAVE + "\\?journalpostId=111111111&journalpostId=222222222&oppgavetype=JFR&oppgavetype=FDR&statuskategori=AAPEN&limit=50&offset=50"))
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("finnoppgave/finnOppgaver-50-duplikater-offset50.json")));
+
+		var result = finnGjenglemteJournalposterService.finnJournalposterUtenOppgaveUpdateMetrics("UFO", 5);
+
+		assertThat(result).hasSize(0);
 	}
 
 	private void assertCorrectMetrics(Map<String, Integer> metricsCache, int expectedValue, String expectedString) {
