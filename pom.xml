@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.3</version>
+        <version>3.3.5</version>
     </parent>
 
     <groupId>no.nav.doksikkerhetsnett</groupId>
@@ -25,12 +25,11 @@
 
         <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
         <commons-collections4.version>4.4</commons-collections4.version>
-        <resilience4j-spring-boot3.version>2.2.0</resilience4j-spring-boot3.version>
-        <context-propagation.version>1.1.1</context-propagation.version>
+        <context-propagation.version>1.1.2</context-propagation.version>
 
         <!-- Plugins -->
         <maven-toolchains-plugin.version>3.2.0</maven-toolchains-plugin.version>
-        <cyclonedx.version>2.7.11</cyclonedx.version>
+        <cyclonedx.version>2.9.0</cyclonedx.version>
 
         <!-- Test -->
         <spring-cloud-contract-wiremock.version>4.1.4</spring-cloud-contract-wiremock.version>
@@ -53,11 +52,6 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-collections4</artifactId>
                 <version>${commons-collections4.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.resilience4j</groupId>
-                <artifactId>resilience4j-spring-boot3</artifactId>
-                <version>${resilience4j-spring-boot3.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.micrometer</groupId>
