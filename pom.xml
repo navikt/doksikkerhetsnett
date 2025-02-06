@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.5</version>
+        <version>3.4.2</version>
     </parent>
 
     <groupId>no.nav.doksikkerhetsnett</groupId>
@@ -32,7 +32,7 @@
         <cyclonedx.version>2.9.0</cyclonedx.version>
 
         <!-- Test -->
-        <spring-cloud-contract-wiremock.version>4.1.4</spring-cloud-contract-wiremock.version>
+        <spring-cloud-contract-wiremock.version>4.2.0</spring-cloud-contract-wiremock.version>
     </properties>
 
     <dependencyManagement>

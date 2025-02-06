@@ -40,8 +40,8 @@ public class JiraConsumer {
 
 	public JiraConsumer(RestTemplateBuilder restTemplateBuilder, DokSikkerhetsnettProperties dokSikkerhetsnettProperties) {
 		this.restTemplate = restTemplateBuilder
-				.setReadTimeout(Duration.ofSeconds(250))
-				.setConnectTimeout(Duration.ofSeconds(5))
+				.readTimeout(Duration.ofSeconds(250))
+				.connectTimeout(Duration.ofSeconds(5))
 				.basicAuthentication(dokSikkerhetsnettProperties.getServiceuser().getUsername(), dokSikkerhetsnettProperties.getServiceuser().getPassword())
 				.build();
 		this.opprettJiraIssueUrl = dokSikkerhetsnettProperties.getEndpoints().getOpprettjiraissue();
