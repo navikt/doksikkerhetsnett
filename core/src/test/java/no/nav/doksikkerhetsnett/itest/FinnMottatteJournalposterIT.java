@@ -47,7 +47,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @ActiveProfiles("itest")
 class FinnMottatteJournalposterIT {
 
-	private static final String URL_FINNMOTTATTEJOURNALPOSTER = "/rest/internal/journalpostapi/v1/finnMottatteJournalposter/";
+	private static final String URL_FINNMOTTATTEJOURNALPOSTER = "/rest/journalpostapi/v1/finnMottatteJournalposter/";
 	private static final String TEMA_SINGLE = "UFO";
 	private static final String TEMA_MULTI = "UFO,PEN,BAR";
 	private static final String TEMA_NONE = "";
