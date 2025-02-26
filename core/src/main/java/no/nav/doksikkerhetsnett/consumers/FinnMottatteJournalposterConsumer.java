@@ -46,7 +46,7 @@ public class FinnMottatteJournalposterConsumer {
 
 		final String callId = MDC.get(MDC_CALL_ID);
 		return webClient.get()
-				.uri( uriBuilder -> uriBuilder.pathSegment("rest","internal", "journalpostapi","v1","finnMottatteJournalposter", tema, valueOf(antallDager)).build())
+				.uri( uriBuilder -> uriBuilder.pathSegment("rest", "journalpostapi","v1","finnMottatteJournalposter", tema, valueOf(antallDager)).build())
 				.attributes(clientRegistrationId(CLIENT_REGISTRATION_DOKARKIV))
 				.headers(httpHeaders -> {
 					httpHeaders.setContentType(APPLICATION_JSON);
