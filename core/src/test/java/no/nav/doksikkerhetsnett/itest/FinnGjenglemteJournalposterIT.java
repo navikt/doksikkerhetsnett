@@ -24,6 +24,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -65,7 +66,7 @@ class FinnGjenglemteJournalposterIT extends DoksikkerhetsnettItest {
 	@Test
 	void shouldPartitionRequestsToFinnOppgave() {
 
-		stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER))
+		stubFor(get(urlPathEqualTo(URL_FINNMOTTATTEJOURNALPOSTER))
 				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("finnmottattejournalposter/mottatteJournalposter51elementer-happy.json")));
@@ -91,7 +92,7 @@ class FinnGjenglemteJournalposterIT extends DoksikkerhetsnettItest {
 
 	@Test
 	void shouldFinnOppgaveWhen50DuplikateOppgaver() {
-		stubFor(get(urlMatching(URL_FINNMOTTATTEJOURNALPOSTER))
+		stubFor(get(urlPathEqualTo(URL_FINNMOTTATTEJOURNALPOSTER))
 				.willReturn(aResponse().withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("finnmottattejournalposter/mottatteJournalposterMedTemaSingle-happy.json")));
