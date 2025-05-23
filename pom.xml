@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.2</version>
+        <version>3.5.0</version>
     </parent>
 
     <groupId>no.nav.doksikkerhetsnett</groupId>
@@ -23,8 +23,8 @@
     <properties>
         <java.version>21</java.version>
 
-        <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
-        <commons-collections4.version>4.4</commons-collections4.version>
+        <logstash-logback-encoder.version>8.1</logstash-logback-encoder.version>
+        <commons-collections4.version>4.5.0</commons-collections4.version>
         <context-propagation.version>1.1.2</context-propagation.version>
 
         <!-- Plugins -->
@@ -32,7 +32,7 @@
         <cyclonedx.version>2.9.0</cyclonedx.version>
 
         <!-- Test -->
-        <spring-cloud-contract-wiremock.version>4.2.0</spring-cloud-contract-wiremock.version>
+        <spring-cloud-contract-wiremock.version>4.2.1</spring-cloud-contract-wiremock.version>
     </properties>
 
     <dependencyManagement>
