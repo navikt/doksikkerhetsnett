@@ -59,3 +59,13 @@ spec:
     application:
       enabled: true
   webproxy: true
+  observability:
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+  envFrom:
+    - secret: slack-alerts

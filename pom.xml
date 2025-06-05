@@ -26,6 +26,7 @@
         <logstash-logback-encoder.version>8.1</logstash-logback-encoder.version>
         <commons-collections4.version>4.5.0</commons-collections4.version>
         <context-propagation.version>1.1.2</context-propagation.version>
+        <slack-api-client.version>1.45.3</slack-api-client.version>
 
         <!-- Plugins -->
         <maven-toolchains-plugin.version>3.2.0</maven-toolchains-plugin.version>
@@ -57,6 +58,11 @@
                 <groupId>io.micrometer</groupId>
                 <artifactId>context-propagation</artifactId>
                 <version>${context-propagation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.slack.api</groupId>
+                <artifactId>slack-api-client</artifactId>
+                <version>${slack-api-client.version}</version>
             </dependency>
 
             <!--test-->

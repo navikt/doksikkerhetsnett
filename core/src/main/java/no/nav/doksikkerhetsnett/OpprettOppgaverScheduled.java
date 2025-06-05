@@ -6,13 +6,14 @@ import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.responses.OpprettOppgaveResponse;
 import no.nav.doksikkerhetsnett.services.FinnGjenglemteJournalposterService;
 import no.nav.doksikkerhetsnett.services.OpprettOppgaveService;
+import no.nav.doksikkerhetsnett.services.SlackService;
 import org.slf4j.MDC;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
 import static no.nav.doksikkerhetsnett.utils.Tema.temaerStringToSet;
@@ -21,17 +22,20 @@ import static no.nav.doksikkerhetsnett.utils.Tema.temaerStringToSet;
 @Component
 public class OpprettOppgaverScheduled {
 
-	private final OpprettOppgaveService opprettOppgaveService;
+	private final SlackService slackService;
 	private final DokSikkerhetsnettProperties dokSikkerhetsnettProperties;
+	private final OpprettOppgaveService opprettOppgaveService;
 	private final FinnGjenglemteJournalposterService finnGjenglemteJournalposterService;
 
 	private static final int FEM_DAGER = 5;
 
-	public OpprettOppgaverScheduled(OpprettOppgaveService opprettOppgaveService,
+	public OpprettOppgaverScheduled(SlackService slackService,
 									DokSikkerhetsnettProperties dokSikkerhetsnettProperties,
+									OpprettOppgaveService opprettOppgaveService,
 									FinnGjenglemteJournalposterService finnGjenglemteJournalposterService) {
-		this.opprettOppgaveService = opprettOppgaveService;
+		this.slackService = slackService;
 		this.dokSikkerhetsnettProperties = dokSikkerhetsnettProperties;
+		this.opprettOppgaveService = opprettOppgaveService;
 		this.finnGjenglemteJournalposterService = finnGjenglemteJournalposterService;
 	}
 
@@ -42,25 +46,32 @@ public class OpprettOppgaverScheduled {
 			MDC.put(MDC_CALL_ID, UUID.randomUUID().toString());
 			log.info("Starter den daglige skriv-kjøringen (man-fre)");
 
-			temaerStringToSet(dokSikkerhetsnettProperties.getSkrivTemaer())
-					.forEach(this::lagOppgaverForGlemteJournalposter);
+			AtomicInteger antallFeiledeOpprettingerAvOppgave = new AtomicInteger(0);
+			for (String tema : temaerStringToSet(dokSikkerhetsnettProperties.getSkrivTemaer())) {
+				try {
+					List<Journalpost> ubehandletJournalpostsUtenOppgave = finnGjenglemteJournalposterService.finnJournalposterUtenOppgaveUpdateMetrics(tema, FEM_DAGER);
+					List<OpprettOppgaveResponse> opprettedeOppgaver = opprettOppgaveService.opprettOppgaver(ubehandletJournalpostsUtenOppgave);
+
+					if (!opprettedeOppgaver.isEmpty()) {
+						log.info("Har opprettet {} oppgaver for tema={} med ID-er: {}",
+								opprettedeOppgaver.size(), tema, opprettedeOppgaver.stream().map(OpprettOppgaveResponse::getId).toList());
+					}
+				} catch (Exception e) {
+					log.error("Oppretting av oppgaver for tema={} feilet med feilmelding={}", tema, e.getMessage(), e);
+
+					antallFeiledeOpprettingerAvOppgave.getAndIncrement();
+				}
+			}
+
+			if (antallFeiledeOpprettingerAvOppgave.get() > 0) {
+				var feilmelding = "OpprettOppgave cron-jobb feilet for %s tema.".formatted(antallFeiledeOpprettingerAvOppgave.get());
+				log.error(feilmelding);
+				slackService.sendMelding(feilmelding);
+			}
 
 			log.info("Avslutter den daglige skriv-kjøringen (man-fre)");
 		} finally {
 			MDC.clear();
-		}
-	}
-
-	public void lagOppgaverForGlemteJournalposter(String tema) {
-		try {
-			List<Journalpost> ubehandletJournalpostsUtenOppgave = finnGjenglemteJournalposterService.finnJournalposterUtenOppgaveUpdateMetrics(tema, FEM_DAGER);
-			List<OpprettOppgaveResponse> opprettedeOppgaver = opprettOppgaveService.opprettOppgaver(ubehandletJournalpostsUtenOppgave);
-			if (!opprettedeOppgaver.isEmpty()) {
-				log.info("Doksikkerhetsnett har opprettet {} oppgaver for tema {} med ID'ene: {}", opprettedeOppgaver.size(), tema,
-						opprettedeOppgaver.stream().map(OpprettOppgaveResponse::getId).toList());
-			}
-		} catch (Exception e) {
-			log.error("Doksikkerhetsnett feilet under oppretting av oppgaver for tema={}", tema, e);
 		}
 	}
 

@@ -17,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 public class DokSikkerhetsnettProperties {
 
     private final Endpoints endpoints = new Endpoints();
+    private final SlackProperties slack = new SlackProperties();
 
     @NotNull
     private ServiceUserProperties serviceuser;
@@ -51,6 +52,17 @@ public class DokSikkerhetsnettProperties {
         private String url;
         @NotEmpty
         private String scope;
+    }
+
+    @Data
+    @Validated
+    public static class SlackProperties {
+        @NotEmpty
+        @ToString.Exclude
+        private String token;
+        @NotEmpty
+        private String channel;
+        private boolean enabled;
     }
 }
 
