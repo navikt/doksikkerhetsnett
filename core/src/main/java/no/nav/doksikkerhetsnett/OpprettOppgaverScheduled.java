@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
 import static no.nav.doksikkerhetsnett.utils.Tema.temaerStringToSet;
@@ -45,7 +46,7 @@ public class OpprettOppgaverScheduled {
 			MDC.put(MDC_CALL_ID, UUID.randomUUID().toString());
 			log.info("Starter den daglige skriv-kjøringen (man-fre)");
 
-			var antallFeiledeOpprettingerAvOppgave = 0;
+			AtomicInteger antallFeiledeOpprettingerAvOppgave = new AtomicInteger(0);
 			for (String tema : temaerStringToSet(dokSikkerhetsnettProperties.getSkrivTemaer())) {
 				try {
 					List<Journalpost> ubehandletJournalpostsUtenOppgave = finnGjenglemteJournalposterService.finnJournalposterUtenOppgaveUpdateMetrics(tema, FEM_DAGER);
@@ -58,12 +59,12 @@ public class OpprettOppgaverScheduled {
 				} catch (Exception e) {
 					log.error("Oppretting av oppgaver for tema={} feilet med feilmelding={}", tema, e.getMessage(), e);
 
-					antallFeiledeOpprettingerAvOppgave++;
+					antallFeiledeOpprettingerAvOppgave.getAndIncrement();
 				}
 			}
 
-			if (antallFeiledeOpprettingerAvOppgave > 0) {
-				var feilmelding = "OpprettOppgave cron-jobb feilet for %s tema.".formatted(antallFeiledeOpprettingerAvOppgave);
+			if (antallFeiledeOpprettingerAvOppgave.get() > 0) {
+				var feilmelding = "OpprettOppgave cron-jobb feilet for %s tema.".formatted(antallFeiledeOpprettingerAvOppgave.get());
 				log.error(feilmelding);
 				slackService.sendMelding(feilmelding);
 			}

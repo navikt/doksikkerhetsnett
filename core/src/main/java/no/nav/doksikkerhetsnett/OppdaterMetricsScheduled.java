@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
 
@@ -44,7 +45,7 @@ public class OppdaterMetricsScheduled {
 
 			metricsService.clearOldMetrics();
 
-			int antallFeiledeOppdateringerFor1Dagsmetrikk = 0;
+			AtomicInteger antallFeiledeOppdateringerFor1Dagsmetrikk = new AtomicInteger(0);
 			for (String tema : Tema.getAlleTema()) {
 				try {
 					int antall = finnGjenglemteJournalposterService.finnJournalposterUtenOppgaveUpdateMetrics(tema, EN_DAG).size();
@@ -52,11 +53,11 @@ public class OppdaterMetricsScheduled {
 				} catch (Exception e) {
 					log.error("Klarte ikke å oppdatere 1-dagsmetrikk for tema={}", tema, e);
 
-					antallFeiledeOppdateringerFor1Dagsmetrikk++;
+					antallFeiledeOppdateringerFor1Dagsmetrikk.getAndIncrement();
 				}
 			}
 
-			int antallFeiledeOppdateringerFor2Dagsmetrikk = 0;
+			AtomicInteger antallFeiledeOppdateringerFor2Dagsmetrikk = new AtomicInteger(0);
 			for (String tema : Tema.getAlleTema()) {
 				try {
 					int antall = finnGjenglemteJournalposterService.finnJournalposterUtenOppgaveUpdateMetrics(tema, TO_DAGER).size();
@@ -64,13 +65,13 @@ public class OppdaterMetricsScheduled {
 				} catch (Exception e) {
 					log.error("Klarte ikke å oppdatere 2-dagsmetrikk for tema={}", tema, e);
 
-					antallFeiledeOppdateringerFor2Dagsmetrikk++;
+					antallFeiledeOppdateringerFor2Dagsmetrikk.getAndIncrement();
 				}
 			}
 
-			if (antallFeiledeOppdateringerFor1Dagsmetrikk > 0 || antallFeiledeOppdateringerFor2Dagsmetrikk > 0) {
+			if (antallFeiledeOppdateringerFor1Dagsmetrikk.get() > 0 || antallFeiledeOppdateringerFor2Dagsmetrikk.get() > 0) {
 				var feilmelding = "OppdaterMetrikker cron-jobb feilet med å oppdatere 1-dagsmetrikk for %s tema og 2-dagsmetrikk for %s tema."
-						.formatted(antallFeiledeOppdateringerFor1Dagsmetrikk, antallFeiledeOppdateringerFor2Dagsmetrikk);
+						.formatted(antallFeiledeOppdateringerFor1Dagsmetrikk.get(), antallFeiledeOppdateringerFor2Dagsmetrikk.get());
 				log.error(feilmelding);
 				slackService.sendMelding(feilmelding);
 			}
