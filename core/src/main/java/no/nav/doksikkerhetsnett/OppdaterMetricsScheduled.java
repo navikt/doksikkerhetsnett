@@ -44,29 +44,37 @@ public class OppdaterMetricsScheduled {
 
 			metricsService.clearOldMetrics();
 
+			int antallFeiledeOppdateringerFor1Dagsmetrikk = 0;
 			for (String tema : Tema.getAlleTema()) {
 				try {
 					int antall = finnGjenglemteJournalposterService.finnJournalposterUtenOppgaveUpdateMetrics(tema, EN_DAG).size();
 					log.info("Fant {} journalposter uten oppgave som var {} dag eller eldre.", antall, EN_DAG);
 				} catch (Exception e) {
-					var feilmelding = "OppdaterMetrics (1-dagsmetrikker) cron-jobb feilet for tema=%s med feilmelding=%s".formatted(tema, e.getMessage());
+					log.error("Klarte ikke å oppdatere 1-dagsmetrikk for tema={}", tema, e);
 
-					log.error(feilmelding, e);
-					slackService.sendMelding(feilmelding);
+					antallFeiledeOppdateringerFor1Dagsmetrikk++;
 				}
 			}
 
+			int antallFeiledeOppdateringerFor2Dagsmetrikk = 0;
 			for (String tema : Tema.getAlleTema()) {
 				try {
 					int antall = finnGjenglemteJournalposterService.finnJournalposterUtenOppgaveUpdateMetrics(tema, TO_DAGER).size();
 					log.info("Fant {} journalposter uten oppgave som var {} dager eller eldre.", antall, TO_DAGER);
 				} catch (Exception e) {
-					var feilmelding = "OppdaterMetrics (2-dagsmetrikker) cron-jobb feilet for tema=%s med feilmelding=%s".formatted(tema, e.getMessage());
+					log.error("Klarte ikke å oppdatere 2-dagsmetrikk for tema={}", tema, e);
 
-					log.error(feilmelding, e);
-					slackService.sendMelding(feilmelding);
+					antallFeiledeOppdateringerFor2Dagsmetrikk++;
 				}
 			}
+
+			if (antallFeiledeOppdateringerFor1Dagsmetrikk > 0 || antallFeiledeOppdateringerFor2Dagsmetrikk > 0) {
+				var feilmelding = "OppdaterMetrikker cron-jobb feilet med å oppdatere 1-dagsmetrikk for %s tema og 2-dagsmetrikk for %s tema."
+						.formatted(antallFeiledeOppdateringerFor1Dagsmetrikk, antallFeiledeOppdateringerFor2Dagsmetrikk);
+				log.error(feilmelding);
+				slackService.sendMelding(feilmelding);
+			}
+
 			log.info("Daglig kjøring av doksikkerhetsnett les-modus er ferdig");
 		} finally {
 			MDC.clear();

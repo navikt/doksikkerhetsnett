@@ -45,29 +45,32 @@ public class OpprettOppgaverScheduled {
 			MDC.put(MDC_CALL_ID, UUID.randomUUID().toString());
 			log.info("Starter den daglige skriv-kjøringen (man-fre)");
 
-			temaerStringToSet(dokSikkerhetsnettProperties.getSkrivTemaer())
-					.forEach(this::lagOppgaverForGlemteJournalposter);
+			var antallFeiledeOpprettingerAvOppgave = 0;
+			for (String tema : temaerStringToSet(dokSikkerhetsnettProperties.getSkrivTemaer())) {
+				try {
+					List<Journalpost> ubehandletJournalpostsUtenOppgave = finnGjenglemteJournalposterService.finnJournalposterUtenOppgaveUpdateMetrics(tema, FEM_DAGER);
+					List<OpprettOppgaveResponse> opprettedeOppgaver = opprettOppgaveService.opprettOppgaver(ubehandletJournalpostsUtenOppgave);
+
+					if (!opprettedeOppgaver.isEmpty()) {
+						log.info("Har opprettet {} oppgaver for tema={} med ID-er: {}",
+								opprettedeOppgaver.size(), tema, opprettedeOppgaver.stream().map(OpprettOppgaveResponse::getId).toList());
+					}
+				} catch (Exception e) {
+					log.error("Oppretting av oppgaver for tema={} feilet med feilmelding={}", tema, e.getMessage(), e);
+
+					antallFeiledeOpprettingerAvOppgave++;
+				}
+			}
+
+			if (antallFeiledeOpprettingerAvOppgave > 0) {
+				var feilmelding = "OpprettOppgave cron-jobb feilet for %s tema.".formatted(antallFeiledeOpprettingerAvOppgave);
+				log.error(feilmelding);
+				slackService.sendMelding(feilmelding);
+			}
 
 			log.info("Avslutter den daglige skriv-kjøringen (man-fre)");
 		} finally {
 			MDC.clear();
-		}
-	}
-
-	public void lagOppgaverForGlemteJournalposter(String tema) {
-		try {
-			List<Journalpost> ubehandletJournalpostsUtenOppgave = finnGjenglemteJournalposterService.finnJournalposterUtenOppgaveUpdateMetrics(tema, FEM_DAGER);
-			List<OpprettOppgaveResponse> opprettedeOppgaver = opprettOppgaveService.opprettOppgaver(ubehandletJournalpostsUtenOppgave);
-
-			if (!opprettedeOppgaver.isEmpty()) {
-				log.info("Doksikkerhetsnett har opprettet {} oppgaver for tema {} med ID'ene: {}",
-						opprettedeOppgaver.size(), tema, opprettedeOppgaver.stream().map(OpprettOppgaveResponse::getId).toList());
-			}
-		} catch (Exception e) {
-			var feilmelding = "OpprettOppgave cron-jobb feilet for tema=%s med feilmelding=%s".formatted(tema, e.getMessage());
-
-			log.error(feilmelding, e);
-			slackService.sendMelding(feilmelding);
 		}
 	}
 
