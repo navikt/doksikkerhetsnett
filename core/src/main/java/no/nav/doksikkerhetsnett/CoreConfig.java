@@ -1,5 +1,10 @@
 package no.nav.doksikkerhetsnett;
 
+import no.nav.dok.jiraapi.JiraProperties;
+import no.nav.dok.jiraapi.JiraService;
+import no.nav.dok.jiraapi.client.JiraClient;
+import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
+import no.nav.doksikkerhetsnett.config.properties.ServiceUserProperties;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
@@ -32,6 +37,25 @@ public class CoreConfig {
 		connectionManager.setMaxTotal(400);
 		connectionManager.setDefaultMaxPerRoute(100);
 		return connectionManager;
+	}
+
+	@Bean
+	public JiraService jiraService(JiraClient jiraClient) {
+		return new JiraService(jiraClient);
+	}
+
+	@Bean
+	public JiraClient jiraClient(DokSikkerhetsnettProperties properties) {
+		return new JiraClient(jiraProperties(properties));
+	}
+
+	public JiraProperties jiraProperties(DokSikkerhetsnettProperties properties) {
+		String jiraUrl = properties.getEndpoints().getJira();
+		ServiceUserProperties serviceuser = properties.getServiceuser();
+		return JiraProperties.builder()
+				.jiraServiceUser(new JiraProperties.JiraServiceUser(serviceuser.getUsername(), serviceuser.getPassword()))
+				.url(jiraUrl)
+				.build();
 	}
 
 }

@@ -3,7 +3,7 @@
   "SRVDOKSIKKERHETSNETT": "/serviceuser/data/dev/srvdoksikkerhetsnt",
   "DOKSIKKERHETSNETT_ENDPOINTS_OPPGAVE_URL": "http://oppgave.oppgavehandtering.svc.nais.local",
   "DOKSIKKERHETSNETT_ENDPOINTS_OPPGAVE_SCOPE": "api://dev-fss.oppgavehandtering.oppgave/.default",
-  "DOKSIKKERHETSNETT_ENDPOINTS_OPPRETTJIRAISSUE": "https://jira-q1.adeo.no/rest/api/2/issue",
+  "DOKSIKKERHETSNETT_ENDPOINTS_JIRA": "https://jira-q1.adeo.no",
   "DOKSIKKERHETSNETT_ENDPOINTS_DOKARKIV_SCOPE": "api://dev-fss.teamdokumenthandtering.dokarkiv/.default",
   "DOKSIKKERHETSNETT_ENDPOINTS_DOKARKIV_URL": "http://dokarkiv.teamdokumenthandtering.svc.nais.local",
   "DOKSIKKERHETSNETT_ENDPOINTS_PDL_SCOPE": "api://dev-fss.pdl.pdl-api/.default",

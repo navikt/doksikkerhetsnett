@@ -22,6 +22,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -37,6 +38,7 @@ public abstract class DoksikkerhetsnettItest {
 	protected static final String URL_OPPGAVE_JOURNALPOST_SEARCH = "/api/v1/oppgaver\\?journalpostId=111111111&journalpostId=222222222&journalpostId=333333333&journalpostId=444444444&journalpostId=555555555&journalpostId=666666666&oppgavetype=JFR&oppgavetype=FDR&statuskategori=AAPEN&limit=50";
 	protected static final String URL_OPPGAVE = "/api/v1/oppgaver";
 	protected static final String URL_JIRA = "/rest/api/2/issue";
+	protected static final String JIRA_PROJECT_URL = "/rest/api/2/project/ADMKDL";
 	protected static final String URL_PDL = "/pdl/graphql";
 	protected static final String METRIC_TAGS = "UFO;ALTINN;0000";
 
@@ -77,6 +79,10 @@ public abstract class DoksikkerhetsnettItest {
 						.withStatus(OK.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 						.withBodyFile("azure/token_response_dummy.json")));
+		stubFor(get(urlMatching(JIRA_PROJECT_URL))
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("opprettOppgave/jira-project.json")));
 	}
 
 }

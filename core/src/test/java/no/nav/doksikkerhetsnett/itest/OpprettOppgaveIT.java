@@ -36,7 +36,9 @@ import static no.nav.doksikkerhetsnett.entities.Bruker.TYPE_PERSON;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -48,6 +50,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @ActiveProfiles("itest")
 class OpprettOppgaveIT {
 
+	private static final String JIRA_PROJECT_URL = "/rest/api/2/project/ADMKDL";
 	private static final String URL_OPPGAVE = "/api/v1/oppgaver";
 	private static final String URL_JIRA = "/rest/api/2/issue";
 	private static final String URL_PDL = "/pdl/graphql";
@@ -171,9 +174,13 @@ class OpprettOppgaveIT {
 				.willReturn(aResponse().withStatus(BAD_REQUEST.value())
 						.withBodyFile("opprettOppgave/opprettOppgave-ukjentFeil.json")));
 		stubFor(post(urlMatching(URL_JIRA))
-				.willReturn(aResponse().withStatus(OK.value())
+				.willReturn(aResponse().withStatus(CREATED.value())
 						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("opprettOppgave/jiraResponse-ok.json")));
+		stubFor(get(urlMatching(JIRA_PROJECT_URL))
+				.willReturn(aResponse().withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("opprettOppgave/jira-project.json")));
 
 		Oppgave jp = Oppgave.builder()
 				.journalpostId("555")

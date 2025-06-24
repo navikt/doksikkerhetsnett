@@ -7,7 +7,6 @@ import no.nav.doksikkerhetsnett.consumers.pdl.PdlIdentConsumer;
 import no.nav.doksikkerhetsnett.consumers.pdl.PersonIkkeFunnetException;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
-import no.nav.doksikkerhetsnett.entities.responses.JiraResponse;
 import no.nav.doksikkerhetsnett.entities.responses.OpprettOppgaveResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.PdlFunctionalException;
 import org.springframework.stereotype.Service;
@@ -63,7 +62,7 @@ public class OpprettOppgaveService {
 		}
 	}
 
-	public OpprettOppgaveResponse opprettOppgaveMedLiteMetadata(Oppgave oppgave) {
+	private OpprettOppgaveResponse opprettOppgaveMedLiteMetadata(Oppgave oppgave) {
 		try {
 			log.info(
 					"Klarte ikke opprette oppgave med oppgavetype {}. Prøver å opprette oppgave med oppgavetype={} med journalpostId={}",
@@ -73,8 +72,8 @@ public class OpprettOppgaveService {
 			);
 			return opprettOppgaveConsumer.opprettOppgave(createMinimalOppgaveFromJournalpost(oppgave, TEMA_PENSJON.equals(oppgave.getTema()) ? OPPGAVETYPE_JOURNALFOERT : OPPGAVETYPE_FORDELING));
 		} catch (WebClientResponseException e) {
-			JiraResponse response = jiraConsumer.opprettJiraIssue(oppgave, e);
-			log.info("Doksikkerhetsnett opprettet en jira-issue med kode {}", response.getKey());
+			String jiraIssueKey = jiraConsumer.opprettJiraIssue(oppgave, e);
+			log.info("Doksikkerhetsnett opprettet et jira-issue med kode {}", jiraIssueKey);
 			return null;
 		}
 	}

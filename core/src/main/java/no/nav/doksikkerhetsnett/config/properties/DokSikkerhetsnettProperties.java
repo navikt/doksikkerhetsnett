@@ -33,7 +33,7 @@ public class DokSikkerhetsnettProperties {
     public static class Endpoints {
 
         @NotNull
-        private String opprettjiraissue;
+        private String jira;
 
         @NotNull
         private AzureEndpoint dokarkiv;
