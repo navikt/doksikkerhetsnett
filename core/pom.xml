@@ -80,6 +80,10 @@
             <groupId>com.slack.api</groupId>
             <artifactId>slack-api-client</artifactId>
         </dependency>
+        <dependency>
+            <groupId>no.nav.dok-common</groupId>
+            <artifactId>jiraapi</artifactId>
+        </dependency>
 
         <!-- Test -->
         <dependency>

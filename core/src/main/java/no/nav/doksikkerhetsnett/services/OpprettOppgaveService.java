@@ -1,13 +1,13 @@
 package no.nav.doksikkerhetsnett.services;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.dok.jiraapi.JiraResponse;
 import no.nav.doksikkerhetsnett.consumers.JiraConsumer;
 import no.nav.doksikkerhetsnett.consumers.OpprettOppgaveConsumer;
 import no.nav.doksikkerhetsnett.consumers.pdl.PdlIdentConsumer;
 import no.nav.doksikkerhetsnett.consumers.pdl.PersonIkkeFunnetException;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
-import no.nav.doksikkerhetsnett.entities.responses.JiraResponse;
 import no.nav.doksikkerhetsnett.entities.responses.OpprettOppgaveResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.PdlFunctionalException;
 import org.springframework.stereotype.Service;
@@ -74,7 +74,7 @@ public class OpprettOppgaveService {
 			return opprettOppgaveConsumer.opprettOppgave(createMinimalOppgaveFromJournalpost(oppgave, TEMA_PENSJON.equals(oppgave.getTema()) ? OPPGAVETYPE_JOURNALFOERT : OPPGAVETYPE_FORDELING));
 		} catch (WebClientResponseException e) {
 			JiraResponse response = jiraConsumer.opprettJiraIssue(oppgave, e);
-			log.info("Doksikkerhetsnett opprettet en jira-issue med kode {}", response.getKey());
+			log.info("Doksikkerhetsnett opprettet en jira-issue med kode {}", response.jiraIssueKey());
 			return null;
 		}
 	}
