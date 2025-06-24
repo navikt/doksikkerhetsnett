@@ -2,21 +2,16 @@ package no.nav.doksikkerhetsnett.consumers;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.jiraapi.JiraRequest;
-import no.nav.dok.jiraapi.JiraResponse;
-import no.nav.dok.jiraapi.JiraService;
 import no.nav.dok.jiraapi.client.JiraClient;
 import no.nav.dok.jiracore.exception.JiraClientException;
 import no.nav.dok.jiracore.interndomain.Issue;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFinnesIkkeFunctionalException;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -38,14 +33,14 @@ public class JiraConsumer {
 		this.opprettJiraIssueUrl = dokSikkerhetsnettProperties.getEndpoints().getJira();
 	}
 
-	public JiraResponse opprettJiraIssue(Oppgave oppgave, WebClientResponseException exception) {
+	public String opprettJiraIssue(Oppgave oppgave, WebClientResponseException exception) {
 		try {
 			JiraRequest jiraRequest = createIssue(oppgave, exception);
 			log.info("doksikkerhetsnett prøver å lage en jira-issue i prosjekt {} med tittel \"{}\"", PROJECT_KEY, jiraRequest.summary());
 
 			Issue issue = jiraClient.opprettJira(jiraRequest, PROJECT_KEY, issueType -> ISSUETYPE_NAME.equalsIgnoreCase(issueType.name()), Issue.class, Stream.empty());
 
-			return JiraResponse.builder().jiraIssueKey(issue.key()).message(this.responseUrl(issue.self(), issue.key())).status(this.getStatus(issue)).httpStatusCode("OK").build();
+			return issue.key();
 		} catch (JiraClientException e) {
 			throw new FinnOppgaveFinnesIkkeFunctionalException(format("OpprettJiraIssue feilet funksjonelt med feilmelding=%s. Url=%s",
 					e.getMessage(), opprettJiraIssueUrl), e);
@@ -75,14 +70,5 @@ public class JiraConsumer {
 			   + "\noppgavetype: " + oppgave.getOppgavetype()
 			   + "\nprioritet: " + oppgave.getPrioritet()
 			   + "\naktivDato: " + oppgave.getAktivDato();
-	}
-
-	private String responseUrl(String self, String key) {
-		URI uri = URI.create(self);
-		return "https://" + uri.getHost() + "/browse/" + key;
-	}
-
-	private String getStatus(Issue issue) {
-		return !Objects.isNull(issue.fields()) && !Objects.isNull(issue.fields().status()) ? issue.fields().status().name() : null;
 	}
 }
