@@ -50,13 +50,24 @@ public class JiraConsumer {
 	private JiraRequest createIssue(Oppgave oppgave, WebClientResponseException e) {
 		return JiraRequest.builder()
 				.labels(LABELS)
-				.summary("Doksikkerhetsnett feilet med å opprette oppgave")
-				.description("Doksikkerhetsnett prøvde å lage en oppgave for den ubehandlede journalposten med id " + oppgave.getJournalpostId() + " og tema " + oppgave.getTema() + ".\n"
-						+ "Forsøkt opprettet oppgave så slik ut:\n"
-						+ prettifyOppgave(oppgave) + "\n\n"
-						+ "Oppgave-api kastet denne feilmeldingen:\n"
-						+ e.getResponseBodyAsString())
+				.summary("Doksikkerhetsnett feilet i å opprette oppgave")
+				.description(formatDescription(oppgave, e))
 				.build();
+	}
+
+	private String formatDescription(Oppgave oppgave, WebClientResponseException e) {
+		return """
+				Doksikkerhetsnett prøvde å lage en oppgave for den ubehandlede journalposten med id %s og tema %s.
+				Forsøkt opprettet oppgave så slik ut:
+				%s
+				
+				Oppgave-api kastet denne feilmeldingen:
+				%s
+				""".formatted(
+				oppgave.getJournalpostId(),
+				oppgave.getTema(),
+				prettifyOppgave(oppgave),
+				e.getResponseBodyAsString());
 	}
 
 	private String prettifyOppgave(Oppgave oppgave) {
