@@ -15,7 +15,7 @@ public class Tema {
 
 	// Alle temaer fra https://confluence.adeo.no/display/BOA/Enum%3A+Tema. Oppdatert 24.10.2023
 	@Getter
-	private static final Set<String> alleTema = Set.of("AAP", "AAR", "AGR", "ARP", "ARS", "BAR", "BID", "BIL", "DAG", "ENF", "ERS", "EYB", "EYO", "FAR", "FEI", "FIP", "FOR", "FOS", "FUL", "FRI", "GEN", "GRA", "GRU", "HEL", "HJE", "IAR", "IND", "KLL", "KON", "KTA", "KTR", "MED", "MOB", "OMS", "OPA", "OPP", "PEN", "PER", "REH", "REK", "RPO", "RVE", "SAA", "SAK", "SAP", "SER", "STO", "SUP", "SYK", "SYM", "TIL", "TRK", "TRY", "TSO", "TSR", "UFM", "UFO", "UKJ", "VEN", "YRA", "YRK");
+	private static final Set<String> alleTema = Set.of("AAP", "AAR", "AGR", "AKT", "ARP", "ARS", "BAR", "BID", "BIL", "DAG", "ENF", "ERS", "EYB", "EYO", "FAR", "FEI", "FIP", "FOR", "FOS", "FUL", "FRI", "GEN", "GRA", "GRU", "HEL", "HJE", "IAR", "IND", "KLL", "KON", "KTA", "KTR", "MED", "MOB", "OMS", "OPA", "OPP", "PAI", "PEN", "PER", "POI", "REH", "REK", "RPO", "RVE", "SAA", "SAK", "SAP", "SER", "STO", "SUP", "SYK", "SYM", "TIL", "TRK", "TRY", "TSO", "TSR", "UFM", "UFO", "UKJ", "UNG", "VEN", "YRA", "YRK");
 
 	public static String formatTemaList(List<String> temaer) {
 		if (temaer == null) {
