@@ -38,7 +38,7 @@ public abstract class DoksikkerhetsnettItest {
 	protected static final String URL_OPPGAVE_JOURNALPOST_SEARCH = "/api/v1/oppgaver\\?journalpostId=111111111&journalpostId=222222222&journalpostId=333333333&journalpostId=444444444&journalpostId=555555555&journalpostId=666666666&oppgavetype=JFR&oppgavetype=FDR&statuskategori=AAPEN&limit=50";
 	protected static final String URL_OPPGAVE = "/api/v1/oppgaver";
 	protected static final String URL_JIRA = "/rest/api/2/issue";
-	protected static final String JIRA_PROJECT_URL = "/rest/api/2/project/ADMKDL";
+	protected static final String JIRA_PROJECT_URL = "/rest/api/2/project/MMA";
 	protected static final String URL_PDL = "/pdl/graphql";
 	protected static final String METRIC_TAGS = "UFO;ALTINN;0000";
 

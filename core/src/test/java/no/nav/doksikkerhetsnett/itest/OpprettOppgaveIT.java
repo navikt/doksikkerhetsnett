@@ -50,7 +50,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @ActiveProfiles("itest")
 class OpprettOppgaveIT {
 
-	private static final String JIRA_PROJECT_URL = "/rest/api/2/project/ADMKDL";
+	private static final String JIRA_PROJECT_URL = "/rest/api/2/project/MMA";
 	private static final String URL_OPPGAVE = "/api/v1/oppgaver";
 	private static final String URL_JIRA = "/rest/api/2/issue";
 	private static final String URL_PDL = "/pdl/graphql";
