@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.itest.config;
+package no.nav.doksikkerhetsnett.services.config;
 
 import no.nav.doksikkerhetsnett.CoreConfig;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;

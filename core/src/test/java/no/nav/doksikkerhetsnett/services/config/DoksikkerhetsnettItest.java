@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.itest.config;
+package no.nav.doksikkerhetsnett.services.config;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;

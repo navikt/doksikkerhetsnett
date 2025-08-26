@@ -1,10 +1,10 @@
-package no.nav.doksikkerhetsnett.itest;
+package no.nav.doksikkerhetsnett.services;
 
 import no.nav.doksikkerhetsnett.consumers.FinnOppgaveConsumer;
 import no.nav.doksikkerhetsnett.entities.responses.FinnOppgaveResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnOppgaveTechnicalException;
-import no.nav.doksikkerhetsnett.itest.config.DoksikkerhetsnettItest;
+import no.nav.doksikkerhetsnett.services.config.DoksikkerhetsnettItest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

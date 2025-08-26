@@ -50,7 +50,7 @@ public class OpprettOppgaveService {
 				.toList();
 	}
 
-	public OpprettOppgaveResponse opprettOppgave(Oppgave oppgave) {
+	OpprettOppgaveResponse opprettOppgave(Oppgave oppgave) {
 		try {
 			log.info("Prøver å opprette en oppgave med journalpostId={}", oppgave.getJournalpostId());
 			return opprettOppgaveConsumer.opprettOppgave(oppgave);

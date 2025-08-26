@@ -1,7 +1,7 @@
-package no.nav.doksikkerhetsnett.itest;
+package no.nav.doksikkerhetsnett.services;
 
 import no.nav.doksikkerhetsnett.OpprettOppgaverScheduled;
-import no.nav.doksikkerhetsnett.itest.config.DoksikkerhetsnettItest;
+import no.nav.doksikkerhetsnett.services.config.DoksikkerhetsnettItest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,7 +16,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 class OpprettOppgaverScheduledIT extends DoksikkerhetsnettItest {

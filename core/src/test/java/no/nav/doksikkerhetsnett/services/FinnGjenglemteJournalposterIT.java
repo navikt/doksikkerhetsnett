@@ -1,11 +1,10 @@
-package no.nav.doksikkerhetsnett.itest;
+package no.nav.doksikkerhetsnett.services;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
-import no.nav.doksikkerhetsnett.itest.config.DoksikkerhetsnettItest;
-import no.nav.doksikkerhetsnett.itest.config.TestConfig;
-import no.nav.doksikkerhetsnett.services.FinnGjenglemteJournalposterService;
+import no.nav.doksikkerhetsnett.services.config.DoksikkerhetsnettItest;
+import no.nav.doksikkerhetsnett.services.config.TestConfig;
 import no.nav.doksikkerhetsnett.utils.Tema;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

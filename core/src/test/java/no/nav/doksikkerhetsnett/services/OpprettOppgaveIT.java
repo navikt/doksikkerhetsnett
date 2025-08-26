@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.itest;
+package no.nav.doksikkerhetsnett.services;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.stubbing.Scenario;
@@ -7,8 +7,7 @@ import no.nav.doksikkerhetsnett.entities.Bruker;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
 import no.nav.doksikkerhetsnett.entities.responses.OpprettOppgaveResponse;
-import no.nav.doksikkerhetsnett.itest.config.TestConfig;
-import no.nav.doksikkerhetsnett.services.OpprettOppgaveService;
+import no.nav.doksikkerhetsnett.services.config.TestConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
