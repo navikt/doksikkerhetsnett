@@ -2,6 +2,7 @@ package no.nav.doksikkerhetsnett.services.config;
 
 import no.nav.doksikkerhetsnett.CoreConfig;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
+import no.nav.doksikkerhetsnett.config.properties.JiraAuthProperties;
 import no.nav.doksikkerhetsnett.consumers.azure.AzureProperties;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Import;
 @EnableAutoConfiguration
 @EnableConfigurationProperties({
 		DokSikkerhetsnettProperties.class,
+		JiraAuthProperties.class,
 		AzureProperties.class
 })
 @Import({CoreConfig.class})
