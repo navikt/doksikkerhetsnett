@@ -69,3 +69,4 @@ spec:
       runtime: java
   envFrom:
     - secret: slack-alerts
+    - secret: jira-service-user

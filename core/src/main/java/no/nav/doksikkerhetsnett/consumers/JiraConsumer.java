@@ -21,8 +21,8 @@ import static java.util.Arrays.asList;
 @Component
 public class JiraConsumer {
 
-	private static final String PROJECT_KEY = "ADMKDL";
-	private static final String ISSUETYPE_NAME = "Avvik";
+	private static final String PROJECT_KEY = "MMA";
+	private static final String ISSUETYPE_NAME = "Oppgave";
 	private static final List<String> LABELS = asList("morgenvakt", "doksikkerhetsnett");
 
 	private final String opprettJiraIssueUrl;

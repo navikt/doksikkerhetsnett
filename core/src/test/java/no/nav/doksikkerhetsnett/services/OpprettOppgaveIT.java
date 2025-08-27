@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.itest;
+package no.nav.doksikkerhetsnett.services;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.stubbing.Scenario;
@@ -7,8 +7,7 @@ import no.nav.doksikkerhetsnett.entities.Bruker;
 import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
 import no.nav.doksikkerhetsnett.entities.responses.OpprettOppgaveResponse;
-import no.nav.doksikkerhetsnett.itest.config.TestConfig;
-import no.nav.doksikkerhetsnett.services.OpprettOppgaveService;
+import no.nav.doksikkerhetsnett.services.config.TestConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,7 +49,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @ActiveProfiles("itest")
 class OpprettOppgaveIT {
 
-	private static final String JIRA_PROJECT_URL = "/rest/api/2/project/ADMKDL";
+	private static final String JIRA_PROJECT_URL = "/rest/api/2/project/MMA";
 	private static final String URL_OPPGAVE = "/api/v1/oppgaver";
 	private static final String URL_JIRA = "/rest/api/2/issue";
 	private static final String URL_PDL = "/pdl/graphql";

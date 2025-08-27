@@ -1,4 +1,4 @@
-package no.nav.doksikkerhetsnett.itest;
+package no.nav.doksikkerhetsnett.services;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import no.nav.doksikkerhetsnett.consumers.FinnMottatteJournalposterConsumer;
@@ -6,7 +6,7 @@ import no.nav.doksikkerhetsnett.entities.Journalpost;
 import no.nav.doksikkerhetsnett.entities.responses.FinnMottatteJournalposterResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnMottatteJournalposterTechnicalException;
-import no.nav.doksikkerhetsnett.itest.config.TestConfig;
+import no.nav.doksikkerhetsnett.services.config.TestConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
