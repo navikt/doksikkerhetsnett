@@ -5,7 +5,6 @@ import no.nav.dok.jiraapi.JiraService;
 import no.nav.dok.jiraapi.client.JiraClient;
 import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.config.properties.JiraAuthProperties;
-import no.nav.doksikkerhetsnett.config.properties.ServiceUserProperties;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
@@ -52,7 +51,7 @@ public class CoreConfig {
 
 	public JiraProperties jiraProperties(DokSikkerhetsnettProperties properties, JiraAuthProperties jiraAuthProperties) {
 		String jiraUrl = properties.getEndpoints().getJira();
-		ServiceUserProperties serviceuser = properties.getServiceuser();
+
 		return JiraProperties.builder()
 				.jiraServiceUser(new JiraProperties.JiraServiceUser(jiraAuthProperties.username(), jiraAuthProperties.password()))
 				.url(jiraUrl)
