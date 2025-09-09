@@ -5,7 +5,6 @@ import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.entities.Oppgave;
 import no.nav.doksikkerhetsnett.entities.responses.OpprettOppgaveResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.OpprettOppgaveFunctionalException;
-import no.nav.doksikkerhetsnett.exceptions.technical.FinnOppgaveTechnicalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.OpprettOppgaveTechnicalException;
 import org.slf4j.MDC;
 import org.springframework.retry.annotation.Backoff;
