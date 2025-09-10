@@ -19,9 +19,6 @@ public class DokSikkerhetsnettProperties {
     private final Endpoints endpoints = new Endpoints();
     private final SlackProperties slack = new SlackProperties();
 
-    @NotNull
-    private ServiceUserProperties serviceuser;
-
     //kommaseparert liste, "ALLE" for å opprette oppgaver på alle temaer.
     private String skrivTemaer;
 

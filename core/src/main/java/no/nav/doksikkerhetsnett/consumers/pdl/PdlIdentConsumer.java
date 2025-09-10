@@ -69,9 +69,9 @@ public class PdlIdentConsumer {
 
 	private String mapPersonInfo(PdlResponse pdlResponse) {
 		if (pdlResponse.getErrors() == null || pdlResponse.getErrors().isEmpty()) {
-			return pdlResponse.getData().getHentIdenter().getIdenter().get(0).getIdent();
+			return pdlResponse.getData().getHentIdenter().getIdenter().getFirst().getIdent();
 		} else {
-			if (PERSON_IKKE_FUNNET_CODE.equals(pdlResponse.getErrors().get(0).getExtensions().getCode())) {
+			if (PERSON_IKKE_FUNNET_CODE.equals(pdlResponse.getErrors().getFirst().getExtensions().getCode())) {
 				throw new PersonIkkeFunnetException("Fant ikke aktørid for person i pdl.");
 			}
 			throw new PdlFunctionalException("Kunne ikke hente aktørid for folkeregisterident i pdl. " + pdlResponse.getErrors());
