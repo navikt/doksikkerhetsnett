@@ -1,5 +1,6 @@
 {
   "APPNAVN": "doksikkerhetsnett",
+  "DOKSIKKERHETSNETT_SECRET": "doksikkerhetsnett",
   "DOKSIKKERHETSNETT_ENDPOINTS_OPPGAVE_URL": "http://oppgave.oppgavehandtering.svc.nais.local",
   "DOKSIKKERHETSNETT_ENDPOINTS_OPPGAVE_SCOPE": "api://prod-fss.oppgavehandtering.oppgave/.default",
   "DOKSIKKERHETSNETT_ENDPOINTS_JIRA": "https://jira.adeo.no",

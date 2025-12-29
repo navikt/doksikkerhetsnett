@@ -69,5 +69,6 @@ spec:
       enabled: true
       runtime: java
   envFrom:
+    - secret: {{ DOKSIKKERHETSNETT_SECRET }}
     - secret: slack-alerts
     - secret: jira-service-user
