@@ -1,5 +1,6 @@
 {
   "APPNAVN": "doksikkerhetsnett",
+  "DOKSIKKERHETSNETT_SECRET": "doksikkerhetsnett",
   "DOKSIKKERHETSNETT_ENDPOINTS_OPPGAVE_URL": "http://oppgave.oppgavehandtering.svc.nais.local",
   "DOKSIKKERHETSNETT_ENDPOINTS_OPPGAVE_SCOPE": "api://dev-fss.oppgavehandtering.oppgave/.default",
   "DOKSIKKERHETSNETT_ENDPOINTS_JIRA": "https://jira-q1.adeo.no",
@@ -8,6 +9,6 @@
   "DOKSIKKERHETSNETT_ENDPOINTS_PDL_SCOPE": "api://dev-fss.pdl.pdl-api/.default",
   "DOKSIKKERHETSNETT_ENDPOINTS_PDL_URL": "http://pdl-api.pdl.svc.nais.local",
   "INGRESSES": [
-    "https://doksikkerhetsnett.dev.intern.nav.no"
+    "https://doksikkerhetsnett.intern.dev.nav.no"
   ]
 }
