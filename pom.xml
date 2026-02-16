@@ -34,7 +34,7 @@
         <cyclonedx-maven-plugin.version>2.9.1</cyclonedx-maven-plugin.version>
 
         <!-- Test -->
-        <spring-cloud-contract-wiremock.version>4.3.0</spring-cloud-contract-wiremock.version>
+        <spring-cloud-contract-wiremock.version>5.0.2</spring-cloud-contract-wiremock.version>
     </properties>
 
     <dependencyManagement>
