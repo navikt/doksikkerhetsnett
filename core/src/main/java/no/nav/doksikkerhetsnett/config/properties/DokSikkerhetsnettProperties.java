@@ -1,5 +1,6 @@
 package no.nav.doksikkerhetsnett.config.properties;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -16,7 +17,10 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class DokSikkerhetsnettProperties {
 
+    @Valid
     private final Endpoints endpoints = new Endpoints();
+
+    @Valid
     private final SlackProperties slack = new SlackProperties();
 
     //kommaseparert liste, "ALLE" for å opprette oppgaver på alle temaer.
@@ -26,24 +30,22 @@ public class DokSikkerhetsnettProperties {
     private String lesTemaer;
 
     @Data
-    @Validated
     public static class Endpoints {
 
         @NotNull
         private String jira;
 
-        @NotNull
+        @Valid
         private AzureEndpoint dokarkiv;
 
-        @NotNull
+        @Valid
         private AzureEndpoint pdl;
 
-        @NotNull
+        @Valid
         private AzureEndpoint oppgave;
     }
 
     @Data
-    @Validated
     public static class AzureEndpoint {
         @NotEmpty
         private String url;
@@ -52,7 +54,6 @@ public class DokSikkerhetsnettProperties {
     }
 
     @Data
-    @Validated
     public static class SlackProperties {
         @NotEmpty
         @ToString.Exclude

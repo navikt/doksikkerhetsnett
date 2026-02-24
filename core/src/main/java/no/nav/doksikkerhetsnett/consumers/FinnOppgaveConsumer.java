@@ -6,8 +6,7 @@ import no.nav.doksikkerhetsnett.entities.responses.FinnOppgaveResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnOppgaveFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnOppgaveTechnicalException;
 import org.slf4j.MDC;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -21,7 +20,7 @@ import static java.time.Duration.ofSeconds;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.NavHeaders.X_CORRELATION_ID;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.DELAY_SHORT;
-import static no.nav.doksikkerhetsnett.constants.RetryConstants.MAX_ATTEMPTS_SHORT;
+import static no.nav.doksikkerhetsnett.constants.RetryConstants.MULTIPLIER_SHORT;
 import static no.nav.doksikkerhetsnett.consumers.azure.AzureProperties.CLIENT_REGISTRATION_OPPGAVE;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_FORDELING;
 import static no.nav.doksikkerhetsnett.entities.Oppgave.OPPGAVETYPE_JOURNALFOERT;
@@ -52,7 +51,7 @@ public class FinnOppgaveConsumer {
 				.build();
 	}
 
-	@Retryable(retryFor = FinnOppgaveTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT, multiplier = MAX_ATTEMPTS_SHORT))
+	@Retryable(includes = FinnOppgaveTechnicalException.class, delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
 	public FinnOppgaveResponse finnOppgaveForJournalposter(List<Long> ubehandledeJournalposter, int offset) {
 		if (ubehandledeJournalposter == null || ubehandledeJournalposter.isEmpty()) {
 			return null;

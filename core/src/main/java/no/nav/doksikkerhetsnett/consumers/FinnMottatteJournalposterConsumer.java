@@ -6,8 +6,7 @@ import no.nav.doksikkerhetsnett.entities.responses.FinnMottatteJournalposterResp
 import no.nav.doksikkerhetsnett.exceptions.functional.FinnMottatteJournalposterFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.FinnMottatteJournalposterTechnicalException;
 import org.slf4j.MDC;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -21,7 +20,7 @@ import static java.time.Duration.ofSeconds;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.NavHeaders.NAV_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.DELAY_SHORT;
-import static no.nav.doksikkerhetsnett.constants.RetryConstants.MAX_ATTEMPTS_SHORT;
+import static no.nav.doksikkerhetsnett.constants.RetryConstants.MULTIPLIER_SHORT;
 import static no.nav.doksikkerhetsnett.consumers.azure.AzureProperties.CLIENT_REGISTRATION_DOKARKIV;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction.clientRegistrationId;
@@ -38,7 +37,7 @@ public class FinnMottatteJournalposterConsumer {
 				.build();
 	}
 
-	@Retryable(retryFor = FinnMottatteJournalposterTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT, multiplier = MAX_ATTEMPTS_SHORT))
+	@Retryable(includes = FinnMottatteJournalposterTechnicalException.class, delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
 	public FinnMottatteJournalposterResponse finnMottatteJournalposter(String tema, int antallDager) {
 		if (tema == null) {
 			throw new IllegalArgumentException("Kan ikke kalle finnMottatteJournalposter med tema=null");

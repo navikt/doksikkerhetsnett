@@ -7,8 +7,7 @@ import no.nav.doksikkerhetsnett.entities.responses.OpprettOppgaveResponse;
 import no.nav.doksikkerhetsnett.exceptions.functional.OpprettOppgaveFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.OpprettOppgaveTechnicalException;
 import org.slf4j.MDC;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -20,7 +19,7 @@ import static java.time.Duration.ofSeconds;
 import static no.nav.doksikkerhetsnett.constants.MDCConstants.MDC_CALL_ID;
 import static no.nav.doksikkerhetsnett.constants.NavHeaders.X_CORRELATION_ID;
 import static no.nav.doksikkerhetsnett.constants.RetryConstants.DELAY_SHORT;
-import static no.nav.doksikkerhetsnett.constants.RetryConstants.MAX_ATTEMPTS_SHORT;
+import static no.nav.doksikkerhetsnett.constants.RetryConstants.MULTIPLIER_SHORT;
 import static no.nav.doksikkerhetsnett.consumers.azure.AzureProperties.CLIENT_REGISTRATION_OPPGAVE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -42,7 +41,7 @@ public class OpprettOppgaveConsumer {
 				.build();
 	}
 
-	@Retryable(retryFor = OpprettOppgaveTechnicalException.class, backoff = @Backoff(delay = DELAY_SHORT, multiplier = MAX_ATTEMPTS_SHORT))
+	@Retryable(includes = OpprettOppgaveTechnicalException.class, delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
 	public OpprettOppgaveResponse opprettOppgave(Oppgave oppgave) {
 
 		return webClient.post()

@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.7</version>
+        <version>4.0.3</version>
     </parent>
 
     <groupId>no.nav.doksikkerhetsnett</groupId>
@@ -23,7 +23,7 @@
     <properties>
         <java.version>25</java.version>
 
-        <logstash-logback-encoder.version>8.1</logstash-logback-encoder.version>
+        <logstash-logback-encoder.version>9.0</logstash-logback-encoder.version>
         <commons-collections4.version>4.5.0</commons-collections4.version>
         <context-propagation.version>1.2.1</context-propagation.version>
         <slack-api-client.version>1.47.0</slack-api-client.version>
@@ -34,7 +34,7 @@
         <cyclonedx-maven-plugin.version>2.9.1</cyclonedx-maven-plugin.version>
 
         <!-- Test -->
-        <spring-cloud-contract-wiremock.version>4.3.0</spring-cloud-contract-wiremock.version>
+        <wiremock-spring-boot.version>4.1.0</wiremock-spring-boot.version>
     </properties>
 
     <dependencyManagement>
@@ -73,9 +73,9 @@
 
             <!--test-->
             <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-contract-wiremock</artifactId>
-                <version>${spring-cloud-contract-wiremock.version}</version>
+                <groupId>org.wiremock.integrations</groupId>
+                <artifactId>wiremock-spring-boot</artifactId>
+                <version>${wiremock-spring-boot.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -83,6 +83,19 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
