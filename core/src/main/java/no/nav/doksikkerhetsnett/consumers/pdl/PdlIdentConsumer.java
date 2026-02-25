@@ -4,8 +4,7 @@ import no.nav.doksikkerhetsnett.config.properties.DokSikkerhetsnettProperties;
 import no.nav.doksikkerhetsnett.exceptions.functional.PdlFunctionalException;
 import no.nav.doksikkerhetsnett.exceptions.technical.PdlTechnicalException;
 import org.slf4j.MDC;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -42,8 +41,9 @@ public class PdlIdentConsumer {
 	}
 
 	@Retryable(
-			retryFor = PdlTechnicalException.class,
-			backoff = @Backoff(delay = DELAY_SHORT, multiplier = MULTIPLIER_SHORT)
+			includes = PdlTechnicalException.class,
+			delay = DELAY_SHORT,
+			multiplier = MULTIPLIER_SHORT
 	)
 	public String hentAktoerId(String folkeregisterIdent) throws PersonIkkeFunnetException {
 		return webClient.post()

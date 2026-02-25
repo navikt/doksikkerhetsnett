@@ -13,9 +13,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
-import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
+import org.wiremock.spring.EnableWireMock;
 
 import java.util.List;
 
@@ -34,7 +33,6 @@ import static no.nav.doksikkerhetsnett.entities.Bruker.TYPE_PERSON;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
@@ -45,7 +43,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 		classes = {TestConfig.class, CoreConfig.class},
 		webEnvironment = RANDOM_PORT
 )
-@AutoConfigureWireMock(port = 0)
+@EnableWireMock
 @ActiveProfiles("itest")
 class OpprettOppgaveIT {
 

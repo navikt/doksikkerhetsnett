@@ -12,10 +12,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.wiremock.spring.EnableWireMock;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -44,7 +44,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 		classes = {TestConfig.class},
 		webEnvironment = RANDOM_PORT
 )
-@AutoConfigureWireMock(port = 0)
+@EnableWireMock
 @ActiveProfiles("itest")
 class FinnMottatteJournalposterIT {
 

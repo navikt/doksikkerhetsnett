@@ -8,10 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.wiremock.spring.EnableWireMock;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -30,7 +28,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 		classes = {TestConfig.class},
 		webEnvironment = RANDOM_PORT
 )
-@AutoConfigureWireMock(port = 0)
+@EnableWireMock
 @ActiveProfiles("itest")
 public abstract class DoksikkerhetsnettItest {
 
@@ -64,20 +62,20 @@ public abstract class DoksikkerhetsnettItest {
 	void setUpStubs() {
 		stubFor(get(urlMatching(URL_OPPGAVE_JOURNALPOST_SEARCH))
 				.willReturn(aResponse().withStatus(OK.value())
-						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("finnoppgave/finnOppgaver-happy.json")));
 		stubFor(get(urlPathEqualTo(URL_FINNMOTTATTEJOURNALPOSTER))
 				.willReturn(aResponse().withStatus(OK.value())
-						.withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("finnmottattejournalposter/mottatteJournalposterForSchedulerTest-happy.json")));
 		stubFor(post(urlEqualTo(URL_PDL))
 				.willReturn(aResponse().withStatus(OK.value())
-						.withHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("pdl/pdl-aktoerid-happy.json")));
 		stubFor(post("/azure_token")
 				.willReturn(aResponse()
 						.withStatus(OK.value())
-						.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("azure/token_response_dummy.json")));
 		stubFor(get(urlMatching(JIRA_PROJECT_URL))
 				.willReturn(aResponse().withStatus(OK.value())
