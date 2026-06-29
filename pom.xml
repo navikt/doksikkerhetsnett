@@ -31,7 +31,7 @@
 
         <!-- Plugins -->
         <maven-toolchains-plugin.version>3.2.0</maven-toolchains-plugin.version>
-        <cyclonedx-maven-plugin.version>2.9.1</cyclonedx-maven-plugin.version>
+        <cyclonedx-maven-plugin.version>2.9.2</cyclonedx-maven-plugin.version>
 
         <!-- Test -->
         <wiremock-spring-boot.version>4.2.1</wiremock-spring-boot.version>
