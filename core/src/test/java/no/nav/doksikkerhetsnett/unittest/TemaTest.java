@@ -36,8 +36,8 @@ class TemaTest {
 
 	@Test
 	void shouldGetAllTemas() {
-		assertEquals(67, Tema.getAlleTema().size());
-		assertEquals(64, Tema.getAlleTemaExcept(new HashSet<>(Arrays.asList("ERS", "RPO", "SAK"))).size());
-		assertEquals(64, Tema.getAlleTemaExcept("ERS,RPO,SAK").size());
+		assertEquals(68, Tema.getAlleTema().size());
+		assertEquals(65, Tema.getAlleTemaExcept(new HashSet<>(Arrays.asList("ERS", "RPO", "SAK"))).size());
+		assertEquals(65, Tema.getAlleTemaExcept("ERS,RPO,SAK").size());
 	}
 }

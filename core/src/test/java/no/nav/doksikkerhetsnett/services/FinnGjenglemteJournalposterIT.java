@@ -57,7 +57,7 @@ class FinnGjenglemteJournalposterIT extends DoksikkerhetsnettItest {
 		List<Journalpost> journalposterUtenOppgaver = new ArrayList<>();
 		Tema.getAlleTema()
 				.forEach(tema -> journalposterUtenOppgaver.addAll(finnGjenglemteJournalposterService.finnJournalposterUtenOppgaveUpdateMetrics(tema, 5)));
-		assertEquals(268, journalposterUtenOppgaver.size());
+		assertEquals(272, journalposterUtenOppgaver.size());
 	}
 
 	@Test
